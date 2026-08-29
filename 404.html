@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th" class="no-js" data-root="./">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ไม่พบหน้านี้ — Portfolio</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0910">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('pf-theme'); } catch (e) {}
+  document.documentElement.dataset.theme = t === 'light' ? 'light' : 'dark';
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@200..700&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/motion.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+
+<!-- ============================================================
+     GitHub Pages ให้ 404.html ทำงานจากทุก path ที่ไม่มีไฟล์จริง
+     แต่หน้าที่ถูกเสิร์ฟจะอยู่ที่ URL เดิม ทำให้ path สัมพัทธ์อย่าง
+     assets/css/... พังทันทีถ้า URL ผิดพลาดอยู่ลึกกว่าหนึ่งชั้น
+     สคริปต์นี้จึงแก้ <base> ให้ชี้กลับรากเว็บก่อน CSS จะโหลด
+     ============================================================ -->
+<script>
+(function () {
+  var seg = location.pathname.split('/').filter(Boolean);
+  // บน GitHub Pages ชั้นแรกคือชื่อ repo จึงไม่นับเป็นความลึกของหน้า
+  var depth = Math.max(0, seg.length - (location.hostname.endsWith('github.io') ? 2 : 1));
+  if (depth > 0) {
+    var b = document.createElement('base');
+    b.href = '../'.repeat(depth);
+    document.head.prepend(b);
+  }
+})();
+</script>
+</head>
+
+<body>
+
+<!-- ชั้นแสงเคลื่อนไหวเป็นฉากหลัง — CSS ล้วน ดู .ambient ใน motion.css -->
+<div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<!-- รูปทรงวิศวกรรมลอยเป็นฉากหลัง ลากได้ — รูปทรงถูกสร้างโดย js/modules/formes.js -->
+<!-- เส้นลายวงจร PCB ที่ขอบซ้าย — แถบความคืบหน้าการอ่าน จุดบัดกรีติดไฟทีละจุดตามหัวข้อ
+     รูปเส้นสร้างโดย js/modules/spine.js เพราะจำนวนจุดต่างกันทุกหน้า
+     ⚠ pointer-events: none อยู่ใน CSS แล้ว (กฎข้อ 6) มันสูงเต็มจอ ถ้าลืมจะกินคลิกทั้งแถบ -->
+<div class="spine" data-spine aria-hidden="true"></div>
+
+<div class="formes" data-formes aria-hidden="true"></div>
+
+<main class="notfound">
+  <div class="container stack stack--center"><div class="stack stack--center" style="width:100%">
+    <p class="notfound-code" aria-hidden="true">404</p>
+    <span class="eyebrow" data-scramble>Page not found</span>
+    <h1 class="gradient-text" style="font-size:var(--t-h2)">ไม่พบหน้าที่ต้องการ</h1>
+    <p class="text-soft" style="max-width:44ch">
+      ลิงก์อาจพิมพ์ผิด หรือหน้านั้นถูกย้ายไปแล้ว
+      ลองกลับไปหน้าแรก หรือกด <kbd>⌘</kbd><kbd>K</kbd> เพื่อค้นหาผลงาน
+    </p>
+    <div class="row row--center" style="margin-top:var(--s-4)">
+      <a data-magnet class="btn btn--primary" href="index.html">
+        <span data-icon="home"></span> กลับหน้าแรก
+      </a>
+      <a data-magnet class="btn btn--secondary" href="work/index.html">
+        ดูผลงาน <span data-icon="arrowRight"></span>
+      </a>
+    </div>
+    </div>
+  </div>
+</main>
+
+<dialog class="palette" data-palette aria-label="ค้นหาและคำสั่ง">
+  <div class="palette-search">
+    <span data-icon="search"></span>
+    <input type="text" data-palette-input placeholder="พิมพ์เพื่อค้นหาผลงานหรือคำสั่ง…"
+           autocomplete="off" spellcheck="false" aria-label="ค้นหา">
+  </div>
+  <div class="palette-list" data-palette-list role="listbox" aria-label="ผลการค้นหา"></div>
+  <div class="palette-foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd> เลื่อน</span>
+    <span><kbd>↵</kbd> เลือก</span>
+    <span><kbd>esc</kbd> ปิด</span>
+  </div>
+</dialog>
+
+<script defer src="assets/js/icons.js"></script>
+<script defer src="assets/js/data/projects.js"></script>
+<script defer src="assets/js/modules/media.js"></script>
+<script defer src="assets/js/modules/halftone.js"></script>
+<script defer src="assets/js/modules/reveal.js"></script>
+<script defer src="assets/js/modules/nav.js"></script>
+<script defer src="assets/js/modules/tabs.js"></script>
+<script defer src="assets/js/modules/fx.js"></script>
+<script defer src="assets/js/modules/ui.js"></script>
+<script defer src="assets/js/modules/palette.js"></script>
+<script defer src="assets/js/modules/render.js"></script>
+<script defer src="assets/js/modules/formes.js"></script>
+<script defer src="assets/js/modules/type.js"></script>
+<script defer src="assets/js/modules/smooth.js"></script>
+<script defer src="assets/js/modules/scenes.js"></script>
+<script defer src="assets/js/modules/spine.js"></script>
+<script defer src="assets/js/main.js"></script>
+</body>
+</html>

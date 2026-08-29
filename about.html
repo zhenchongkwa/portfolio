@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="th" class="no-js" data-root="./">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เกี่ยวกับ — Portfolio</title>
+
+<meta name="description" content="เจิน ชง กวา นักเรียนโรงเรียนเลยพิทยาคม แผนศิลป์-เทคโนโลยี สนใจฮาร์ดแวร์และซอฟต์แวร์ ตั้งใจเรียนต่อวิศวกรรมคอมพิวเตอร์">
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://lpk37943-cyber.github.io/portfolio/about.html">
+
+<meta property="og:type" content="profile">
+<meta property="og:title" content="เกี่ยวกับ — Portfolio">
+<meta property="og:description" content="รางวัลระดับประเทศ IPST AI Inventor · หุ่นยนต์แขนกล Dobot · Interactive Math">
+<meta property="og:image" content="https://lpk37943-cyber.github.io/portfolio/assets/og-image.jpg">
+<meta property="og:url" content="https://lpk37943-cyber.github.io/portfolio/about.html">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('pf-theme'); } catch (e) {}
+  document.documentElement.dataset.theme = t === 'light' ? 'light' : 'dark';
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@200..700&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/motion.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+</head>
+
+<body>
+
+<!-- ชั้นแสงเคลื่อนไหวเป็นฉากหลัง — CSS ล้วน ดู .ambient ใน motion.css -->
+<div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<!-- รูปทรงวิศวกรรมลอยเป็นฉากหลัง ลากได้ — รูปทรงถูกสร้างโดย js/modules/formes.js -->
+<!-- เส้นลายวงจร PCB ที่ขอบซ้าย — แถบความคืบหน้าการอ่าน จุดบัดกรีติดไฟทีละจุดตามหัวข้อ
+     รูปเส้นสร้างโดย js/modules/spine.js เพราะจำนวนจุดต่างกันทุกหน้า
+     ⚠ pointer-events: none อยู่ใน CSS แล้ว (กฎข้อ 6) มันสูงเต็มจอ ถ้าลืมจะกินคลิกทั้งแถบ -->
+<div class="spine" data-spine aria-hidden="true"></div>
+
+<div class="formes" data-formes aria-hidden="true"></div>
+
+<div class="progress" data-progress aria-hidden="true"></div>
+<a class="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
+
+<header class="site-header" data-scrolled="false">
+  <nav class="nav" aria-label="เมนูหลัก">
+    <a class="nav-brand" href="index.html"><span>zhenchong</span><span>.dev</span></a>
+    <ul class="nav-links">
+      <li><a class="nav-link" href="index.html">Home</a></li>
+      <li><a class="nav-link" href="about.html" aria-current="page">About</a></li>
+      <li><a class="nav-link" href="work/index.html">Portfolio</a></li>
+      <li><a class="nav-link" href="index.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button type="button" class="icon-btn" data-magnet data-theme-toggle aria-label="สลับธีมสว่าง / มืด"></button>
+      <button type="button" class="kbd-hint" data-magnet data-palette-open>
+        <span data-icon="search"></span> ค้นหา <kbd>⌘</kbd><kbd>K</kbd>
+      </button>
+      <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false"
+              aria-controls="nav-panel" aria-label="เปิดเมนู"><i></i><i></i><i></i></button>
+    </div>
+  </nav>
+  <div class="nav-panel" id="nav-panel" data-nav-panel data-open="false">
+    <div><ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="work/index.html">Portfolio</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul></div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="section" id="intro" data-spine-label="INTRO" style="padding-top:9rem;position:relative;overflow:hidden">
+    <div class="glow glow--accent" style="top:-30%;left:-10%;width:60vw;height:60vw;max-width:760px;max-height:760px" aria-hidden="true"></div>
+
+    <div class="container">
+      <div class="split split--text-lead">
+
+        <div class="stack">
+          <span class="eyebrow" data-scramble data-reveal>About me</span>
+          <h1 class="gradient-text" style="font-size:var(--t-h1)" data-reveal>
+            zhen chong<br>developer
+          </h1>
+          <p class="hero-role caret" data-reveal>student developer</p>
+        </div>
+
+        <!-- ไม่ใส่ data-halftone ตรงนี้โดยตั้งใจ — ชั้นเม็ดจุดโหมด hold เป็นแผ่นทึบที่บังรูป
+             ไว้จนกว่าจะชี้เมาส์ (ดู [data-halftone="on"]::after ใน components.css)
+             กรอบนี้ต้องการให้เห็นรูปสีจริงตลอดเวลา จึงไม่ผูกเอฟเฟกต์ไว้เลย -->
+        <div class="portrait" data-reveal="scale">
+          <img src="assets/img/portrait.jpg" alt="รูปโปรไฟล์"
+               data-label="ใส่รูปที่นี่" data-ratio="1/1" loading="lazy">
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ruled" id="story" data-spine-label="STORY">
+    <div class="container">
+      <div class="case-body">
+
+        <h2>ผมเป็นใคร</h2>
+        <p>
+          นายเจิน ชง กวา นักเรียนโรงเรียนเลยพิทยาคม จังหวัดเลย แผนการเรียนศิลป์-เทคโนโลยี
+          สนใจงานสองด้านพร้อมกันคือฮาร์ดแวร์และซอฟต์แวร์ และตั้งใจเรียนต่อ
+          คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมคอมพิวเตอร์
+        </p>
+
+        <h2>ผลงานที่ภูมิใจที่สุด</h2>
+        <p>
+          หุ่นยนต์ยามรักษ์โลกที่แยกประเภทขยะด้วย AI พร้อมแดชบอร์ดสรุปผล ส่งประกวดรายการ
+          IPST AI Inventor รอบระดับประเทศ จัดโดยสถาบันส่งเสริมการสอนวิทยาศาสตร์และเทคโนโลยี
+          (สสวท.) ร่วมกับ NECTEC ได้รางวัลรองชนะเลิศอันดับ 2 พร้อมเงินรางวัล 6,000 บาท
+          จัดแสดงในการประชุมวิชาการวิทยาศาสตร์ คณิตศาสตร์ในโรงเรียน ระดับชาติ ครั้งที่ 25
+          เมื่อวันที่ 24–26 กรกฎาคม 2569
+        </p>
+        <p>
+          สิ่งที่ได้จากงานนี้ไม่ใช่แค่เรื่องเทคนิค แต่คือการเรียนรู้ว่าจะเล่าให้คนที่ไม่ได้ทำ
+          ฟังยังไงให้เข้าใจภายในสามนาทีบนเวที
+        </p>
+
+        <h2>รางวัลและกิจกรรม</h2>
+        <ul>
+          <li><strong>รองชนะเลิศอันดับ 2</strong> — IPST AI Inventor ระดับประเทศ (สสวท. × NECTEC) · 2569</li>
+          <li><strong>รองชนะเลิศอันดับ 2</strong> — การแข่งขันหุ่นยนต์แขนกล Dobot ระดับ ม.ปลาย (ม.ราชภัฏเลย) · 2568</li>
+          <li><strong>จัดแสดงผลงาน</strong> — โครงงาน Interactive Math ที่มหาวิทยาลัยขอนแก่น</li>
+          <li><strong>วิทยากรกระบวนการ (Mentor)</strong> — โครงการ I'm Hero ระดับประเทศ (GLO × มูลนิธิครอบครัวพอเพียง) · 2568</li>
+          <li><strong>ผ่านการอบรม</strong> — หลักสูตรกล้าคุณธรรม รุ่นที่ 7/2568 (กระทรวงวัฒนธรรม)</li>
+        </ul>
+
+        <h2>ทำไมถึงสนใจวิศวกรรมคอมพิวเตอร์</h2>
+        <p>
+          เพราะงานที่ผ่านมาบอกตรงกันว่าตัวเองสนุกกับจุดที่ฮาร์ดแวร์มาเจอกับซอฟต์แวร์
+          หุ่นยนต์ยามรักษ์โลกต้องใช้ทั้งเซนเซอร์และการเขียนโปรแกรม แขนกล Dobot ต้องเข้าใจ
+          ทั้งกลไกและลำดับคำสั่ง ส่วน Interactive Math เป็นฝั่งซอฟต์แวร์ล้วน
+          ทั้งสามอย่างสอนคนละเรื่อง แต่ต่อกันเป็นทางเดียวกัน
+        </p>
+
+        <h2>วิธีทำงาน</h2>
+        <ul>
+          <li>วางโครงหยาบให้ครบก่อน แล้วค่อยลงรายละเอียด ไม่ทำชิ้นเดียวให้สวยตั้งแต่แรก</li>
+          <li>เก็บค่าคงที่ไว้ที่เดียว และเขียนคอมเมนต์อธิบายว่า <em>ทำไม</em> ไม่ใช่ <em>ทำอะไร</em></li>
+          <li>ตัวเลขที่แสดงต้องตอบได้ว่าทำไปแล้วได้อะไร ไม่ใช่แค่บอกว่าระบบทำงานได้</li>
+        </ul>
+
+        <h2>ตอนนี้กำลังทำอะไร</h2>
+        <ul>
+          <li>ต่อยอดหุ่นยนต์ยามรักษ์โลกให้แม่นขึ้นและติดตั้งใช้จริงในโรงเรียน</li>
+          <li>ฝึกเขียนเว็บโดยไม่ใช้ framework เพื่อเข้าใจว่าเครื่องมือแต่ละตัวแก้ปัญหาอะไร — เว็บนี้คือหนึ่งในคำตอบ</li>
+          <li>เตรียมพอร์ตโฟลิโอสำหรับยื่นเข้าคณะวิศวกรรมคอมพิวเตอร์</li>
+        </ul>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ruled" id="skills" data-spine-label="SKILLS">
+    <div class="container-wide">
+      <div class="section-head section-head--center">
+        <span class="eyebrow" data-scramble data-reveal>Skills</span>
+        <h2 class="gradient-text" data-split data-reveal>ทักษะที่ใช้จริง</h2>
+        <p data-reveal>ไม่ได้ใส่ทุกอย่างที่เคยลอง — เฉพาะที่ใช้ทำงานจริงจนจบชิ้น</p>
+      </div>
+      <div class="grid grid--tech" data-tools></div>
+    </div>
+  </section>
+
+  <section class="section" id="cta" data-spine-label="CONTACT">
+    <div class="container">
+      <div class="cta" data-reveal="scale">
+        <h2 class="gradient-text" data-split>อยากคุยเรื่องงานไหม</h2>
+        <p>ส่งข้อความมาได้เลย ตอบทุกฉบับ</p>
+        <div class="row row--center">
+          <a data-magnet class="btn btn--accent btn--lg" href="index.html#contact">
+            <span data-icon="mail"></span> ติดต่อ
+          </a>
+          <a data-magnet class="btn btn--secondary btn--lg" href="work/index.html">
+            ดูผลงาน <span data-icon="arrowRight"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom" style="border:0;padding-top:0">
+      <span>© <span data-year>2569</span> เจิน ชง กวา — สงวนลิขสิทธิ์</span>
+      <span class="mono-note">กด <kbd>?</kbd> เพื่อดูคีย์ลัด</span>
+    </div>
+  </div>
+</footer>
+
+<dialog class="palette" data-palette aria-label="ค้นหาและคำสั่ง">
+  <div class="palette-search">
+    <span data-icon="search"></span>
+    <input type="text" data-palette-input placeholder="พิมพ์เพื่อค้นหาผลงานหรือคำสั่ง…"
+           autocomplete="off" spellcheck="false" aria-label="ค้นหา">
+  </div>
+  <div class="palette-list" data-palette-list role="listbox" aria-label="ผลการค้นหา"></div>
+  <div class="palette-foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd> เลื่อน</span>
+    <span><kbd>↵</kbd> เลือก</span>
+    <span><kbd>esc</kbd> ปิด</span>
+  </div>
+</dialog>
+
+<dialog class="palette" data-help aria-label="คีย์ลัด">
+  <div class="palette-search" style="justify-content:space-between">
+    <strong style="font-size:var(--t-small)">คีย์ลัด</strong>
+    <button type="button" class="lightbox-close" data-help-close aria-label="ปิด" data-icon="close"></button>
+  </div>
+  <div class="palette-list">
+    <button type="button" class="palette-item"><span>ค้นหา / คำสั่ง</span><span class="meta"><kbd>⌘</kbd><kbd>K</kbd></span></button>
+    <button type="button" class="palette-item"><span>ค้นหา</span><span class="meta"><kbd>/</kbd></span></button>
+    <button type="button" class="palette-item"><span>ไปหน้าแรก</span><span class="meta"><kbd>g</kbd><kbd>h</kbd></span></button>
+    <button type="button" class="palette-item"><span>ไปหน้าผลงาน</span><span class="meta"><kbd>g</kbd><kbd>w</kbd></span></button>
+    <button type="button" class="palette-item"><span>ไปหน้าเกี่ยวกับ</span><span class="meta"><kbd>g</kbd><kbd>a</kbd></span></button>
+    <button type="button" class="palette-item"><span>ปิดกล่อง</span><span class="meta"><kbd>esc</kbd></span></button>
+  </div>
+</dialog>
+
+<script defer src="assets/js/icons.js"></script>
+<script defer src="assets/js/data/projects.js"></script>
+<script defer src="assets/js/modules/media.js"></script>
+<script defer src="assets/js/modules/halftone.js"></script>
+<script defer src="assets/js/modules/reveal.js"></script>
+<script defer src="assets/js/modules/nav.js"></script>
+<script defer src="assets/js/modules/tabs.js"></script>
+<script defer src="assets/js/modules/fx.js"></script>
+<script defer src="assets/js/modules/ui.js"></script>
+<script defer src="assets/js/modules/palette.js"></script>
+<script defer src="assets/js/modules/render.js"></script>
+<script defer src="assets/js/modules/formes.js"></script>
+<script defer src="assets/js/modules/type.js"></script>
+<script defer src="assets/js/modules/smooth.js"></script>
+<script defer src="assets/js/modules/scenes.js"></script>
+<script defer src="assets/js/modules/spine.js"></script>
+<script defer src="assets/js/main.js"></script>
+</body>
+</html>

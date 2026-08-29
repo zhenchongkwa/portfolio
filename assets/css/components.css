@@ -1,0 +1,1437 @@
+/* ============================================================================
+   components.css — ชิ้นส่วนที่ใช้ซ้ำทั้งเว็บ
+
+   เรียงตามลำดับที่พบบนหน้าจอ: nav → ปุ่ม → chip → การ์ด → tab → สถิติ
+   → ฟอร์ม → โซเชียล → lightbox → command palette → เคอร์เซอร์
+   ========================================================================= */
+
+/* ============================================================================
+   NAV — แถบ pill ลอย ไม่ติดขอบบน (ตามเรฟ)
+
+   ต่างจาก header ทั่วไปตรงที่ตัว <header> เป็นแค่กรอบโปร่งใสเต็มความกว้าง
+   ส่วนที่มองเห็นคือ .nav ข้างในซึ่งเป็นแคปซูล — ทำแบบนี้เพื่อให้แคปซูลอยู่กลาง
+   และหดความกว้างได้เองตอน scroll โดยไม่ต้องขยับตัว header
+   ========================================================================= */
+.site-header {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: var(--z-nav);
+  padding: var(--s-5) var(--pad-x);
+  pointer-events: none;   /* ให้คลิกทะลุช่องว่างข้างแคปซูลได้ */
+  transition: padding var(--dur-slow) var(--ease);
+}
+.site-header[data-scrolled="true"] { padding-block: var(--s-3); }
+
+.nav {
+  pointer-events: auto;
+  /* ⚠ ต้องหัก --pad-x ออกสองข้าง ไม่ใช่ใช้ --w-content ดิบๆ
+
+     .container เอา padding ไว้ "ข้างใน" กล่อง 1600px (ขอบเนื้อหา = กลาง + pad)
+     ส่วน nav เอา padding ไว้ "ข้างนอก" ที่ .site-header (ขอบกล่อง = กลางเฉยๆ)
+     ถ้าให้ทั้งคู่กว้าง 1600px เท่ากัน ขอบซ้ายจะห่างกันเท่ากับ --pad-x พอดี
+     ซึ่งเห็นชัดเฉพาะจอที่กว้างกว่ากล่อง (วัดจริงที่ 1920px: ห่างกัน 42px)
+     จอแคบกว่านั้นไม่เห็นเพราะทั้งคู่ถูกบีบเต็มความกว้างอยู่แล้ว */
+  max-width: calc(var(--w-content) - var(--pad-x) * 2);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  height: 56px;
+  padding-inline: var(--s-5);
+  border-radius: var(--r-pill);
+  border: var(--bw) solid transparent;
+  background: transparent;
+  transition:
+    background   var(--dur-slow) var(--ease),
+    border-color var(--dur-slow) var(--ease),
+    box-shadow   var(--dur-slow) var(--ease),
+    max-width    var(--dur-slow) var(--ease);
+}
+
+/* กระจกจะ "ติด" ก็ต่อเมื่อเลื่อนลงมาแล้ว — ตอนอยู่บนสุด nav ลอยเปล่าๆ บน hero
+   backdrop-filter ตอน scroll เท่านั้น เพราะมันกิน GPU ตลอดเวลาถ้าเปิดค้างไว้
+
+   ⚠ ห้ามใส่ max-width กลับมาที่นี่
+   เดิมแคปซูลหดลง 4rem ตอนเลื่อน ซึ่งดูดีเมื่อดูเฉพาะแถบ แต่มันทำให้ขอบซ้าย
+   ของ nav เลื่อนออกจากขอบของเนื้อหาข้างล่างทันทีที่คนเริ่มอ่าน — เส้นตั้ง
+   ที่เพิ่งจัดให้ตรงกันทั้งหน้าจะพังทุกครั้งที่ scroll (ดูกฎที่ tokens.css)
+   ความรู้สึก "แถบเปลี่ยนสถานะ" ยังได้ครบจากกระจก ขอบ และเงาที่ติดเข้ามา */
+.site-header[data-scrolled="true"] .nav {
+  background: var(--surface-glass);
+  border-color: var(--line);
+  box-shadow: var(--shadow-md), var(--card-lip);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+          backdrop-filter: blur(20px) saturate(180%);
+}
+
+.nav-brand {
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 500;
+  letter-spacing: .08em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.nav-brand span { color: var(--ink-faint); }
+
+.nav-links {
+  display: none;
+  align-items: center;
+  gap: var(--s-1);
+}
+@media (min-width: 52rem) { .nav-links { display: flex; } }
+
+/* ลิงก์ nav — ขีดใต้ตัว active เป็นเส้นสั้นๆ ใต้ตัวอักษรพอดี (ตามเรฟ)
+   ใช้ ::after ที่ scaleX จาก 0 เพื่อให้เส้นวิ่งออกจากกลาง ไม่ใช่โผล่มาทั้งเส้น */
+.nav-link {
+  position: relative;
+  padding: var(--s-2) var(--s-3);
+  font-family: var(--font-mono);
+  font-size: var(--t-tiny);
+  letter-spacing: .06em;
+  color: var(--ink-faint);
+  border-radius: var(--r-sm);
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: var(--s-3);
+  right: var(--s-3);
+  bottom: 2px;
+  height: 1px;
+  background: currentColor;
+  scale: 0 1;
+  transition: scale var(--dur) var(--ease-out);
+}
+.nav-link:hover { color: var(--ink-soft); }
+.nav-link:hover::after,
+.nav-link[aria-current="page"]::after { scale: 1 1; }
+.nav-link[aria-current="page"] { color: var(--ink); }
+
+.nav-actions { display: flex; align-items: center; gap: var(--s-2); }
+
+/* ปุ่มเรียก command palette — โชว์คีย์ลัดไว้ในตัวปุ่มเลย (แบบ Linear) */
+.kbd-hint {
+  display: none;
+  align-items: center;
+  gap: var(--s-2);
+  height: 32px;
+  padding-inline: var(--s-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--pill-face);
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.kbd-hint:hover { border-color: var(--line-strong); color: var(--ink-soft); }
+@media (min-width: 40rem) { .kbd-hint { display: inline-flex; } }
+
+kbd {
+  display: inline-block;
+  min-width: 1.35em;
+  padding: 1px 4px;
+  border: var(--bw) solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: var(--r-xs);
+  background: var(--pill-face);
+  font-family: var(--font-mono);
+  font-size: .95em;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+/* ปุ่มไอคอนเปล่าใน nav — ใช้กับสวิตช์ธีม
+   ต้องแสดงทุกขนาดจอ ต่างจาก .kbd-hint ที่ซ่อนบนจอแคบ
+   เพราะสวิตช์ธีมเป็นฟีเจอร์ที่คนหาไม่เจอถ้าไม่มีปุ่มให้เห็น
+   (เดิมเรียกได้จาก command palette อย่างเดียว ซึ่งเท่ากับไม่มี สำหรับคนส่วนใหญ่) */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 32px; height: 32px;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--pill-face);
+  color: var(--ink-faint);
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+.icon-btn svg { width: 15px; height: 15px; }
+
+/* ปุ่มเปิดเมนูมือถือ — hamburger สามขีดที่แปลงเป็นกากบาท */
+.nav-toggle {
+  display: grid;
+  place-items: center;
+  width: 34px; height: 34px;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--pill-face);
+}
+@media (min-width: 52rem) { .nav-toggle { display: none; } }
+
+.nav-toggle i {
+  display: block;
+  width: 15px; height: 1.5px;
+  background: var(--ink-soft);
+  border-radius: 2px;
+  transition: translate var(--dur) var(--ease), rotate var(--dur) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+.nav-toggle i + i { margin-top: 4px; }
+.nav-toggle[aria-expanded="true"] i:nth-child(1) { translate: 0 5.5px; rotate: 45deg; }
+.nav-toggle[aria-expanded="true"] i:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] i:nth-child(3) { translate: 0 -5.5px; rotate: -45deg; }
+
+/* แผงเมนูมือถือ — ร่วงลงมาจากใต้แคปซูล
+   ใช้ grid-template-rows 0fr→1fr เพื่อ animate ความสูงโดยไม่ต้องรู้ค่าจริง */
+.nav-panel {
+  pointer-events: auto;
+  /* กล่องเดียวกับ .nav ข้างบน — หักขอบสองข้างเหมือนกัน (เหตุผลอยู่ที่นั่น) */
+  max-width: calc(var(--w-content) - var(--pad-x) * 2);
+  margin: var(--s-2) auto 0;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-slow) var(--ease-out);
+}
+.nav-panel[data-open="true"] { grid-template-rows: 1fr; }
+.nav-panel > div { overflow: hidden; }
+
+.nav-panel ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding: var(--s-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface-glass);
+  box-shadow: var(--shadow-lg), var(--card-lip);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+          backdrop-filter: blur(20px) saturate(180%);
+}
+.nav-panel a {
+  display: block;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+}
+.nav-panel a:hover { background: rgba(255, 255, 255, .05); color: var(--ink); }
+
+/* ============================================================================
+   ปุ่ม
+
+   สามแบบ: primary (ขาวทึบ) · secondary (โปร่งมีขอบ) · ghost (ไม่มีขอบ)
+   ทุกแบบสูง 40px เท่ากันเพื่อให้วางเรียงกันแล้วขอบตรงกัน
+   ========================================================================= */
+.btn {
+  --btn-h: 40px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  height: var(--btn-h);
+  padding-inline: var(--s-5);
+  border-radius: var(--r-md);
+  font-size: var(--t-small);
+  font-weight: 500;
+  letter-spacing: -.005em;
+  white-space: nowrap;
+  transition:
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    translate var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+.btn:active { translate: 0 1px; }
+.btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* ---------- ปุ่มแบบคอมิก: กดจมลงไปหาเงา ----------
+   ปุ่มลอยอยู่เหนือเงาแข็งที่ออฟเซ็ตลงขวา พอชี้เมาส์มันจะขยับ "เข้าหา" เงา
+   แล้วเงาหดลงเท่าที่ปุ่มขยับ — ระยะรวมจึงคงที่เสมอ ตากับมือจึงตีความว่า
+   ปุ่มถูกกดจมลงไปในหน้ากระดาษ ไม่ใช่แค่เลื่อนตำแหน่ง
+
+   ธีมเดิมใช้ translate: 0 -1px คือ "ยกลอยขึ้น" ซึ่งเป็นภาษาของ Material
+   ที่วางอยู่บนสมมติฐานว่ามีแหล่งกำเนิดแสงจริง — คนละโลกกับหมึกบนกระดาษ
+
+   ตัวเลข 2px/4px ต้องเท่ากับ --shadow-sm/--shadow-md เป๊ะ ไม่งั้นปุ่มจะ
+   "ลอยเหลื่อม" ออกจากเงาตอนกด แทนที่จะจมลงไปพอดี */
+.btn--primary {
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: var(--shadow-md);
+}
+.btn--primary:hover {
+  translate: 2px 2px;
+  box-shadow: var(--shadow-sm);
+}
+.btn--primary:active {
+  translate: 4px 4px;
+  box-shadow: none;
+}
+
+.btn--secondary {
+  border: var(--bw) solid var(--line-strong);
+  background: var(--pill-face);
+  color: var(--ink);
+  box-shadow: var(--shadow-md);
+}
+.btn--secondary:hover {
+  border-color: var(--line-glow);
+  translate: 2px 2px;
+  box-shadow: var(--shadow-sm);
+}
+.btn--secondary:active {
+  translate: 4px 4px;
+  box-shadow: none;
+}
+
+/* ปุ่มหลักได้เงาสีแบรนด์ เพราะเป็นปุ่มเดียวที่ต้องเด่นกว่าเพื่อนจริงๆ */
+.btn--accent {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--ink);
+  box-shadow: var(--shadow-md);
+}
+.btn--accent:hover {
+  background: var(--accent);
+  translate: 2px 2px;
+  box-shadow: var(--shadow-sm);
+}
+.btn--accent:active {
+  translate: 4px 4px;
+  box-shadow: none;
+}
+
+
+.btn--sm  { --btn-h: 32px; padding-inline: var(--s-4); font-size: var(--t-tiny); }
+.btn--lg  { --btn-h: 46px; padding-inline: var(--s-6); font-size: var(--t-body); }
+.btn--full{ width: 100%; }
+
+/* ปุ่มที่ไม่มีลิงก์จริง — ในเรฟจะขึ้นว่า "No Link" และกดไม่ได้ */
+.btn[aria-disabled="true"] {
+  opacity: .4;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* ============================================================================
+   chip / badge — ป้ายเล็กบอกเครื่องมือหรือหมวด
+   ========================================================================= */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: 28px;
+  padding-inline: var(--s-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--pill-face);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .04em;
+  color: var(--ink-soft);
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.chip:hover { border-color: var(--line-strong); color: var(--ink); }
+.chip svg { width: 12px; height: 12px; opacity: .7; }
+
+/* ป้าย "ว่างรับงาน" พร้อมจุดเต้น — องค์ประกอบแรกที่คนเห็นบนหน้าแรก */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: 28px;
+  padding-inline: var(--s-3) var(--s-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--pill-face);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.status-dot {
+  position: relative;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+}
+/* วงกระเพื่อม — เป็น ::after แยกเพื่อให้จุดแกนกลางนิ่ง มีแต่วงนอกที่ขยาย */
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--success);
+  animation: ping 2.4s var(--ease-out) infinite;
+}
+
+/* ============================================================================
+   การ์ด — พื้นฐานของทุกอย่างในหน้า work
+
+   สูตร Linear: พื้นไล่สีบางมาก + ขอบ hairline + เส้นไฮไลต์ในขอบบน
+   ตอน hover ขอบสว่างขึ้นและการ์ดยกตัว 2px — แค่นี้พอ ไม่ต้อง scale
+   ========================================================================= */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-xl);
+  background: var(--card-face);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition:
+    border-color var(--dur) var(--ease),
+    translate var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+/* การ์ดใช้ทิศทางตรงข้ามกับปุ่ม — ปุ่ม "จมลง" ตอนกด ส่วนการ์ด "เด้งขึ้น" ตอนชี้
+   เพราะการ์ดยังไม่ใช่ของที่กด มันคือของที่ถูกหยิบขึ้นมาดู เงาจึงยาวขึ้นไม่ใช่สั้นลง */
+.card:hover {
+  border-color: var(--line-glow);
+  translate: -2px -2px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* แสงตามเมาส์ — อ่านค่า --mx/--my ที่ spotlight.js เขียนใส่ตอนเมาส์ขยับ
+   ต้องเป็น ::before ที่ opacity 0 ไว้ก่อน ไม่งั้นการ์ดที่เมาส์ไม่เคยผ่านจะมีจุดสว่างค้างมุมซ้ายบน */
+.card--spotlight::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, .07),
+    transparent 70%
+  );
+  transition: opacity var(--dur) var(--ease);
+}
+.card--spotlight:hover::before { opacity: 1; }
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  flex: 1;
+}
+.card-title { font-size: var(--t-h4); color: var(--ink); }
+.card-desc {
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+  /* ตัดสองบรรทัดเสมอ เพื่อให้การ์ดทุกใบในแถวสูงเท่ากันโดยไม่ต้องบังคับความสูง */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: auto;
+  padding-top: var(--s-2);
+}
+
+/* กรอบสื่อในการ์ด — เว้นขอบด้านในให้ภาพลอยอยู่ในการ์ดอีกที (ตามเรฟ) */
+.card-media {
+  position: relative;
+  margin: var(--s-3) var(--s-3) 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--bg-sunken);
+  border: var(--bw) solid var(--line-soft);
+  aspect-ratio: 16 / 10;
+}
+.card-media img,
+.card-media video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: scale var(--dur-slow) var(--ease-out), opacity var(--dur) var(--ease);
+}
+.card:hover .card-media img,
+.card:hover .card-media video { scale: 1.04; }
+
+/* ป้ายหมวดมุมบนซ้ายของสื่อ */
+.card-tag {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  z-index: 2;
+  padding: 3px var(--s-2);
+  border-radius: var(--r-xs);
+  background: rgba(8, 9, 10, .72);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+  border: var(--bw) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* การ์ดเด่น — ขอบไล่สีหมุนรอบตัว
+   ต้องใช้ @property (motion.css) ประกาศ --angle เป็นมุมจริง
+   ไม่งั้นเบราว์เซอร์จะ animate ไม่ได้เพราะมองเป็นแค่ข้อความ */
+.card--featured {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    conic-gradient(from var(--angle),
+      var(--line) 0%, var(--accent-line) 12%, var(--line) 26%,
+      var(--line) 74%, var(--accent-line) 86%, var(--line) 100%) border-box;
+  animation: spin-border 8s linear infinite;
+}
+
+/* การ์ดที่ทั้งใบเป็นลิงก์ — ครอบด้วย ::after แทนการห่อ <a> รอบทุกอย่าง
+   วิธีนี้ทำให้ปุ่มข้างในยังกดแยกได้ และ screen reader ไม่อ่านซ้ำ */
+.card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ============================================================================
+   segmented tabs — ตัวสลับ Projects / Certificates / Tech Stack (จากเรฟ)
+
+   ตัวชี้ (.tabs-thumb) เป็น element เดียวที่เลื่อนไปมา ไม่ใช่ background
+   ของปุ่มแต่ละอัน — ทำแบบนี้เพื่อให้มันไถลได้จริงตอนสลับแท็บ
+   ========================================================================= */
+.tabs {
+  position: relative;
+  display: flex;
+  gap: var(--s-1);
+  padding: var(--s-1);
+  margin-inline: auto;
+  width: fit-content;
+  max-width: 100%;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--pill-face);
+  box-shadow: var(--card-lip);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tabs-thumb {
+  position: absolute;
+  top: var(--s-1);
+  bottom: var(--s-1);
+  left: 0;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, .07);
+  border: var(--bw) solid var(--line);
+  box-shadow: var(--card-lip);
+  /* translate + width ถูกเซ็ตจาก tabs.js ตอนรันจริง */
+  transition: translate var(--dur-slow) var(--ease-out), width var(--dur-slow) var(--ease-out);
+  pointer-events: none;
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  padding: var(--s-3) var(--s-6);
+  border-radius: var(--r-pill);
+  font-size: var(--t-small);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--ink-faint);
+  transition: color var(--dur) var(--ease);
+}
+.tab:hover { color: var(--ink-soft); }
+.tab[aria-selected="true"] { color: var(--ink); }
+
+.tab-panel[hidden] { display: none; }
+
+/* ============================================================================
+   การ์ดสถิติ — แถวสามใบใต้ About (จากเรฟ)
+   ไอคอนซ้ายบน · ตัวเลขขวาบน · ป้ายซ้ายล่าง · ลูกศรขวาล่าง
+   ========================================================================= */
+.stat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: var(--s-4) var(--s-3);
+  align-items: center;
+  padding: var(--s-5);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--card-face);
+  box-shadow: var(--card-lip);
+  transition: border-color var(--dur) var(--ease), translate var(--dur) var(--ease);
+}
+.stat:hover { border-color: var(--line-strong); translate: 0 -2px; }
+
+.stat-icon {
+  display: grid;
+  place-items: center;
+  width: 34px; height: 34px;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, .03);
+  color: var(--ink-soft);
+}
+.stat-icon svg { width: 16px; height: 16px; }
+
+.stat-num {
+  justify-self: end;
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: var(--track-h);
+  font-variant-numeric: tabular-nums;   /* กันตัวเลขกระโดดตอนนับขึ้น */
+  color: var(--ink);
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.stat-arrow { justify-self: end; color: var(--ink-ghost); }
+.stat-arrow svg { width: 14px; height: 14px; }
+
+/* ============================================================================
+   ช่องเครื่องมือ — กริด Tech Stack (จากเรฟ)
+   ========================================================================= */
+.tech {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  aspect-ratio: 1;
+  padding: var(--s-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--card-face);
+  box-shadow: var(--card-lip);
+  text-align: center;
+  transition: border-color var(--dur) var(--ease), translate var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.tech:hover {
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 255, .045);
+  translate: 0 -3px;
+}
+.tech svg, .tech img { width: 38px; height: 38px; }
+.tech span {
+  font-size: var(--t-tiny);
+  color: var(--ink-soft);
+  letter-spacing: -.005em;
+}
+
+/* ============================================================================
+   ฟอร์ม
+   ========================================================================= */
+.field { display: flex; flex-direction: column; gap: var(--s-2); }
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--s-3) var(--s-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-sunken);
+  color: var(--ink);
+  font-size: var(--t-small);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.input::placeholder { color: var(--ink-faint); }
+.input:hover  { border-color: var(--line-strong); }
+.input:focus  {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg);
+  box-shadow: 0 0 0 3px var(--accent-wash);
+}
+textarea.input { min-height: 130px; padding-top: var(--s-3); line-height: 1.6; }
+
+.form-note { font-size: var(--t-tiny); color: var(--ink-faint); }
+
+/* ============================================================================
+   การ์ดโซเชียล — บล็อก "Connect With Me" (จากเรฟ)
+   ========================================================================= */
+.social {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--card-face);
+  box-shadow: var(--card-lip);
+  transition: border-color var(--dur) var(--ease), translate var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.social:hover {
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 255, .05);
+  translate: 0 -2px;
+}
+.social svg { width: 20px; height: 20px; color: var(--ink-soft); flex-shrink: 0; }
+.social b { display: block; font-size: var(--t-small); font-weight: 500; }
+.social small { display: block; font-size: var(--t-tiny); color: var(--ink-faint); }
+
+/* ============================================================================
+   COMIC SURFACE OVERRIDES — กฎร่วมสำหรับ block ที่กดหรือเลือกได้ทุกชนิด
+   ============================================================================ */
+.tabs {
+  border-color: var(--ink);
+  border-radius: 0;
+  box-shadow: var(--shadow-md);
+  background: var(--surface-raised);
+}
+.tabs-thumb {
+  border-color: var(--ink);
+  border-radius: 0;
+  background: var(--accent);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.tab { font-family: var(--font-mono); font-size: var(--t-micro); font-weight: 800; letter-spacing: .04em; }
+.tab[aria-selected="true"] { color: #fff; }
+
+.stat,
+.tech,
+.social {
+  border-color: var(--ink);
+  border-radius: 0;
+  box-shadow: var(--shadow-md);
+}
+.stat { position: relative; overflow: hidden; }
+.stat::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7px;
+  background: var(--accent);
+}
+.stat:nth-child(2)::before { background: var(--accent-bright); }
+.stat:nth-child(3)::before { background: var(--hue-motion); }
+.stat:hover,
+.tech:hover,
+.social:hover { border-color: var(--ink); translate: 2px 2px; box-shadow: var(--shadow-sm); }
+.stat-icon,
+.feature-icon { border-radius: 0; border-color: var(--ink); background: var(--hue-motion); color: #14100c; }
+.stat-num { color: var(--accent-ink); font-weight: 900; text-shadow: 1px 0 0 var(--accent-bright); }
+
+.tech { background-image: var(--halftone); background-size: var(--halftone-size) var(--halftone-size); }
+.tech:nth-child(3n + 1) { border-top-color: var(--accent); }
+.tech:nth-child(3n + 2) { border-top-color: var(--accent-bright); }
+.tech:nth-child(3n) { border-top-color: var(--hue-motion); }
+
+.input {
+  border-color: var(--ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--ink-ghost);
+  font-family: var(--font-mono);
+}
+.input:focus { box-shadow: 4px 4px 0 var(--accent); }
+.field-label { color: var(--accent-ink); font-weight: 800; }
+.social:nth-child(odd) { rotate: -1deg; }
+.social:nth-child(even) { rotate: 1deg; }
+.social svg { color: var(--accent-ink); }
+
+/* ============================================================================
+   lightbox — เปิดดู GIF / ภาพเต็มจอ
+   ใช้ <dialog> จริง จะได้ focus trap และปุ่ม Esc ฟรีจากเบราว์เซอร์
+   ========================================================================= */
+.lightbox {
+  max-width: min(92vw, 1200px);
+  max-height: 92dvh;
+  padding: 0;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+.lightbox::backdrop {
+  background: rgba(3, 4, 5, .82);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+}
+.lightbox img, .lightbox video {
+  max-width: 100%;
+  max-height: calc(92dvh - 4rem);
+  object-fit: contain;
+  background: var(--bg-sunken);
+}
+.lightbox-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-top: var(--bw) solid var(--line);
+  font-size: var(--t-tiny);
+  color: var(--ink-soft);
+}
+.lightbox-close {
+  display: grid;
+  place-items: center;
+  width: 30px; height: 30px;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--ink-soft);
+}
+.lightbox-close:hover { border-color: var(--line-strong); color: var(--ink); }
+
+/* ============================================================================
+   command palette (⌘K) — ฟีเจอร์ที่ "Linear ที่สุด"
+   ========================================================================= */
+.palette {
+  width: min(92vw, 560px);
+  margin-top: 12vh;
+  margin-inline: auto;
+  padding: 0;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-xl);
+  background: var(--surface-glass);
+  color: var(--ink);
+  box-shadow: var(--shadow-xl);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+          backdrop-filter: blur(24px) saturate(180%);
+  overflow: hidden;
+}
+.palette::backdrop {
+  background: rgba(3, 4, 5, .6);
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+}
+
+.palette-search {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-5);
+  border-bottom: var(--bw) solid var(--line);
+}
+.palette-search svg { width: 16px; height: 16px; color: var(--ink-faint); flex-shrink: 0; }
+.palette-search input {
+  flex: 1;
+  font-size: var(--t-body);
+  background: none;
+}
+.palette-search input::placeholder { color: var(--ink-faint); }
+
+.palette-list {
+  max-height: min(52vh, 400px);
+  overflow-y: auto;
+  padding: var(--s-2);
+}
+.palette-group {
+  padding: var(--s-3) var(--s-3) var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.palette-item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  text-align: left;
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+}
+/* ไฮไลต์มาจาก data-active ไม่ใช่ :hover — เพราะคีย์บอร์ดต้องคุมได้ด้วย
+   ถ้าใช้ :hover ด้วย ตัวชี้จะกระโดดตามเมาส์ที่วางค้างอยู่ */
+.palette-item[data-active="true"] {
+  background: rgba(255, 255, 255, .07);
+  color: var(--ink);
+}
+.palette-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: .8; }
+.palette-item .meta { margin-left: auto; font-size: var(--t-micro); color: var(--ink-faint); }
+
+.palette-empty {
+  padding: var(--s-10) var(--s-5);
+  text-align: center;
+  font-size: var(--t-small);
+  color: var(--ink-faint);
+}
+
+.palette-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-5);
+  border-top: var(--bw) solid var(--line);
+  font-size: var(--t-micro);
+  color: var(--ink-faint);
+}
+.palette-foot span { display: inline-flex; align-items: center; gap: var(--s-2); }
+
+/* ============================================================================
+   เคอร์เซอร์กำหนดเอง — เปิดเฉพาะเมาส์จริง (ดู cursor.js)
+   ========================================================================= */
+.cursor-dot, .cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  z-index: var(--z-cursor);
+  pointer-events: none;
+  border-radius: 50%;
+  translate: -50% -50%;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+/* จุดกลาง — สีแบรนด์ ไม่ใช่สีหมึก เพราะมันคือ "เป้า" ไม่ใช่ตัวหนังสือ */
+.cursor-dot  {
+  width: 6px; height: 6px;
+  border-radius: 0;                 /* เหลี่ยม — เข้ากับมุมคมของธีม */
+  background: var(--accent);
+  rotate: 45deg;                    /* หมุนเป็นข้าวหลามตัด ต่างจากเป้าสี่เหลี่ยมทั่วไป */
+}
+
+/* ---------- วงแหวนเป็นเรติเคิลเหลี่ยม + ขอบสีเหลื่อม ----------
+   ขอบแดง/ไซแอนเหลื่อมออกสองข้างด้วย box-shadow ไม่ใช่ element เพิ่มอีกสองใบ
+   ระยะเหลื่อมมาจาก --cursor-chroma ที่ fx.js เขียนใหม่ทุกเฟรมตามความเร็วเมาส์
+   ยิ่งสะบัดเร็ว ขอบยิ่งแยก เหมือนภาพพิมพ์ที่เพลตเลื่อน
+
+   ห้ามใส่ --cursor-chroma ใน transition — มันถูกเขียนใหม่ทุกเฟรมอยู่แล้ว
+   ถ้าใส่ เบราว์เซอร์จะไล่ค่าตามไม่ทันแล้วขอบจะกระตุก */
+.cursor-ring {
+  width: 30px; height: 30px;
+  border-radius: 0;
+  border: var(--bw) solid var(--ink);
+  box-shadow:
+    calc(var(--cursor-chroma, 0px) * -1) 0 0 var(--accent),
+    var(--cursor-chroma, 0px) 0 0 var(--accent-bright);
+  transition: opacity var(--dur) var(--ease), width var(--dur) var(--ease-spring),
+              height var(--dur) var(--ease-spring), border-color var(--dur) var(--ease),
+              rotate var(--dur) var(--ease-spring);
+}
+
+/* ============================================================================
+   2D INTERACTION LAYER — Canvas trail, tilt, ink-sense, and panel reveal
+   ============================================================================ */
+.comic-fx-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-nav) - 1);
+  width: 100%; height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+[data-tilt] {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --tilt-light-x: 50%;
+  --tilt-light-y: 50%;
+  transform: perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+/* ---------- will-change ต้องอยู่แค่ตอน hover เท่านั้น ----------
+   เดิมประกาศไว้ที่ [data-tilt] ตรงๆ ซึ่งแปลว่าทุกใบที่ติดแอตทริบิวต์นี้จองเลเยอร์
+   GPU แยกของตัวเองไว้ตลอดเวลา — วัดจริงบนหน้าแรกได้ 34 ใบ (.tech 15 · .cert 8 ·
+   .pindex-row 4 · .stat 3 · .social 2 · .tabs 1 · .copy-mail 1) จากทั้งหน้า 50 เลเยอร์
+
+   แต่การเอียงเกิดตอนเอาเมาส์ไปชี้เท่านั้น เวลาที่เหลือเกือบทั้งหมดมันนิ่งสนิท
+   เลเยอร์ที่จองค้างไว้จึงเป็นหน่วยความจำ GPU ที่เสียเปล่า และคอมโพสิเตอร์ต้อง
+   ไล่ตรวจทุกใบทุกเฟรม — บนเครื่องที่การ์ดจอไม่แรงจะรู้สึกได้ชัด
+   (MDN เตือนเรื่องนี้ไว้ตรงๆ ว่าห้ามใส่ will-change แบบถาวรให้ของหลายชิ้น)
+
+   ย้ายมาไว้ที่ :hover แล้วเหลือจองทีละใบเฉพาะใบที่กำลังชี้อยู่จริง
+   ทรานซิชัน 180ms ยาวพอให้เบราว์เซอร์เลื่อนขั้นเลเยอร์ทันอยู่แล้ว ภาพที่เห็นเหมือนเดิมทุกอย่าง */
+[data-tilt]:hover { will-change: transform; }
+[data-tilt]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(280px circle at var(--tilt-light-x) var(--tilt-light-y), rgba(255,255,255,.2), transparent 58%);
+  mix-blend-mode: screen;
+  transition: opacity 180ms var(--ease);
+}
+[data-tilt][data-comic-hot="true"] { transform: perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(8px) scale(1.012); }
+[data-tilt][data-comic-hot="true"]::after { opacity: 1; }
+
+[data-sense] { position: relative; isolation: isolate; }
+[data-sense]::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, var(--accent) 0 2deg, transparent 2deg 14deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 42%, #000 44% 47%, transparent 49%);
+          mask: radial-gradient(circle, transparent 0 42%, #000 44% 47%, transparent 49%);
+  transition: opacity var(--dur-fast) var(--ease), scale var(--dur) var(--ease-out), rotate var(--dur) var(--ease-out);
+}
+[data-sense][data-comic-hot="true"]::before { opacity: .82; scale: 1.12; rotate: 16deg; }
+
+[data-glitch] { --glitch-red: var(--glitch-x, 0px); --glitch-cyan: calc(var(--glitch-x, 0px) * -1); }
+[data-glitch][data-comic-hot="true"] {
+  text-shadow: var(--glitch-red) var(--glitch-y, 0px) 0 var(--accent), var(--glitch-cyan) 0 0 var(--accent-bright);
+  animation: comic-glitch 280ms steps(2, end) both;
+}
+/* .hero-copy ถูกลบพร้อมการรื้อหน้าจอแรก — กฎ [data-depth] ย้ายไปอยู่ที่
+   .hero-poster ใน pages.css แทน (วางไว้ที่นั่นเพราะเป็นของหน้าเดียว) */
+/* ---------- หัวข้อแตกหลายมิติตอนชี้ ----------
+   หัวข้อยักษ์แยกเป็นร่างซ้อนหลายชั้นที่คลาดกันคนละระยะ แล้วรวมกลับ
+
+   ใช้สามสีจากชุดหมึกพิมพ์ (แดง · ไซแอน · เหลือง) ไม่ใช่สองสี เพราะการเหลื่อม
+   สองสีอ่านเป็น "ภาพ 3D" ส่วนสามสีอ่านเป็น "เพลตพิมพ์ไม่ตรงกัน" ซึ่งเป็นภาษา
+   ของงานพิมพ์คอมิกจริงๆ และให้ความรู้สึกหลายชั้นมากกว่า
+
+   ทำด้วย text-shadow ล้วน จึงไม่ต้องแตะ HTML และ screen reader ยังอ่านข้อความ
+   เดียว ไม่ใช่อ่านซ้ำสามรอบแบบวิธีซ้อน element จริง
+
+   ระยะไล่กัน 2/4/6 เท่า ไม่ใช่เท่ากันหมด — ถ้าเท่ากันตาจะเห็นเป็นเงาหนาชั้นเดียว
+   ไม่ใช่หลายร่างที่แยกจากกัน */
+.hero-name[data-glitch][data-comic-hot="true"] .hero-name-lit {
+  text-shadow:
+    calc(var(--glitch-red) - 2px)  0 0 var(--accent),
+    calc(var(--glitch-cyan) + 2px) 0 0 var(--accent-bright),
+    calc(var(--glitch-red) - 5px)  var(--glitch-y, 0px) 0 color-mix(in oklab, var(--accent) 55%, transparent),
+    calc(var(--glitch-cyan) + 5px) calc(var(--glitch-y, 0px) * -1) 0 color-mix(in oklab, var(--accent-bright) 55%, transparent),
+    calc(var(--glitch-red) - 8px)  0 0 color-mix(in oklab, var(--hue-motion) 38%, transparent);
+}
+
+[data-panel] { cursor: pointer; }
+
+/* ลูกโป่งคำพูด — comic-fx.js เป็นคนตั้ง data-comic-hot ตอนเมาส์เข้า
+   และ data-popped ตอนถูกกด (ลบออกเองใน 500ms) หน้าตาของลูกโป่งอยู่ที่ pages.css */
+.comic-bubble { cursor: pointer; }
+.comic-bubble[data-comic-hot="true"] { animation: bubble-squash 400ms var(--ease-spring) both; }
+.comic-bubble[data-popped="true"]    { animation: bubble-pop    500ms var(--ease-spring) both; }
+
+.comic-panel {
+  width: min(92vw, 36rem);
+  margin: auto;
+  padding: 0;
+  border: var(--bw-thick) solid var(--ink);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+.comic-panel::backdrop { background: rgba(4, 2, 8, .78); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
+.comic-panel-card {
+  position: relative;
+  padding: var(--s-7);
+  background: var(--halftone), var(--surface);
+  background-size: var(--halftone-size) var(--halftone-size), auto;
+  clip-path: polygon(0 0, 100% 0, 100% 95%, 95% 100%, 0 100%);
+  animation: panel-curl 420ms var(--ease-out) both;
+}
+.comic-panel-close {
+  position: absolute;
+  right: var(--s-3); top: var(--s-3);
+  display: grid; place-items: center;
+  width: 2rem; height: 2rem;
+  border: var(--bw) solid var(--ink);
+  background: var(--accent);
+  color: #fff;
+  font-size: 1.35rem;
+  line-height: 1;
+  box-shadow: var(--shadow-sm);
+}
+.comic-panel-media { margin: calc(var(--s-2) * -1) 0 var(--s-5); border: var(--bw-thick) solid var(--ink); background: var(--bg-sunken); box-shadow: var(--shadow-md); }
+.comic-panel-media img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.comic-panel-kicker { margin-bottom: var(--s-2); color: var(--accent-ink); font-family: var(--font-mono); font-size: var(--t-micro); font-weight: 800; letter-spacing: var(--track-label); }
+.comic-panel h2 { font-size: var(--t-h3); }
+.comic-panel-copy { margin-top: var(--s-3); color: var(--ink-soft); }
+.comic-panel-actions { display: flex; gap: var(--s-3); margin-top: var(--s-6); }
+
+@media (hover: none), (pointer: coarse) {
+  .comic-fx-canvas, .cursor-dot, .cursor-ring { display: none; }
+  [data-tilt] { transform: none !important; will-change: auto; }
+}
+
+:root[data-cursor="on"] .cursor-dot,
+:root[data-cursor="on"] .cursor-ring { opacity: 1; }
+
+/* ---------- ซ่อนเคอร์เซอร์ของระบบ ----------
+   ถ้าไม่ซ่อน จะเห็นลูกศรของ OS ทับจุดกับวงแหวนของเว็บอยู่ตลอด กลายเป็นสองอันซ้อนกัน
+
+   ⚠ ห้ามเขียนเป็น html { cursor: none } เด็ดขาด
+   ต้องผูกกับ [data-cursor="on"] ซึ่ง fx.js ตั้งให้ "หลังสร้างเคอร์เซอร์สำเร็จแล้ว" เท่านั้น
+   (initCursor คืนค่าออกก่อนถ้าเป็นจอสัมผัสหรือผู้ใช้ปิดแอนิเมชัน) ถ้าซ่อนแบบไม่มีเงื่อนไข
+   แล้ว JavaScript ตายหรือโหลดไม่ทัน จะไม่เหลือเคอร์เซอร์ให้ใช้เลยสักอัน — ใช้เว็บไม่ได้ทันที
+
+   media query ซ้อนอีกชั้นเพราะบล็อก  (hover: none), (pointer: coarse) ข้างบน
+   ซ่อน .cursor-dot/.cursor-ring ไว้ ถ้าเครื่องเข้าเงื่อนไขนั้นแต่ยังผ่าน pointer: fine
+   (เช่นปากกาสไตลัส) เคอร์เซอร์ของเว็บจะถูกซ่อนอยู่แล้ว เราจึงต้องไม่ไปซ่อนของระบบซ้ำ
+
+   ต้องกวาดด้วย * ไม่ใช่ตั้งที่ :root ตัวเดียว เพราะ cursor เป็นค่าที่สืบทอดก็จริง
+   แต่ของที่ตั้งค่าเองจะทับค่าที่สืบทอดมา — button, a (จาก UA stylesheet), input,
+   [data-panel], .comic-bubble, .lanyard-card, .case-figure-btn ล้วนตั้งไว้เอง
+
+   !important เพราะ .lanyard-card:active { cursor: grabbing } มีความจำเพาะ (0,2,0)
+   เท่ากับตัวเลือกนี้พอดี ถ้าไม่ใส่ ผลจะไปขึ้นกับลำดับบรรทัดซึ่งเปราะเกินไป
+   (ใช้ !important แบบเดียวกับที่บล็อก prefers-reduced-motion ใน motion.css ใช้) */
+@media (hover: hover) and (pointer: fine) {
+  :root[data-cursor="on"],
+  :root[data-cursor="on"] * { cursor: none !important; }
+}
+
+/* ตอนชี้ของที่กดได้ — เรติเคิลบานออกและหมุน 45° กลายเป็นข้าวหลามตัด
+   บอกว่า "ตรงนี้กดได้" ด้วยรูปทรง ไม่ใช่แค่สี จึงยังสื่อได้กับคนตาบอดสี */
+:root[data-cursor="on"][data-cursor-hot="true"] .cursor-ring {
+  width: 46px; height: 46px;
+  rotate: 45deg;
+  border-color: var(--accent);
+}
+:root[data-cursor="on"][data-cursor-hot="true"] .cursor-dot { opacity: 0; }
+
+/* ============================================================================
+   แถบความคืบหน้าการอ่าน — ใช้ในหน้า case study
+   ========================================================================= */
+.progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  z-index: calc(var(--z-nav) + 1);
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+  transform-origin: 0 50%;
+  scale: 0 1;
+}
+
+/* ============================================================================
+   toast — แจ้งผลสั้นๆ เช่น "คัดลอกอีเมลแล้ว"
+   ========================================================================= */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--s-8);
+  /* 120% ของความสูงตัวเองไม่พอจะพ้นขอบจอ เพราะยังต้องเลื่อนลงอีกเท่ากับ bottom
+     ที่ยกมันขึ้นมา — ถ้าใช้แค่ translate จะมีขอบโผล่ค้างอยู่ท้ายจอทุกหน้า
+     opacity กับ visibility จึงเป็นตัวการันตีว่าซ่อนจริง ส่วน translate ทำหน้าที่แค่จังหวะ */
+  translate: -50% 160%;
+  opacity: 0;
+  visibility: hidden;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface-glass);
+  box-shadow: var(--shadow-lg);
+  -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
+  font-size: var(--t-small);
+  transition:
+    translate  var(--dur-slow) var(--ease-spring),
+    opacity    var(--dur) var(--ease),
+    /* visibility ต้องหน่วงตอนซ่อน เพื่อให้ transition ของ opacity เล่นจบก่อน
+       ตอนแสดงไม่หน่วง (0s) จะได้เห็นทันที — สลับค่าใน [data-show] ข้างล่าง */
+    visibility 0s var(--ease) var(--dur-slow);
+}
+.toast[data-show="true"] {
+  translate: -50% 0;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s, 0s, 0s;
+}
+.toast svg { width: 16px; height: 16px; color: var(--success); }
+
+/* ============================================================================
+   สกรีนเม็ดจุดบนรูปถ่าย (halftone)
+
+   ทุกกรอบรูปที่ติด [data-halftone] จะมีชั้นเม็ดจุดทับอยู่ แล้วคลี่ออกเป็นรูปจริง
+   ตอนเลื่อนมาถึง — สูตรและเหตุผลว่าทำไมต้องเป็น CSS ไม่ใช่ canvas อยู่ที่
+   --ht-screen ใน tokens.css
+
+   ที่อยู่รูปถูกเขียนมาที่ --shot โดย js/modules/halftone.js ไม่ได้เขียนใน CSS
+   เพราะรูปแต่ละใบคนละไฟล์ และบางใบถูก media.js สลับเป็นภาพแทนที่ตอนรัน
+   ========================================================================= */
+[data-halftone] { position: relative; }
+
+/* วาดต่อเมื่อ halftone.js ยืนยันแล้วว่ารูปโหลดสำเร็จและเขียน --shot ให้เรียบร้อย
+   (มาร์กอัปใส่มาแค่ data-halftone เปล่าๆ ตัวโมดูลเป็นคนเลื่อนเป็น "on")
+
+   ที่ต้องรอสัญญาณจาก JS แทนที่จะวาดทันที เพราะถ้า JS ไม่ทำงาน ผู้ใช้ปิด
+   แอนิเมชัน หรือรูปโหลดไม่สำเร็จจนถูก media.js สลับเป็นภาพแทนที่
+   ชั้นจุดต้อง "ไม่เกิดขึ้นเลย" ไม่ใช่เกิดแล้วค้างทับรูปจนมองไม่เห็นอะไร */
+[data-halftone="on"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+
+  background-image: var(--ht-screen), var(--shot);
+  background-size: var(--ht-live, var(--ht-dot-lg)) var(--ht-live, var(--ht-dot-lg)), cover;
+  background-position: center, center;
+  background-repeat: repeat, no-repeat;
+  background-blend-mode: overlay;
+
+  /* filter ทำงานกับผลรวมของ background ทั้งสองชั้นหลังผสมกันแล้ว
+     จึงได้ภาพขาว-ดำล้วนที่เป็นเม็ดจุด ไม่ใช่รูปที่ถูกเพิ่มคอนทราสต์เฉยๆ */
+  filter: grayscale(1) contrast(var(--ht-contrast));
+
+  /* ⚠ ชั้นนี้ต้องทึบ ห้ามใส่ mix-blend-mode
+     เคยลองใช้ screen (เก็บจุดขาว ทิ้งพื้นดำ) แล้วผลที่ได้ผิดจากที่ตั้งใจ:
+     รูปสีเดิมยังทะลุขึ้นมาเต็มความเข้ม เม็ดจุดจึงกลายเป็น "มุ้งลวดสีขาวทับรูป"
+     ไม่ใช่ภาพพิมพ์เม็ดสกรีน
+
+     ภาพพิมพ์จริงคือหมึกสีเดียวบนกระดาษ ไม่มีรูปต้นฉบับอยู่ข้างหลังให้เห็น
+     ชั้นนี้จึงต้องบังรูปไว้ทั้งใบ แล้วค่อยจางออกไปเผยรูปจริง —
+     การจางนั้นแหละคือเอฟเฟกต์ ถ้าเห็นรูปอยู่แล้วตั้งแต่แรกก็ไม่มีอะไรให้เฉลย */
+
+  opacity: var(--ht-on, 1);
+  transition:
+    opacity          var(--dur-slower) var(--ease-out),
+    background-size  var(--dur-slower) var(--ease-out);
+}
+
+/* ============================================================================
+   สองโหมด: "เอกสาร" กับ "รูปถ่าย"
+
+   ค่าตั้งต้น (ไม่มี data-ht-mode) = เอกสาร → คลี่ทันทีที่เลื่อนมาถึง
+     ใช้กับเกียรติบัตร ซึ่งเป็น "หลักฐาน" ที่กรรมการต้องอ่านตัวหนังสือบนใบจริง
+     ถ้าปล่อยให้เม็ดจุดค้าง = ซ่อนหลักฐาน ซึ่งทำลายประโยชน์หลักของเว็บ
+
+   data-ht-mode="hold" = รูปถ่าย → เป็นภาพพิมพ์ค้างไว้ สีกลับมาตอนชี้เมาส์
+     ใช้กับรูปถ่ายทั้งหมด (ปกผลงาน · ฟิล์มสตริป · รูปหน้าจอแรก · รูปตัวเอง)
+
+   ทำไมรูปถ่ายต้องค้าง
+   ---------------------------------------------------------------------------
+   ตอนแรกทำเป็น "คลี่ทันทีที่เลื่อนถึง" เหมือนกันหมด ผลคือเอฟเฟกต์นี้มองเห็นได้
+   แค่ 800ms ต่อรูปหนึ่งใบ แล้วหายถาวร — 95% ของเวลาที่คนดูอยู่บนหน้า
+   เว็บก็หน้าตาเหมือนพอร์ตโฟลิโอทั่วไปทุกประการ
+
+   พอให้มันค้าง มันเลิกเป็น "ทรานซิชัน" แล้วกลายเป็น "หน้าตาของเว็บ" —
+   ซึ่งเป็นสิ่งเดียวที่ทำให้คนจำได้ว่าเคยเห็นเว็บนี้ ส่วนสีที่กลับมาตอนชี้เมาส์
+   ก็กลายเป็นรางวัลของการโต้ตอบ แทนที่จะเป็นของแถมที่พลาดไปแล้วพลาดเลย
+   ========================================================================= */
+
+/* เอกสาร — คลี่เมื่อ reveal.js บอกว่าเลื่อนมาถึง
+   ผูกกับ [data-revealed] ที่มีอยู่แล้ว จึงไม่ต้องมี observer ตัวที่สอง
+   เม็ดจุดหดจาก --ht-dot-lg ลงมา --ht-dot พร้อมกับจางหาย ตาจึงอ่านว่า
+   "ภาพกำลังถูกพิมพ์ให้ละเอียดขึ้น" ไม่ใช่ "มีอะไรจางหายไปเฉยๆ" */
+[data-halftone="on"]:not([data-ht-mode])[data-revealed="true"],
+[data-revealed="true"] [data-halftone="on"]:not([data-ht-mode]) {
+  --ht-live: var(--ht-dot);
+  --ht-on: 0;
+}
+
+/* เกียรติบัตรคลี่เร็วกว่าที่อื่นและจุดเล็กกว่าตั้งแต่ต้น เพราะตัวหนังสือบนใบเล็กมาก */
+.cert-shot[data-halftone="on"] { --ht-dot-lg: 6px; }
+.cert-shot[data-halftone="on"]::after { transition-duration: var(--dur-slow); }
+
+/* รูปถ่าย — ค้างเป็นภาพพิมพ์ */
+[data-halftone="on"][data-ht-mode="hold"] { --ht-on: 1; --ht-live: var(--ht-dot); }
+
+@media (hover: hover) {
+  /* สีกลับมาตอนชี้เมาส์ — ชี้ที่ตัวมันเองหรือที่การ์ด/แผงที่ห่อมันอยู่ก็ได้
+     เพราะคนชี้ที่ "ผลงาน" ไม่ได้ชี้ที่ "กรอบรูป" */
+  [data-halftone="on"][data-ht-mode="hold"]:hover,
+  .card:hover      [data-halftone="on"][data-ht-mode="hold"],
+  .reel-panel:hover [data-halftone="on"][data-ht-mode="hold"],
+  .lanyard-card:hover [data-halftone="on"][data-ht-mode="hold"],
+  /* รูปหลังชื่อบนหน้าจอแรกเป็นฉากหลัง ไม่มีการ์ดห่อ จึงผูกกับการชี้ที่ทั้ง section */
+  .hero:hover .hero-shot[data-halftone="on"] { --ht-on: 0; }
+}
+
+/* ---------- จอสัมผัส ----------
+   ไม่มี hover จึงไม่มีทางเห็นรูปจริงเลยถ้าปล่อยให้ค้าง ซึ่งแย่กว่าไม่มีเอฟเฟกต์
+   บนจอสัมผัสจึงกลับไปใช้กฎเดียวกับเอกสาร คือคลี่เมื่อเลื่อนมาถึง
+
+   ยอมให้เอกลักษณ์อ่อนลงบนมือถือ เพื่อแลกกับการที่ทุกคนได้เห็นผลงานจริง —
+   รูปผลงานคือเนื้อหา ส่วนเม็ดจุดคือการนำเสนอ เนื้อหาสำคัญกว่าเสมอ */
+@media (hover: none) {
+  [data-halftone="on"][data-ht-mode="hold"][data-revealed="true"],
+  [data-revealed="true"] [data-halftone="on"][data-ht-mode="hold"] { --ht-on: 0; }
+
+  /* ยกเว้นรูปหลังชื่อ — มันเป็นฉากหลัง ไม่ใช่ผลงานที่คนมาดู
+     ถ้าคลี่เป็นรูปสีเต็มบนมือถือ มันจะแย่งความสนใจจากชื่อซึ่งเป็นเนื้อหาหลักของจอแรก */
+  .hero-shot[data-halftone="on"] { --ht-on: 1; }
+}
+
+/* ============================================================================
+   เคอร์เซอร์ตอนกลายเป็นป้าย VIEW
+
+   วงแหวนเดิมขยายเป็นวงกลมทึบที่มีคำว่า VIEW อยู่ข้างใน เมื่อลอยเหนือของที่
+   "เปิดดูได้" — ต่างจาก [data-cursor-hot] ที่แค่บอกว่ากดได้เฉยๆ
+
+   ใช้ mix-blend-mode: difference เพื่อกลับสีทุกอย่างที่อยู่ข้างใต้
+   ป้ายจึงอ่านออกทั้งบนพื้นมืด พื้นสว่าง และบนรูปถ่าย โดยไม่ต้องรู้ล่วงหน้าว่า
+   ข้างใต้เป็นสีอะไร — ซึ่งเป็นเหตุผลเดียวที่เลือกวิธีนี้แทนการใส่พื้นทึบ
+   ========================================================================= */
+.cursor-label {
+  display: grid;
+  place-items: center;
+  width: 100%; height: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-indent: var(--track-label);   /* ชดเชยช่องไฟตัวท้ายที่ดันข้อความเบ้ซ้าย */
+  text-transform: uppercase;
+  color: var(--bg);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+/* ⚠ ต้องมี [data-cursor="on"] ในตัวเลือกด้วย ไม่ใช่เพื่อความถูกต้อง แต่เพื่อ
+   ความจำเพาะ: ของที่ "เปิดดูได้" ก็เป็นของที่ "กดได้" ด้วยเสมอ กฎ
+   [data-cursor-hot] ข้างบนจึงติดมาพร้อมกันทุกครั้ง ถ้าความจำเพาะไม่ถึงกัน
+   วงแหวนจะถูกหมุน 45° ตามกฎนั้น แล้วตัวหนังสือ VIEW จะเอียงตามไปด้วย */
+:root[data-cursor="on"][data-cursor-mode="label"] .cursor-ring {
+  width: var(--cursor-label-size);
+  height: var(--cursor-label-size);
+  border-radius: 50%;
+  rotate: 0deg;                  /* ล้างการหมุนที่ [data-cursor-hot] ใส่ไว้ */
+  border-color: transparent;
+  background: var(--ink);
+  box-shadow: none;              /* ขอบสีเหลื่อมกวนตัวหนังสือ ปิดตอนเป็นป้าย */
+  mix-blend-mode: difference;
+}
+:root[data-cursor="on"][data-cursor-mode="label"] .cursor-label { opacity: 1; }
+:root[data-cursor="on"][data-cursor-mode="label"] .cursor-dot   { opacity: 0; }
+
+/* ============================================================================
+   ปุ่มแม่เหล็ก — ขยับเข้าหาเมาส์เมื่อเมาส์เข้าใกล้
+
+   ⚠ ต้องใช้ transform ไม่ใช่ translate
+   ปุ่มคอมิกใช้คุณสมบัติ translate อยู่แล้วสำหรับเอฟเฟกต์ "กดจมลงไปหาเงา"
+   (.btn--primary:hover { translate: 2px 2px }) ถ้าแม่เหล็กเขียน translate ทับ
+   เอฟเฟกต์นั้นจะหายไปทันที
+
+   CSS มี transform กับ translate เป็นคนละคุณสมบัติที่ประกอบกันเองตามลำดับ
+   translate → rotate → scale → transform จึงเขียนแยกกันได้โดยไม่ชนกันเลย
+   ========================================================================= */
+[data-magnet] {
+  transform: translate(var(--mag-x, 0px), var(--mag-y, 0px));
+  transition: transform var(--dur-slow) var(--ease-spring);
+}
+/* ตอนกำลังดูดอยู่ต้องไม่มี transition — ค่าถูกเขียนใหม่ทุกครั้งที่เมาส์ขยับ
+   ถ้าหน่วงไว้ ปุ่มจะไล่ตามเมาส์ไม่ทันแล้วรู้สึกเหมือนลากของหนัก
+   เหลือ transition ไว้เฉพาะจังหวะ "ดีดกลับ" ตอนเมาส์ออก ซึ่งควรมีสปริง
+   (กฎเดียวกับ .pindex-preview และ .forme) */
+[data-magnet][data-magnet-on="true"] { transition: none; }
+
+/* ============================================================================
+   เส้นลายวงจร PCB ที่ขอบจอ — แถบความคืบหน้าที่พูดเรื่องเดียวกับเนื้อหา
+
+   มาแทนอะไร: แถบ progress เส้นตรงธรรมดาบอกได้แค่ "อ่านไปกี่เปอร์เซ็นต์"
+   เส้นนี้บอกเท่ากันแต่บอกด้วยว่า "ผ่านหัวข้อไหนมาแล้วบ้าง" — จุดบัดกรีแต่ละจุด
+   ผูกกับ section จริงในหน้า พอเลื่อนถึงจุดไหน จุดนั้นติดไฟค้างไว้
+
+   รูปเส้นถูกสร้างด้วย JS (js/modules/spine.js) ไม่ได้เขียน path ไว้ตรงนี้
+   เพราะจำนวนจุดเปลี่ยนตามจำนวน section ของแต่ละหน้า — หน้าแรกมีสี่ หน้า
+   case study มีสอง ถ้า hardcode ไว้จะผิดทันทีที่เพิ่มหรือลบส่วนใดส่วนหนึ่ง
+
+   ⚠ pointer-events: none บังคับ (กฎข้อ 6) — มันสูงเต็มจอ ถ้าลืมจะกินคลิก
+   ของลิงก์และปุ่มที่อยู่ใต้มันทั้งแถบ
+   ========================================================================= */
+/* ตำแหน่งของเส้นถูกคำนวณให้อยู่ใน "ช่องว่างขอบซ้าย" ของ container พอดี
+
+   container ใช้ --pad-x = clamp(1.25rem, .5rem + 4vw, 4rem) เป็นระยะขอบ
+   ที่จุดตัด 72rem (1152px) ค่านั้นเท่ากับ 54px ส่วนกล่องเส้นกินพื้นที่
+   13px → 53px จึงพอดีเฉียดโดยไม่ทับตัวหนังสือ และกว้างขึ้นเรื่อยๆ ตามจอ
+
+   ⚠ ถ้าจะแก้ --pad-x ใน tokens.css ต้องมาดูตรงนี้ด้วย ไม่งั้นเส้นจะเลื่อน
+   ไปนั่งใต้ย่อหน้าแรกของทุกหน้าพร้อมกัน */
+.spine {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: clamp(6px, 1.2vw, 18px);
+  z-index: var(--z-grid);
+  width: 40px;
+  pointer-events: none;
+  display: none;                 /* เปิดเฉพาะจอกว้างพอ — ดูกฎข้างล่าง */
+  color: var(--pcb-trace);
+}
+
+/* จอแคบกว่า 72rem ไม่มีที่ว่างข้างเนื้อหาให้เส้นอยู่โดยไม่ทับตัวหนังสือ
+   เพราะ --pad-x หดลงตามความกว้างจอ พอถึงมือถือมันเหลือแค่ 20px */
+@media (min-width: 72rem) {
+  .spine { display: block; }
+}
+
+.spine svg { width: 100%; height: 100%; overflow: visible; }
+
+/* เส้นทองแดงพื้นหลัง — เห็นทั้งเส้นตลอดเวลา บอกว่าหน้านี้ยาวแค่ไหน */
+.spine-trace {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--pcb-w);
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+/* เส้นที่ "วิ่งแล้ว" — ทับเส้นพื้นหลังด้วยสีสด
+   pathLength="1" ทำให้ dasharray ใช้ค่าชุดเดียวได้ไม่ว่าเส้นจริงยาวเท่าไหร่
+   (เหตุผลเต็มอยู่ที่ webSVG ใน js/modules/fx.js ซึ่งใช้เทคนิคเดียวกัน)
+   spine.js เขียน --pcb-p เป็น 0→1 ตามที่เลื่อน ที่เหลือ CSS จัดการเอง */
+.spine-live {
+  fill: none;
+  stroke: var(--pcb-live);
+  stroke-width: var(--pcb-w);
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--pcb-p, 0));
+  filter: drop-shadow(0 0 3px var(--pcb-live));
+  opacity: .9;
+}
+
+/* จุดบัดกรี — วงแหวนกลวงเหมือนรู via บนแผ่นปริ๊นต์จริง ไม่ใช่จุดทึบ */
+.spine-pad {
+  fill: var(--bg);
+  stroke: currentColor;
+  stroke-width: var(--pcb-w);
+  transition: stroke var(--dur) var(--ease), r var(--dur) var(--ease-spring);
+}
+.spine-pad[data-lit="true"] { stroke: var(--pcb-live); }
+
+/* ไฟที่จุด — element แยกเพื่อให้เรืองแสงได้โดยไม่ต้องใส่ filter ให้ตัววงแหวน
+   (filter บนวงแหวนจะทำให้เส้นขอบเบลอไปด้วย) */
+.spine-glow {
+  fill: var(--pcb-live);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.spine-pad[data-lit="true"] + .spine-glow { opacity: 1; }
+
+/* ป้ายชื่อหัวข้อข้างจุด — เขียนตั้งฉากให้เหมือนซิลค์สกรีนบนแผ่นปริ๊นต์ */
+.spine-label {
+  fill: currentColor;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease), fill var(--dur) var(--ease);
+}
+.spine-pad[data-lit="true"] ~ .spine-label { opacity: .85; fill: var(--pcb-live); }
