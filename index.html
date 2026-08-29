@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="th" class="no-js" data-root="./">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio — zhenchongkwa</title>
+
+<!-- ============================================================
+     META + การ์ดตอนแชร์ลิงก์
+
+     og:image ต้องเป็น URL เต็มเสมอ ตัวขูดข้อมูลของ LINE/Facebook อ่าน path
+     แบบสัมพัทธ์ไม่ออก มันไม่ได้เปิดหน้าเว็บเหมือนเบราว์เซอร์ แค่ดึง HTML
+     มาอ่าน <head> อย่างเดียว — ที่อยู่นี้ผูกกับโฮสต์ ถ้าย้ายต้องแก้ทุกหน้า
+     ============================================================ -->
+<meta name="description" content="พอร์ตโฟลิโอนายเจิน ชง กวา โรงเรียนเลยพิทยาคม — รางวัลระดับประเทศ IPST AI Inventor, หุ่นยนต์แขนกล Dobot และโครงงาน Interactive Math">
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://lpk37943-cyber.github.io/portfolio/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Portfolio — zhen chong kwa">
+<meta property="og:description" content="รางวัลระดับประเทศ IPST AI Inventor · หุ่นยนต์แขนกล Dobot · Interactive Math">
+<meta property="og:image" content="https://lpk37943-cyber.github.io/portfolio/assets/og-image.jpg">
+<meta property="og:url" content="https://lpk37943-cyber.github.io/portfolio/">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+<!-- ============================================================
+     ธีม — ต้องรันก่อน CSS โหลด ไม่งั้นจะเห็นจอกระพริบเป็นสีตรงข้ามหนึ่งเฟรม
+     ก่อนที่ค่าที่ผู้ใช้เลือกไว้จะถูกอ่าน (flash of wrong theme)
+     ตัวนี้ต้องเป็นสคริปต์ inline เท่านั้น ไฟล์แยกโหลดไม่ทัน
+     ============================================================ -->
+<script>
+(function () {
+  var t = null;
+  try { t = localStorage.getItem('pf-theme'); } catch (e) {}
+  document.documentElement.dataset.theme = t === 'light' ? 'light' : 'dark';
+})();
+</script>
+
+<!-- ฟอนต์: Inter (อังกฤษ) · Anuphan (ไทย) · JetBrains Mono (ป้ายกำกับ)
+     preconnect สองบรรทัดช่วยลดเวลาโหลดฟอนต์ราว 100ms เพราะเปิดการเชื่อมต่อ
+     ล่วงหน้าก่อนที่เบราว์เซอร์จะอ่านเจอว่าต้องโหลดจากที่ไหน -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@200..700&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap">
+
+<!-- CSS แยกเป็นหลาย <link> ไม่ใช่ @import ในไฟล์เดียว
+     เพราะ @import บังคับให้เบราว์เซอร์โหลดทีละไฟล์ต่อกันเป็นทอดๆ
+     ส่วน <link> หลายเส้นโหลดพร้อมกันได้ทั้งหมด -->
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/motion.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "เจิน ชง กวา",
+  "jobTitle": "Student Developer",
+  "url": "https://lpk37943-cyber.github.io/portfolio/",
+  "sameAs": ["https://github.com/lpk37943-cyber"],
+  "knowsAbout": ["Artificial Intelligence", "Robotics", "Electronics", "Front-end Development"],
+  "alumniOf": "โรงเรียนเลยพิทยาคม จังหวัดเลย"
+}
+</script>
+</head>
+
+<body data-scene="home">
+
+<!-- ============================================================
+     ชั้นแสงเคลื่อนไหว — ฉากหลังของทั้งหน้า ทำด้วย CSS ล้วน
+
+     ต้องเป็น element แรกใน <body> เพื่อให้วาดทับกริดแบน (body::before)
+     แต่ยังอยู่ใต้เกรน (body::after) ตามลำดับการซ้อนที่ตั้งใจไว้ใน motion.css
+     aria-hidden เพราะเป็นภาพประกอบล้วน ไม่มีข้อมูลที่ screen reader ต้องรู้
+
+     ตรงนี้เคยเป็น <canvas> ฉาก 3D ที่เรนเดอร์แขนกลด้วย WebGL — ถอดออกแล้ว
+     เหตุผลอยู่ที่หัวข้อ .ambient ใน assets/css/motion.css
+     ============================================================ -->
+<div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<!-- เส้นลายวงจร PCB ที่ขอบซ้าย — แถบความคืบหน้าการอ่านที่มีจุดบัดกรีคั่นตามหัวข้อ
+     ตำแหน่งจุดคำนวณจากตำแหน่งจริงของแต่ละ section ในเอกสาร เส้นนี้จึงเป็น
+     "แผนที่ย่อ" ของหน้า ไม่ใช่ของตกแต่ง — รูปเส้นสร้างโดย js/modules/spine.js
+     เพราะจำนวนจุดเปลี่ยนตามหน้าและเปลี่ยนอีกทุกครั้งที่ย่อ-ขยายหน้าต่าง
+
+     ⚠ pointer-events: none ถูกตั้งไว้ใน CSS แล้ว (กฎข้อ 6) — มันสูงเต็มจอ
+     ถ้าลืม ลิงก์และปุ่มที่อยู่ใต้แถบนี้จะกดไม่ได้ทั้งแถบ -->
+<div class="spine" data-spine aria-hidden="true"></div>
+
+<!-- รูปทรงวิศวกรรมลอยเป็นฉากหลัง ลากได้ — รูปทรงถูกสร้างโดย js/modules/formes.js -->
+<div class="formes" data-formes aria-hidden="true"></div>
+
+<!-- ============================================================
+     ฉากเปิด — ใยแมงมุมวาดตัวเองแล้วฉีกออกเป็นสองซีก
+     เล่นครั้งเดียวต่อ session กดที่ไหนก็ข้ามได้
+
+     ที่นี่มีแค่โครงสองซีก ส่วนใยกับข้อความถูกใส่ทีหลังโดย fx.js
+     เพราะรูปใยสร้างด้วยตรีโกณ ไม่ใช่ path ที่เขียนมือได้
+     ============================================================ -->
+<div class="intro" data-intro>
+  <div class="intro-tear intro-tear--l" aria-hidden="true"><div class="intro-stage" data-intro-stage></div></div>
+  <div class="intro-tear intro-tear--r" aria-hidden="true"><div class="intro-stage" data-intro-stage></div></div>
+</div>
+
+<a class="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
+
+<!-- ============================================================
+     NAV — แคปซูลลอย กระจกจะติดตอนเลื่อนลง
+     ============================================================ -->
+<header class="site-header" data-scrolled="false">
+  <nav class="nav" aria-label="เมนูหลัก">
+    <a class="nav-brand" href="index.html"><span>zhen chong</span><span>.dev</span></a>
+
+    <ul class="nav-links">
+      <li><a class="nav-link" href="#hero" aria-current="page">Home</a></li>
+      <li><a class="nav-link" href="#about">About</a></li>
+      <li><a class="nav-link" href="#work">Portfolio</a></li>
+      <li><a class="nav-link" href="#contact">Contact</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button type="button" class="icon-btn" data-magnet data-theme-toggle aria-label="สลับธีมสว่าง / มืด"></button>
+      <button type="button" class="kbd-hint" data-magnet data-palette-open>
+        <span data-icon="search"></span>
+        ค้นหา
+        <kbd>⌘</kbd><kbd>K</kbd>
+      </button>
+      <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false"
+              aria-controls="nav-panel" aria-label="เปิดเมนู">
+        <i></i><i></i><i></i>
+      </button>
+    </div>
+  </nav>
+
+  <div class="nav-panel" id="nav-panel" data-nav-panel data-open="false">
+    <div>
+      <ul>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Portfolio</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="work/index.html">ผลงานทั้งหมด</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<main id="main" data-comic-fx>
+
+  <!-- ==========================================================
+       HERO
+       ========================================================== -->
+  <section class="hero" id="hero">
+    <!-- data-par = ขยับคนละความเร็วกับหน้า (โค้ดอยู่ที่ modules/scenes.js)
+         แสงสองก้อนใช้ค่าคนละเครื่องหมาย จึงสวนทางกันตอนเลื่อน ทำให้รู้สึกว่า
+         อยู่คนละระยะลึก — ถ้าไปทางเดียวกันทั้งคู่จะดูเหมือนภาพเดียวที่เลื่อนเฉยๆ
+         ⚠ ห้ามใส่ data-par ทับ element ที่มี data-reveal (ทั้งคู่เขียน translate) -->
+    <div class="glow glow--accent hero-glow-a" aria-hidden="true" data-par="0.35"></div>
+    <div class="glow glow--warm hero-glow-b" aria-hidden="true" data-par="-0.25"></div>
+    
+    <!-- ==========================================================
+         หน้าจอแรกแบบโปสเตอร์ — เต็มจอ ชนขอบ
+
+         เลิกใช้ container แล้ว เพราะ container บังคับ max-width 1280px กับ
+         ขอบ 64px รอบด้าน ผลคือหน้าเว็บ "ไม่เคยแตะขอบจอ" ซึ่งเป็นสัดส่วนของ
+         เทมเพลต ไม่ใช่ของงานออกแบบ — ชื่อตัวยักษ์จึงถูกกักไว้ในกล่องกลางจอ
+         และไม่มีน้ำหนักพอจะเป็นจุดเริ่มสายตา
+
+         โครงใหม่เป็นสามชั้นซ้อนกัน ไม่ใช่กริดสองคอลัมน์:
+           ชั้นหลัง  รูปถ่ายเม็ดจุดเต็มจอ ชิดขวา
+           ชั้นกลาง  บัตรห้อยที่ห้อยลงมาจากขอบบน
+           ชั้นหน้า  ชื่อตัวยักษ์นั่งชนขอบล่างซ้าย + แถบข้อมูลใต้ชื่อ
+         ========================================================== -->
+
+    <!-- ชั้นหลัง — รูปถ่ายเม็ดจุด กินครึ่งขวาที่คอลัมน์เนื้อหาไม่ได้ใช้
+         ที่อยู่รูปมาจาก SITE.heroShot ใน data/projects.js (main.js เป็นคนต่อให้)
+         mask ไล่จางทางซ้ายเว้นที่ให้ตัวหนังสือ ทางบนเว้นที่ให้แถบ nav -->
+    <div class="hero-shot" data-hero-shot data-halftone data-ht-mode="hold" aria-hidden="true">
+      <img alt="" data-hero-img data-label="zhen chong" data-ratio="4/3" decoding="async">
+    </div>
+
+    <!-- บัตรห้อยสายคล้อง — ลากได้ (ฟิสิกส์อยู่ใน modules/lanyard.js)
+         ห้อยจากขอบบนทางขวา ถ่วงน้ำหนักกับคอลัมน์ข้อความทางซ้าย -->
+    <div class="lanyard" data-lanyard data-dragged="false" data-par="0.15">
+      <span class="lanyard-anchor" aria-hidden="true"></span>
+      <svg class="lanyard-rope" aria-hidden="true">
+        <path class="lanyard-strap" d=""></path>
+        <path class="lanyard-strap-hi" d=""></path>
+      </svg>
+
+      <div class="lanyard-card">
+        <span class="lanyard-clip" aria-hidden="true"></span>
+        <div class="lanyard-photo" data-halftone data-ht-mode="hold">
+          <!-- แทนที่ไฟล์นี้ด้วยรูปตัวเอง สัดส่วน 3:4 -->
+          <img src="assets/img/portrait-card.jpg" alt="รูปโปรไฟล์"
+               data-label="ใส่รูปที่นี่" data-ratio="3/4" draggable="false">
+          <span class="lanyard-monogram" aria-hidden="true"><b>ZC</b><small>photo</small></span>
+        </div>
+        <span class="lanyard-name" aria-hidden="true">
+          <span>เจิน ชง กวา</span><span>2569</span>
+        </span>
+      </div>
+
+      <p class="lanyard-tip">ลากบัตรเล่นได้</p>
+    </div>
+
+    <!-- คอลัมน์เนื้อหา — เรียงลงมาชั้นเดียว ไม่มีอะไรลอยทับกัน
+         ทุกอย่างอยู่ในกล่องเดียวกับ .container ของ section อื่น (กฎข้อ 11) -->
+    <div class="hero-poster" data-depth="0.18">
+
+      <span class="status-pill" data-reveal>
+        <span class="status-dot"></span>
+        Available for work
+      </span>
+
+      <!-- data-split ทำให้แต่ละบรรทัดเผยขึ้นมาจากใต้เส้นบังทีละบรรทัด (modules/type.js)
+           data-depth ให้มันขยับตามเมาส์เล็กน้อย (modules/comic-fx.js) -->
+      <h1 class="hero-name" data-split data-reveal data-glitch data-sense data-depth="0.3">
+        <span class="hero-name-lit">zhen chong</span>
+        <span class="hero-name-dim">developer</span>
+      </h1>
+
+      <div class="hero-bar" data-reveal>
+        <p class="hero-role caret">student developer</p>
+
+        <p class="hero-lede">
+          กระผมนายเจิน ชง กวา จากโรงเรียนเลยพิทยาคม แผนการเรียนศิลป์-เทคโนโลยี
+          สนใจการทำฮาร์ดแวร์และซอฟต์แวร์ จึงตั้งใจเรียนต่อคณะวิศวกรรมคอมพิวเตอร์
+        </p>
+
+        <!-- ลูกโป่ง CLICK ME อยู่ในแถวเดียวกับชิปโดยตั้งใจ
+             มันจึงเกาะท้ายแถวชิปเสมอ ไม่ว่าคอลัมน์จะสูงเท่าไหร่
+             จอแคบ = ไหลต่อท้ายชิปตามปกติ · จอกว้าง = ลอยออกไปทางขวาของแถว -->
+        <div class="row row--tight hero-chips">
+          <span class="chip">Electronics</span>
+          <span class="chip">Developer</span>
+          <span class="chip">Project Manager</span>
+          <button type="button" class="comic-bubble comic-bubble--cyan" data-pop data-sense aria-label="Click me">CLICK<br>ME!</button>
+        </div>
+
+        <!-- ลิงก์ข้อความแทนปุ่มสองปุ่ม — หน้าจอแรกมีทางเดินทางเดียวคือ "เลื่อนลง"
+             ปุ่มทึบสองปุ่มเรียกความสนใจแรงเกินกว่าที่ควรได้ในจอที่เนื้อหาสงบแบบนี้ -->
+        <p class="hero-more mono-note">
+          <a href="#work" data-magnet data-sense><span data-icon="arrowDown"></span> ดูผลงานด้านล่าง</a>
+        </p>
+
+        <p class="hero-award mono-note">
+          <span data-icon="trophy"></span> รางวัลระดับประเทศ IPST AI Inventor 2569
+        </p>
+      </div>
+
+      <!-- ลูกโป่ง IDEAS IN MOTION — ช่องว่างซ้ายเหนือชื่อ (เฉพาะจอกว้างมาก)
+           เป็นลูกคนสุดท้ายของ .hero-poster ซึ่ง position: relative อยู่แล้ว
+           จอที่ช่องซ้ายแคบเกินไป = ไหลต่อท้ายคอลัมน์ตามปกติ ไม่หลุดจอ -->
+      <button type="button" class="comic-bubble comic-bubble--red" data-pop data-sense aria-label="Ideas in motion">IDEAS<br>IN MOTION</button>
+    </div>
+
+    <span class="scroll-hint" aria-hidden="true">
+      Scroll
+      <span data-icon="arrowDown"></span>
+    </span>
+  </section>
+
+  <!-- ==========================================================
+       แถบเครื่องมือเลื่อน
+       ========================================================== -->
+  <div class="marquee comic-ribbon" aria-label="เครื่องมือที่ใช้">
+    <div class="marquee-track" data-marquee></div>
+  </div>
+
+  <!-- ==========================================================
+       REEL — ผลงานไถลผ่านหน้าจอตอนเลื่อน
+
+       มาร์กอัปของแผงถูกสร้างโดย renderReel ใน js/modules/render.js
+       การตรึงจออยู่ที่ js/modules/reel.js · หน้าตาอยู่ที่หัวข้อ REEL ใน pages.css
+
+       data-sticky บอก scenes.js ว่าห้ามใส่ scale ให้ส่วนนี้ตอนเลื่อนพ้น
+       เพราะ scale ทำให้ตัวมันกลายเป็น containing block แล้ว position: sticky
+       ข้างในจะเลิกตรึงทันที (เหตุผลเต็มอยู่ที่ initScenes ใน modules/scenes.js)
+
+       ค่าตั้งต้นของส่วนนี้คือแถบเลื่อนแนวนอนที่ปัดเองได้ ซึ่งใช้งานได้ครบแม้
+       JavaScript ตายสนิท reel.js จะอัปเกรดเป็นโหมดตรึงให้เมื่อเครื่องไหว
+       ========================================================== -->
+  <section class="reel" id="reel" data-reel data-sticky
+           data-spine-label="REEL" aria-labelledby="reel-heading">
+    <div class="reel-pin">
+
+      <div class="reel-head">
+        <span class="eyebrow" data-scramble data-reveal>Selected work</span>
+        <h2 id="reel-heading" class="gradient-text" data-split data-reveal
+            style="font-size:var(--t-h2)">ผลงานที่คัดมา</h2>
+      </div>
+
+      <div class="reel-track" data-reel-track></div>
+
+      <div class="reel-rail" aria-hidden="true"><i></i></div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       ABOUT
+       ========================================================== -->
+  <section class="section comic-chapter comic-chapter--about" id="about"
+           data-spine-label="ORIGIN">
+    <span class="chapter-mark chapter-mark--about" data-depth="0.12" aria-hidden="true">01<br>ORIGIN</span>
+    <div class="container">
+      <div class="split split--text-lead">
+
+        <div class="stack">
+          <span class="eyebrow" data-scramble data-reveal>About me</span>
+
+          <h2 class="gradient-text" data-split style="font-size:var(--t-h1)" data-reveal>
+            <!-- หนึ่ง <span> = หนึ่งบรรทัด (แบบเดียวกับ h1 ของ hero)
+                 ห้ามใช้ <br> หรือปล่อยข้อความลอยนอก <span> — splitOne ใน type.js
+                 ถือว่า "ลูกแต่ละตัวคือหนึ่งบรรทัด" แล้วข้ามข้อความที่ไม่ได้ห่อไปเลย
+                 <br> จึงกลายเป็นบรรทัดว่างสูงเต็มบรรทัด และข้อความที่ลอยอยู่จะไม่ได้หน้ากาก -->
+            <span>สวัสดีผมชื่อ</span>
+            <span>นายเจิน ชง กวา</span>
+          </h2>
+
+          <p class="text-soft" data-reveal>
+            นักเรียนโรงเรียนเลยพิทยาคม แผนการเรียนศิลป์-เทคโนโลยี ทำงานสองสายพร้อมกัน —
+            ทั้งด้านฮาร์ดแวร์และซอฟต์แวร์ มีผลงานทั้งการทำหุ่นยนต์และการทำเว็บไซต์
+            รวมถึงรางวัลระดับประเทศและรายการแข่งขันอีกหลายรายการ
+          </p>
+
+          <p class="text-soft" data-reveal>
+            จึงมีความสนใจที่จะเข้าศึกษาต่อคณะ<strong>วิศวกรรมคอมพิวเตอร์</strong> —
+            หากได้เข้ารับการศึกษาต่อที่มหาวิทยาลัยแห่งนี้
+            กระผมมั่นใจว่าจะสามารถศึกษาและสร้างชื่อเสียงให้กับมหาวิทยาลัยได้อย่างเต็มที่
+          </p>
+
+          <blockquote class="quote-box" data-reveal>
+            <span class="eyebrow" data-scramble style="display:block;margin-bottom:var(--s-2)">เป้าหมาย</span>
+            สถาบันเทคโนโลยีไทยญี่ปุ่น (TNI)<br>
+            คณะวิศวกรรมศาสตร์ สาขาวิศวกรรมคอมพิวเตอร์และปัญญาประดิษฐ์ (CE)
+          </blockquote>
+
+          <div class="row" data-reveal>
+            <a data-magnet class="btn btn--primary" href="work/index.html">
+              <span data-icon="grid"></span> ผลงานทั้งหมด
+            </a>
+            <a data-magnet class="btn btn--secondary" href="about.html">
+              <span data-icon="arrowUpRight"></span> อ่านเพิ่มเติม
+            </a>
+          </div>
+        </div>
+
+        <!-- ไม่ใส่ data-halftone ตรงนี้โดยตั้งใจ — ชั้นเม็ดจุดโหมด hold เป็นแผ่นทึบที่บังรูป
+             ไว้จนกว่าจะชี้เมาส์ (ดู [data-halftone="on"]::after ใน components.css)
+             กรอบนี้ต้องการให้เห็นรูปสีจริงตลอดเวลา จึงไม่ผูกเอฟเฟกต์ไว้เลย -->
+        <div class="portrait" data-reveal="scale">
+          <!-- แทนที่ด้วยรูปตัวเอง สัดส่วนจัตุรัส -->
+          <!-- data-par อยู่ที่ <img> ไม่ใช่ที่ .portrait ซึ่งถือ data-reveal อยู่
+               ถ้าใส่ที่ตัวเดียวกันจะแย่งกันเขียน translate แล้วรูปจะกระตุก -->
+          <img src="assets/img/portrait.jpg" alt="รูปโปรไฟล์" data-par="0.12"
+               data-label="ใส่รูปที่นี่" data-ratio="1/1" loading="lazy">
+        </div>
+
+      </div>
+
+      <!-- การ์ดสถิติ — ตัวเลขมาจาก SITE.stats ใน data/projects.js -->
+      <div class="grid grid--3" style="margin-top:var(--s-16)" data-stats></div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       SHOWCASE — สลับสามแท็บ
+       ========================================================== -->
+  <section class="section section--ruled comic-chapter comic-chapter--work" id="work" data-spine-label="ISSUES">
+    <span class="chapter-mark chapter-mark--work" data-depth="0.08" aria-hidden="true">02<br>ISSUES</span>
+    <div class="container-wide">
+
+      <div class="section-head section-head--center">
+        <span class="eyebrow" data-scramble data-reveal>Portfolio</span>
+        <h2 class="gradient-text" data-split data-reveal>ผลงานที่คัดมา</h2>
+        <p data-reveal>ทั้งฮาร์ดแวร์และซอฟต์แวร์ — การแข่งขัน โครงงาน และการอบรม</p>
+      </div>
+
+      <div class="tabs" data-tabs data-tilt data-sense style="margin-bottom:var(--s-12)" data-reveal>
+        <span class="tabs-thumb" aria-hidden="true"></span>
+        <div role="tablist" aria-label="หมวดผลงาน" style="display:flex;gap:var(--s-1)">
+          <button type="button" class="tab" role="tab" id="tab-work"
+                  aria-controls="panel-work" aria-selected="true">ผลงาน</button>
+          <button type="button" class="tab" role="tab" id="tab-cert"
+                  aria-controls="panel-cert" aria-selected="false" tabindex="-1">เกียรติบัตร</button>
+          <button type="button" class="tab" role="tab" id="tab-tech"
+                  aria-controls="panel-tech" aria-selected="false" tabindex="-1">ทักษะ</button>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-work" role="tabpanel" aria-labelledby="tab-work">
+        <div class="pindex" data-project-index data-limit="4"></div>
+        <noscript>
+          <p class="text-soft" style="text-align:center;padding:var(--s-10)">
+            การ์ดผลงานสร้างด้วย JavaScript — เปิด JavaScript แล้วโหลดหน้าใหม่
+            หรือดูรายการทั้งหมดที่ <a href="work/index.html" style="text-decoration:underline">หน้าผลงาน</a>
+          </p>
+        </noscript>
+        <div class="row row--center" style="margin-top:var(--s-10)">
+          <a data-magnet class="btn btn--secondary" href="work/index.html" data-sense data-glitch>
+            ดูผลงานทั้งหมด <span data-icon="arrowRight"></span>
+          </a>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="panel-cert" role="tabpanel" aria-labelledby="tab-cert" hidden>
+        <p class="mono-note" style="text-align:center;margin-bottom:var(--s-8)">
+          กดที่เกียรติบัตรเพื่อดูขนาดเต็ม
+        </p>
+        <div class="cert-grid" data-certs></div>
+      </div>
+
+      <div class="tab-panel" id="panel-tech" role="tabpanel" aria-labelledby="tab-tech" hidden>
+        <div class="grid grid--tech" data-tools></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       CONTACT
+       ========================================================== -->
+  <section class="section section--ruled comic-chapter comic-chapter--contact" id="contact" data-spine-label="CONNECT">
+    <span class="chapter-mark chapter-mark--contact" data-depth="0.1" aria-hidden="true">03<br>CONNECT</span>
+    <div class="container">
+
+      <div class="section-head section-head--center">
+        <span class="eyebrow" data-scramble data-reveal>Contact</span>
+        <h2 class="gradient-text" data-split data-reveal>ติดต่อได้เลย</h2>
+        <p data-reveal>มีคำถามเรื่องผลงาน หรืออยากชวนทำโปรเจกต์ — ส่งข้อความมาได้</p>
+      </div>
+
+      <div class="split split--top">
+
+        <form class="stack" data-contact-form novalidate style="width:100%">
+          <div class="field" style="width:100%">
+            <label class="field-label" for="f-name">ชื่อ</label>
+            <input class="input" id="f-name" name="name" type="text"
+                   autocomplete="name" placeholder="ชื่อของคุณ" required>
+          </div>
+          <div class="field" style="width:100%">
+            <label class="field-label" for="f-mail">อีเมล</label>
+            <input class="input" id="f-mail" name="email" type="email"
+                   autocomplete="email" placeholder="you@example.com" required>
+          </div>
+          <div class="field" style="width:100%">
+            <label class="field-label" for="f-msg">ข้อความ</label>
+            <textarea class="input" id="f-msg" name="message"
+                      placeholder="พิมพ์ข้อความได้เลย" required></textarea>
+          </div>
+          <button type="submit" data-magnet class="btn btn--primary btn--full" data-sense data-glitch>
+            <span data-icon="send"></span> ส่งข้อความ
+          </button>
+          <p class="form-note">
+            ปุ่มนี้จะเปิดโปรแกรมอีเมลของคุณพร้อมข้อความที่กรอกไว้ — เว็บนี้ไม่มีเซิร์ฟเวอร์เก็บข้อมูล
+          </p>
+        </form>
+
+        <div class="stack" style="width:100%">
+          <span class="eyebrow" data-scramble>Connect with me</span>
+          <div class="grid grid--2" style="width:100%;gap:var(--s-3)" data-socials></div>
+
+          <button type="button" class="copy-mail" data-copy="lpk37943@loeipit.ac.th"
+                  style="margin-top:var(--s-4)">
+            <span data-icon="copy"></span>
+            <span data-site-email>lpk37943@loeipit.ac.th</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       CTA
+       ========================================================== -->
+  <section class="section comic-chapter comic-chapter--cta">
+    <span class="chapter-mark chapter-mark--cta" data-depth="0.14" aria-hidden="true">04<br>NEXT?</span>
+    <div class="container">
+      <div class="cta" data-reveal="scale">
+        <h2 class="gradient-text" data-split>ขอบคุณที่รับชมผม!!!</h2>
+        <p>ผลงานทั้งหมดพร้อมเกียรติบัตรตัวจริงอยู่ในหน้าผลงาน</p>
+        <div class="row row--center">
+          <a data-magnet class="btn btn--accent btn--lg" href="work/index.html" data-sense data-glitch>
+            <span data-icon="grid"></span> ดูผลงานทั้งหมด
+          </a>
+          <a data-magnet class="btn btn--secondary btn--lg" href="#contact" data-sense>
+            ติดต่อ <span data-icon="arrowRight"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+
+      <div class="footer-col footer-brand">
+        <p class="nav-brand" style="margin-bottom:var(--s-3)">
+          <span>zhen chong</span><span>.dev</span>
+        </p>
+        <p class="text-faint" style="font-size:var(--t-small);max-width:34ch">
+          ฮาร์ดแวร์ · ซอฟต์แวร์ · โรงเรียนเลยพิทยาคม
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>ผลงาน</h4>
+        <ul>
+          <li><a href="work/index.html">ทั้งหมด</a></li>
+          <li><a href="work/ai-inventor.html">หุ่นยนต์ยามรักษ์โลก</a></li>
+          <li><a href="work/dobot.html">หุ่นยนต์แขนกล Dobot</a></li>
+          <li><a href="work/interactive-math.html">Interactive Math</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>เว็บไซต์</h4>
+        <ul>
+          <li><a href="index.html">หน้าแรก</a></li>
+          <li><a href="about.html">เกี่ยวกับ</a></li>
+          <li><a href="#contact">ติดต่อ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>ติดต่อ</h4>
+        <ul>
+          <li><a href="https://github.com/lpk37943-cyber" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a data-site-email href="mailto:lpk37943@loeipit.ac.th">อีเมล</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span>นายเจิน ชง กวา — ศิลป์เทคโนโลยี</span>
+      <span class="mono-note">กด <kbd>?</kbd> เพื่อดูคีย์ลัด</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     COMMAND PALETTE (⌘K)
+     ============================================================ -->
+<dialog class="palette" data-palette aria-label="ค้นหาและคำสั่ง">
+  <div class="palette-search">
+    <span data-icon="search"></span>
+    <input type="text" data-palette-input placeholder="พิมพ์เพื่อค้นหาผลงานหรือคำสั่ง…"
+           autocomplete="off" spellcheck="false" aria-label="ค้นหา">
+  </div>
+  <div class="palette-list" data-palette-list role="listbox" aria-label="ผลการค้นหา"></div>
+  <div class="palette-foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd> เลื่อน</span>
+    <span><kbd>↵</kbd> เลือก</span>
+    <span><kbd>esc</kbd> ปิด</span>
+  </div>
+</dialog>
+
+<!-- ============================================================
+     กล่องคีย์ลัด (กด ?)
+     ============================================================ -->
+<dialog class="palette" data-help aria-label="คีย์ลัด">
+  <div class="palette-search" style="justify-content:space-between">
+    <strong style="font-size:var(--t-small)">คีย์ลัด</strong>
+    <button type="button" class="lightbox-close" data-help-close aria-label="ปิด"
+            data-icon="close"></button>
+  </div>
+  <div class="palette-list">
+    <button type="button" class="palette-item"><span>ค้นหา / คำสั่ง</span><span class="meta"><kbd>⌘</kbd><kbd>K</kbd></span></button>
+    <button type="button" class="palette-item"><span>ค้นหา</span><span class="meta"><kbd>/</kbd></span></button>
+    <button type="button" class="palette-item"><span>ไปหน้าแรก</span><span class="meta"><kbd>g</kbd><kbd>h</kbd></span></button>
+    <button type="button" class="palette-item"><span>ไปหน้าผลงาน</span><span class="meta"><kbd>g</kbd><kbd>w</kbd></span></button>
+    <button type="button" class="palette-item"><span>ไปหน้าเกี่ยวกับ</span><span class="meta"><kbd>g</kbd><kbd>a</kbd></span></button>
+    <button type="button" class="palette-item"><span>ปิดกล่อง</span><span class="meta"><kbd>esc</kbd></span></button>
+  </div>
+</dialog>
+
+<!-- ============================================================
+     สคริปต์ — เป็น <script> ธรรมดา ไม่ใช่ type="module" โดยตั้งใจ
+     เพราะ module ถูก CORS บล็อกเมื่อเปิดจาก file:// ทำให้ดับเบิลคลิกไฟล์แล้วเว็บตาย
+     ทุกไฟล์ห่อตัวเองด้วย IIFE และฝากของไว้ที่ window.PF ตัวเดียว
+
+     ลำดับสำคัญ: icons กับ data ต้องมาก่อน เพราะ palette/render ใช้ของจากสองตัวนี้
+     main.js ต้องอยู่ท้ายสุดเสมอ
+     defer ทำให้โหลดพร้อมกันทุกไฟล์แต่รันตามลำดับหลัง HTML พร้อม
+     ============================================================ -->
+<script defer src="assets/js/icons.js"></script>
+<script defer src="assets/js/data/projects.js"></script>
+<script defer src="assets/js/modules/media.js"></script>
+<script defer src="assets/js/modules/halftone.js"></script>
+<script defer src="assets/js/modules/reveal.js"></script>
+<script defer src="assets/js/modules/nav.js"></script>
+<script defer src="assets/js/modules/tabs.js"></script>
+<script defer src="assets/js/modules/fx.js"></script>
+<script defer src="assets/js/modules/comic-fx.js"></script>
+<script defer src="assets/js/modules/ui.js"></script>
+<script defer src="assets/js/modules/palette.js"></script>
+<script defer src="assets/js/modules/render.js"></script>
+<script defer src="assets/js/modules/lanyard.js"></script>
+<script defer src="assets/js/modules/formes.js"></script>
+<script defer src="assets/js/modules/type.js"></script>
+<script defer src="assets/js/modules/smooth.js"></script>
+<script defer src="assets/js/modules/scenes.js"></script>
+<!-- reel.js อยู่ที่หน้านี้หน้าเดียว (ฟิล์มสตริปมีเฉพาะหน้าแรก)
+     main.js จึงต้องเรียกมันด้วย PF.initReel?.() ไม่ใช่เรียกตรงๆ ตามกฎข้อ 9
+     ต้องมาหลัง scenes.js เพราะใช้ PF.docTop ที่ไฟล์นั้นเป็นคนฝากไว้ -->
+<script defer src="assets/js/modules/reel.js"></script>
+<script defer src="assets/js/modules/spine.js"></script>
+<script defer src="assets/js/main.js"></script>
+</body>
+</html>

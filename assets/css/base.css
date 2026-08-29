@@ -1,0 +1,271 @@
+/* ============================================================================
+   base.css — reset + ตัวอักษร + สิ่งที่ใช้ทั้งเว็บโดยไม่ต้องใส่ class
+
+   ทุกอย่างในไฟล์นี้เป็น element selector ล้วน ห้ามมี class ของ component
+   (class อยู่ที่ components.css) เพื่อให้รู้ว่าถ้าอะไรเพี้ยนทั้งเว็บ ให้มาดูที่นี่
+   ========================================================================= */
+
+/* ---------- reset ----------
+   ตัด margin เริ่มต้นทิ้งทั้งหมด แล้วค่อยใส่กลับเฉพาะที่ต้องการ
+   วิธีนี้ทำให้ไม่มี margin ที่ "โผล่มาจากไหนไม่รู้" ให้ตามแก้ */
+*, *::before, *::after { box-sizing: border-box; }
+
+* { margin: 0; padding: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* เผื่อที่ให้ nav ลอยตอนกดลิงก์ #anchor ไม่งั้นหัวข้อจะไปซ่อนใต้ nav */
+  scroll-padding-top: 7rem;
+  /* กัน layout กระตุกตอนเปิด modal แล้ว scrollbar หาย */
+  scrollbar-gutter: stable;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+
+body {
+  /* ---------- ขอบซ้าย/ขวาที่ "ของลอย" ต้องเกาะ ----------
+     container จัดกลางตัวเองด้วย margin-inline: auto พอจอกว้างกว่ากล่อง
+     ขอบเนื้อหาจริงจึงไม่ใช่ --pad-x แต่เป็น --pad-x บวกระยะที่ถูกดันเข้ามา
+
+     ของที่เป็น position: absolute (บัตรห้อย · ลูกโป่งคำพูด · ป้ายบทที่มุม)
+     ไม่ได้อยู่ใน container จึงคำนวณเองไม่ได้ ตัวแปรนี้ให้คำตอบเดียวกันเสมอ
+     ทุกความกว้างจอ — ของลอยจึงเรียงตรงกับเนื้อหาได้จริง ไม่ใช่เดาด้วย vw
+
+     ⚠ ต้องอยู่ที่ body ไม่ใช่ :root
+     100% ที่ body คือความกว้างจอ "หลังหักแถบเลื่อน" แล้ว ส่วน 100vw ที่ :root
+     ยังนับแถบเลื่อนรวมอยู่ ซึ่งทำให้ทุกอย่างเยื้องไปราว 15px บนวินโดวส์ */
+  --edge: max(var(--pad-x), calc((100% - var(--w-wide)) / 2 + var(--pad-x)));
+
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  letter-spacing: var(--track-body);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;   /* clip ไม่ใช่ hidden — hidden จะทำให้ position:sticky ตาย */
+}
+
+/* ---------- สื่อ ----------
+   display:block กัน gap 4px ใต้ภาพที่เกิดจาก inline baseline
+   ซึ่งเป็นบั๊กที่หาสาเหตุยากที่สุดอันหนึ่งของ CSS */
+img, svg, video, canvas, picture {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- ฟอร์ม ----------
+   ฟอนต์ไม่สืบทอดเข้า form element เองในทุกเบราว์เซอร์ ต้องบังคับ */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: none;
+}
+
+button { cursor: pointer; }
+textarea { resize: vertical; }
+
+/* ---------- ลิงก์ ---------- */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+/* ---------- หัวข้อ ----------
+   text-wrap:balance ทำให้บรรทัดสุดท้ายของหัวข้อไม่เหลือคำเดียวโดดๆ
+   ส่วน pretty ใช้กับย่อหน้า จะกัน "คำกำพร้า" ท้ายย่อหน้าแทน */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+  line-height: var(--lh-h);
+  letter-spacing: var(--track-h);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--t-h1); }
+h2 { font-size: var(--t-h2); }
+h3 { font-size: var(--t-h3); }
+h4 { font-size: var(--t-h4); font-weight: 550; }
+
+p { text-wrap: pretty; }
+
+strong, b { font-weight: 600; color: var(--ink); }
+
+ul, ol { list-style: none; }
+
+code, kbd, pre, samp {
+  font-family: var(--font-mono);
+  font-size: .9em;
+  font-variant-ligatures: none;
+}
+
+hr {
+  border: none;
+  border-top: var(--bw) solid var(--line);
+  margin-block: var(--s-8);
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ---------- focus ----------
+   :focus-visible ไม่ใช่ :focus — คนใช้เมาส์จะไม่เห็นกรอบ แต่คนกด Tab เห็น
+   ใช้ outline ไม่ใช่ box-shadow เพราะ outline ไม่ถูก overflow:hidden ตัด */
+:focus { outline: none; }
+
+:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 3px;
+  border-radius: var(--r-xs);
+}
+
+/* ---------- scrollbar ---------- */
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid var(--bg);
+  border-radius: var(--r-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+/* ============================================================================
+   พื้นหลังทั้งเว็บ — จุด halftone + กริด + เกรน
+
+   ทั้งสองชั้นผูกกับ body ไม่ใช่ element แยก เพราะถ้าเป็น element จริงมันจะ
+   ยาวแค่เท่าเนื้อหา พอหน้าไหนสั้นกว่าจอจะเห็นพื้นเปล่าด้านล่าง
+   ========================================================================= */
+
+/* จุด halftone ทับกริด — ตรึงกับ viewport ไม่เลื่อนตามการ scroll
+   mask ให้จางลงด้านล่าง เพื่อไม่ให้แย่งความสนใจจาก footer
+
+   ---------------------------------------------------------------------------
+   ทำไมวางจุดไว้ "ก่อน" กริดในรายการ background
+
+   background-image ชั้นแรกอยู่บนสุด จุดจึงต้องมาก่อนเพื่อให้เป็นลายเด่น
+   ส่วนกริดถอยไปเป็นโครงจางๆ ข้างหลัง — ถ้าสลับกัน กริดจะตัดผ่านจุดทุกเม็ด
+   จนลายดูสกปรกเหมือนภาพเสีย
+
+   ขนาดของสองชั้นนี้ต้องไม่หารกันลงตัว (7px กับ 64px) ไม่งั้นเส้นกริดจะทับ
+   ตำแหน่งจุดซ้ำๆ เป็นจังหวะ แล้วตาจะจับเป็นลายทางแทนที่จะเห็นเป็นพื้นผิว */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grid);
+  pointer-events: none;
+  background-image:
+    var(--halftone),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:
+    var(--halftone-live-size, var(--halftone-size)) var(--halftone-live-size, var(--halftone-size)),
+    var(--grid-size) var(--grid-size),
+    var(--grid-size) var(--grid-size);
+  -webkit-mask-image: radial-gradient(ellipse 120% 80% at 50% 0%, #000 30%, transparent 100%);
+          mask-image: radial-gradient(ellipse 120% 80% at 50% 0%, #000 30%, transparent 100%);
+
+}
+
+/* เกรน — SVG feTurbulence ฝังเป็น data URI
+   ใช้ SVG แทนไฟล์ .png เพราะไม่ต้องโหลดอะไรเพิ่มและคมทุกความละเอียดจอ
+   opacity ต่ำมากโดยตั้งใจ ถ้าเห็นชัดแปลว่าเยอะเกิน */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grid);
+  pointer-events: none;
+  opacity: .035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================================
+   คลาสอรรถประโยชน์ — มีได้แค่ที่ใช้ซ้ำจริงเกินสามที่
+   ========================================================================= */
+
+/* ซ่อนจากตาแต่ยังให้ screen reader อ่าน — ใช้กับ label ของ input ที่มีแต่ไอคอน */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ลิงก์ข้ามไปเนื้อหา — ตัวแรกที่ Tab เจอ ปกติซ่อน โผล่มาตอน focus */
+.skip-link {
+  position: fixed;
+  top: var(--s-4);
+  left: 50%;
+  translate: -50% -200%;
+  z-index: var(--z-intro);
+  padding: var(--s-3) var(--s-5);
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--r-md);
+  font-size: var(--t-small);
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  transition: translate var(--dur) var(--ease-out);
+}
+.skip-link:focus-visible { translate: -50% 0; }
+
+/* label ตัวพิมพ์ใหญ่ mono ที่เห็นเหนือหัวข้อทุก section (จากเรฟ) */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* หัวข้อขอบสีเหลื่อม — ลายเซ็นของธีมคอมิก
+   เลียนอาการพิมพ์เพลตแดง/ไซแอนไม่ตรงกันของแท่นพิมพ์เก่า
+
+   ใช้ text-shadow ไม่ใช่การซ้อน element สามชั้น เพราะ:
+     - ไม่ต้องแตะ HTML เลย ใส่คลาสเดียวจบ
+     - screen reader ยังอ่านได้ข้อความเดียว ไม่ใช่อ่านซ้ำสามรอบ
+     - เงาไม่กินพื้นที่ layout จึงไม่ดันบรรทัดข้างเคียง
+
+   ตัวหนังสือหลักต้องทึบและคอนทราสต์สูงตามเดิม เงาสีเป็นแค่ขอบ —
+   ถ้าทำตัวหนังสือเองเป็นสีแดง จะเหลือคอนทราสต์ 3.9:1 ซึ่งไม่ผ่านเกณฑ์ */
+/* คลาสเดิมจากธีม Linear — คงชื่อไว้เพราะถูกใช้อยู่หลายหน้า
+   แต่เปลี่ยนพฤติกรรมเป็นขอบสีเหลื่อมแทนการไล่สี จะได้ไม่ต้องไล่แก้ HTML ทุกไฟล์
+   (เปลี่ยนชื่อคลาสให้ตรงความหมายกว่านี้ได้ แต่ต้องไล่แก้ HTML ทั้ง 10 หน้า
+   ซึ่งเป็นความเสี่ยงที่ไม่คุ้มกับการได้ชื่อที่ตรงขึ้น) */
+.gradient-text {
+  color: var(--ink);
+  text-shadow:
+    calc(var(--chroma) * -1) 0 0 var(--accent),
+    var(--chroma) 0 0 var(--accent-bright);
+}
+
+/* บรรทัด mono จางๆ ที่มีสัญลักษณ์นำหน้า (จากเรฟ: "↓ explore my work below") */
+.mono-note {
+  font-family: var(--font-mono);
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+  letter-spacing: .02em;
+}
+
+.text-soft  { color: var(--ink-soft); }
+.text-faint { color: var(--ink-faint); }

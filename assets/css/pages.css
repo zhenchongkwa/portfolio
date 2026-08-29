@@ -1,0 +1,1877 @@
+/* ============================================================================
+   pages.css — สิ่งที่ปรากฏแค่ที่เดียวหรือสองที่
+
+   ถ้าอะไรในไฟล์นี้ถูกใช้เกินสามหน้า ให้ย้ายไป components.css
+   ========================================================================= */
+
+/* ============================================================================
+   HERO
+   ========================================================================= */
+/* ---------- หน้าจอแรกแบบโปสเตอร์ ----------
+   เลิกใช้ container แล้ว ทั้งส่วนกินเต็มจอและชนขอบ
+
+   ทำไมถึงเปลี่ยน
+   ---------------------------------------------------------------------------
+   ของเดิมเป็นกริดสองคอลัมน์อยู่ใน .container-wide ซึ่งบังคับ max-width 1440px
+   กับขอบ --pad-x (สูงสุด 4rem) รอบด้าน หน้าเว็บจึงไม่เคยแตะขอบจอสักที่
+   และชื่อถูกจำกัดไว้ที่ 9 ใน 12 คอลัมน์ เพราะต้องแบ่งที่ให้บัตรห้อย
+
+   ผลรวมคือชื่อโตได้แค่ 168px บนจอ 1440px ซึ่งเป็นสัดส่วนของ "หัวข้อใหญ่หน่อย"
+   ไม่ใช่ "โปสเตอร์" — และเป็นเหตุผลหลักที่หน้าจอแรกไม่มีน้ำหนัก
+
+   โครงใหม่เป็นชั้นซ้อน ไม่ใช่คอลัมน์: รูปอยู่หลัง บัตรห้อยลงมาจากขอบบน
+   ชื่อนั่งชนขอบล่างซ้าย ที่ว่างที่เคยเป็นคอลัมน์ขวาจึงคืนมาให้ชื่อทั้งหมด
+
+   ---------------------------------------------------------------------------
+   ⚠ หน้าจอแรกใช้ "ขอบเดียวกับทั้งเว็บ" ไม่ได้ตั้งขอบของตัวเอง
+
+   เคยตั้ง --hero-gut แยกไว้ (14–44px) เพราะอยากให้ชื่อเข้าใกล้ขอบจอมากกว่า
+   ส่วนอื่น ผลคือหน้าเดียวกันมีขอบซ้ายสี่ตำแหน่ง แล้วทั้งหน้าอ่านออกมาว่า "แปลก"
+   (รายละเอียดเต็มอยู่ที่หัวข้อ "ความกว้าง" ใน tokens.css)
+
+   ตอนนี้แก้ด้วยการ "ขยับทุกอย่างเข้าใกล้ขอบพร้อมกัน" แทนที่จะให้ชื่อออกไป
+   คนเดียว — --pad-x ทั้งเว็บถูกลดจาก 64px เหลือ 42px ชื่อจึงยังเกือบชนขอบ
+   แต่คราวนี้ nav กับเนื้อหาทุกส่วนไปอยู่ที่เส้นเดียวกันกับมัน */
+.hero {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* คอลัมน์เนื้อหาอยู่กลางความสูงจอ */
+
+  /* เว้นบนให้พ้นแถบ nav — nav สูง 56px บวก padding 20px บน-ล่าง = 96px */
+  padding: clamp(6.5rem, 14vh, 9.5rem) 0 clamp(var(--s-10), 8vh, var(--s-20));
+  overflow: hidden;
+}
+
+
+/* แสงสองก้อน — ก้อนเย็นบนซ้ายหลังหัวข้อ ก้อนอุ่นขวาหลังบัตรห้อย
+   ขนาดใหญ่กว่าจอโดยตั้งใจ จะได้ไม่เห็นขอบวง */
+.hero-glow-a {
+  top: -20%; left: -15%;
+  width: 70vw; height: 70vw;
+  max-width: 900px; max-height: 900px;
+}
+.hero-glow-b {
+  bottom: -25%; right: -10%;
+  width: 55vw; height: 55vw;
+  max-width: 700px; max-height: 700px;
+}
+
+/* ---------- ชั้นหน้า: ชื่อกับแถบข้อมูล ----------
+   ใช้กล่องเดียวกับ .container เป๊ะ (max-width + margin auto + padding เท่ากัน)
+   ชื่อบนหน้าจอแรกจึงเริ่มที่เส้นเดียวกับหัวข้อของทุก section ที่อยู่ข้างล่าง
+   ถ้าแก้ค่าใดค่าหนึ่งในสามบรรทัดนี้ ต้องแก้ที่ .container ใน layout.css ด้วย */
+/* ---------- ชั้นหลัง: รูปถ่ายเม็ดจุด ----------
+   เกาะขอบขวา เต็มความสูงจอ อยู่ในครึ่งขวาที่คอลัมน์เนื้อหาไม่ได้ใช้
+
+   ที่อยู่รูปมาจาก SITE.heroShot ใน data/projects.js — halftone.js เป็นคนอ่านมาใส่
+   ตัว --shot ให้ ส่วนชั้นเม็ดจุดเป็น ::after ที่ประกาศไว้ใน components.css */
+.hero-shot {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(52vw, 880px);
+  z-index: 0;
+  pointer-events: none;
+
+  /* mask สองทาง
+
+     ทางซ้าย  ให้รูปละลายเข้าพื้นแทนที่จะมีขอบตรงผ่ากลางจอ และเว้นครึ่งซ้าย
+              ไว้ให้คอลัมน์เนื้อหาโดยไม่ต้องพึ่งพื้นรองเพียงอย่างเดียว
+     ทางบน    เว้นที่ให้แถบ nav — nav โปร่งใสตอนยังไม่เลื่อน ถ้ารูปขึ้นไปถึง
+              ขอบบน ตัวหนังสือในแถบจะไปนั่งบนเม็ดจุดขาว-ดำแล้วอ่านไม่ออก
+
+     ⚠ ต้องมี -webkit-mask-composite ด้วย ค่าคนละชุดกับมาตรฐาน
+     (source-in ของ WebKit = intersect ของมาตรฐาน) ถ้าใส่แค่ตัวมาตรฐาน
+     Safari จะเอาสอง mask มา "บวกกัน" แทนที่จะ "ตัดกัน" แล้วรูปจะโผล่เต็มจอ */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, #000 32%),
+    linear-gradient(180deg, transparent 0%, #000 15%);
+          mask-image:
+    linear-gradient(90deg, transparent 0%, #000 32%),
+    linear-gradient(180deg, transparent 0%, #000 15%);
+  -webkit-mask-composite: source-in;
+          mask-composite: intersect;
+}
+/* ---------- จอแคบ: ซ่อนรูป ----------
+   ⚠ พื้นรองเป็นไล่สีแนวนอน ซึ่งใช้ได้เฉพาะตอนที่คอลัมน์ข้อความกินแค่ครึ่งซ้าย
+
+   บนมือถือคอลัมน์กินเต็มความกว้าง ตัวหนังสือจึงยื่นเข้าไปในเขตรูปเสมอ
+   (วัดจริงที่ 375px: พื้นรองทึบถึง 157px แต่ย่อหน้าไทยยาวถึง 340px)
+
+   ---------------------------------------------------------------------------
+   ทำไมไม่หรี่รูปแทนการซ่อน
+
+   ลองหรี่เหลือ 12% ก่อน แล้ววัดคอนทราสต์กรณีแย่สุด (เม็ดจุดขาวเต็มดวงใต้ตัวอักษร)
+   ปรากฏว่า --ink-dim ได้แค่ 1.07:1 เพราะสีเทากลางกับพื้นที่ถูกดันสว่างขึ้น 12%
+   มี luminance ใกล้กันพอดี
+
+   คำนวณย้อนกลับหาเพดานที่ยังผ่านเกณฑ์ ได้ค่าดังนี้:
+     --ink (ชื่อ)          ทึบได้ถึง .285
+     --ink-soft (ย่อหน้า)   ทึบได้ถึง .025
+     --ink-faint           ทึบได้ถึง .010
+     --ink-dim (developer) ทึบได้ถึง .005  ← ตัวคุม
+
+   .005 คือมองไม่เห็นอยู่ดี แปลว่า "รูปอยู่หลังตัวหนังสือบนมือถือ" เป็นไปไม่ได้
+   ไม่ว่าจะหรี่เท่าไหร่ จึงซ่อนทิ้งไปตรงๆ ด้วยเหตุผลเดียวกับบัตรห้อย —
+   รูปเป็นฉากหลัง ส่วนตัวหนังสือเป็นเนื้อหา เนื้อหาชนะเสมอ
+   เดสก์ท็อปยังได้รูปเต็มเหมือนเดิม เพราะที่นั่นคอลัมน์กินแค่ครึ่งซ้ายจริงๆ */
+@media (max-width: 60rem) {
+  .hero-shot { display: none; }
+}
+
+.hero-shot img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+
+  /* ⚠ จุดโฟกัสของรูป — ปรับตรงนี้ถ้าคนในรูปถูกครอปหาย
+
+     กล่องนี้เป็นแนวตั้ง (สูงเต็มจอ กว้าง ~52vw) ส่วนรูปถ่ายเป็นแนวนอน
+     object-fit: cover จึงครอปด้านข้างออกเสมอ ค่านี้บอกว่าจะเก็บส่วนไหนไว้
+
+     0% = เก็บฝั่งซ้ายของรูป ใช้ค่านี้เพราะตัวคนอยู่ค่อนไปทางซ้ายของภาพ
+     ถ้าเปลี่ยนรูปเป็นใบที่คนอยู่กลางหรือขวา ให้ดันขึ้นเป็น 40–60%
+
+     ตัวเลขนี้ต้องดูคู่กับ mask ของ .hero-shot ข้างบนเสมอ — ครึ่งซ้ายของกล่อง
+     ถูกไล่จางทิ้งไปเพื่อเว้นที่ให้ตัวหนังสือ ของที่อยู่ซ้ายเกิน 32% ของกล่อง
+     จะมองไม่เห็น ต่อให้ object-position เก็บมันไว้แล้วก็ตาม */
+  object-position: 0% 50%;
+  /* รูปสีอยู่ใต้ชั้นเม็ดจุดซึ่งทึบ จึงมองไม่เห็นจนกว่าจะชี้เมาส์เข้ามาในจอแรก
+     ค่านี้จึงคุม "รางวัลของการชี้เมาส์" ไม่ได้คุมหน้าตาตอนปกติ */
+  opacity: .72;
+}
+
+/* พื้นรองระหว่างรูปกับตัวหนังสือ — เหตุผลเต็มอยู่ที่ --hero-scrim ใน tokens.css
+
+   วางเป็น ::before ของ .hero ไม่ใช่ของ .hero-shot เพราะ .hero-shot ใช้ ::after
+   ไปแล้วสำหรับชั้นเม็ดจุด และพื้นรองต้องอยู่ "เหนือ" ชั้นเม็ดจุดนั้น
+   z-index 1 = เหนือรูป (0) แต่เท่ากับ .hero-poster ซึ่งมาทีหลังใน DOM จึงวาดทับ */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--hero-scrim);
+}
+
+.hero-poster {
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(var(--s-4), 2vh, var(--s-7));
+  width: 100%;
+  max-width: var(--w-wide);
+  margin-inline: auto;
+  padding-inline: var(--pad-x);
+  /* ขยับตามเมาส์เล็กน้อย — ค่ามาจาก comic-fx.js ผ่าน [data-depth] */
+  transform: translate3d(var(--depth-x, 0px), var(--depth-y, 0px), 0);
+  transition: transform 180ms var(--ease-out);
+}
+
+/* ---------- ทำไมคอลัมน์เนื้อหาต้องโปร่งต่อการคลิก ----------
+   .hero-poster กว้างเต็ม --w-wide (1280px) แต่ตัวหนังสือจริงกินแค่ครึ่งซ้าย
+   ครึ่งขวาจึงเป็น "กล่องเปล่าที่มองไม่เห็น" ซึ่งบังเอิญคลุมบัตรห้อยไว้ทั้งใบพอดี
+   (วัดที่ 1440px: บัตรอยู่ x 1144–1346 · กล่องนี้กิน x 80–1360 = ทับเต็ม 100%
+   ไม่ใช่เรื่องบังเอิญ — .lanyard วางด้วย --edge ซึ่งนิยามจากขอบในของกล่องนี้เอง)
+
+   กล่องนี้ z-index: 1 (--z-content) และมี transform สร้าง stacking context
+   ส่วน .lanyard อยู่ z-index: 0 ผลคือ pointerdown ทุกครั้งที่กดบนบัตรตกใส่กล่องนี้
+   แทน บัตรจึงลากไม่ได้เลยแม้ฟิสิกส์ใน lanyard.js จะทำงานปกติทุกอย่าง
+
+   ทำไมไม่ดัน .lanyard ขึ้นไป z-index: 2 แทนซึ่งสั้นกว่า
+   ---------------------------------------------------------------------------
+   เพราะ z-index: 0 ของ .lanyard เป็นการตัดสินใจที่ตั้งใจ (ดูคอมเมนต์ที่นั่น) —
+   ให้บัตรลอดใต้คอลัมน์เนื้อหาเวลาถูกลากมาทางซ้าย ถ้าดันขึ้นไปบัตรจะทับตัวหนังสือ
+   การแก้ที่ hit-testing จึงตรงจุดกว่า: ลำดับการวาดคงเดิมเป๊ะ เปลี่ยนแค่ว่าใครรับคลิก
+
+   ⚠ ต้องคืน pointer-events ให้ลูกทุกตัว ไม่ใช่แค่ <a> กับ <button>
+   เพราะเอฟเฟกต์ hover ของ data-sense/data-glitch ใน comic-fx.js ใช้
+   e.target.closest() ซึ่งต้องการให้ตัว element เป็นเป้า hit-test จริงๆ
+   ถ้าคืนไม่ครบ ชื่อตัวยักษ์จะหยุด glitch ตอนชี้เมาส์โดยไม่มีใครสังเกต
+
+   ลูกทุกตัวถูกจำกัดความกว้างด้วยเนื้อหาอยู่แล้ว (.hero-bar ที่ --w-text คือตัวกว้างสุด
+   จบราว x 700) จึงไม่มีตัวไหนยื่นไปถึงเขตบัตร การคืน auto จึงไม่ทำให้บั๊กกลับมา */
+.hero-poster { pointer-events: none; }
+.hero-poster > * { pointer-events: auto; }
+
+.hero-poster .status-pill { margin-bottom: auto; }
+
+/* ---------- ชื่อตัวยักษ์ ----------
+   line-height .82 แน่นกว่าเดิม (.87) เพราะยิ่งตัวใหญ่ยิ่งต้องบีบบรรทัดเข้าหากัน
+   ไม่งั้นสองบรรทัดจะอ่านเป็นสองก้อนที่ไม่เกี่ยวกัน แทนที่จะเป็นชื่อเดียว
+
+   ---------------------------------------------------------------------------
+   margin-left ติดลบ = ชดเชย "ช่องไฟข้าง" (side bearing) ของฟอนต์
+
+   ตัวอักษรทุกตัวมีช่องว่างเปล่าติดมากับตัวมันเองด้านซ้ายเสมอ ถ้าไม่ดึงออก
+   กล่องจะชนขอบแต่ตาจะเห็นว่าตัวหนังสือลอยห่างขอบ — และจะไม่ตรงกับ nav
+   กับหัวข้อ section ที่อยู่ข้างล่างซึ่งตัวเล็กกว่ามากจนช่องไฟแทบไม่มีผล
+
+   ⚠ ค่านี้วัดมา ไม่ได้กะ
+   วัดด้วย canvas measureText().actualBoundingBoxLeft ที่ฟอนต์และน้ำหนักจริง:
+     Z (บรรทัดแรก)  0.0469em
+     D (บรรทัดสอง)  0.0417em
+   ใช้ค่าของ Z เพราะบรรทัดแรกคือตัวที่ตาใช้เทียบเส้น ส่วนต่าง 0.005em
+   (ราว 1px ที่ 192px) เล็กเกินกว่าจะคุ้มกับการชดเชยแยกทีละบรรทัด
+
+   เคยตั้งไว้ -.055em โดยลอกค่ามาจาก letter-spacing ซึ่งเป็นคนละเรื่องกัน
+   ผลคือชื่อล้ำออกไปทางซ้ายเกินเส้นจริง 1.5px
+
+   ถ้าเปลี่ยนฟอนต์หรือน้ำหนัก ต้องวัดใหม่ — ค่านี้ผูกกับรูปร่างตัวอักษร */
+/* ตัวพิมพ์เล็ก ไม่ใช่ตัวพิมพ์ใหญ่
+
+   ธีมคอมิกใช้ตัวพิมพ์ใหญ่กับหัวข้อเป็นหลัก แต่ชื่อคนไม่ใช่หัวข้อ — มันคือชื่อ
+   ตัวพิมพ์ใหญ่ทำให้อ่านเป็น "ป้ายประกาศ" ส่วนตัวพิมพ์เล็กอ่านเป็น "การแนะนำตัว"
+   ซึ่งตรงกับสิ่งที่หน้านี้กำลังทำมากกว่า
+
+   line-height 1.02 ไม่ใช่ .82 เพราะตัวพิมพ์เล็กมีหางบนหางล่าง (h, g, p)
+   ถ้าบีบบรรทัดแน่นเท่าตัวพิมพ์ใหญ่ หางของ g ในบรรทัดแรกจะชนหัว d ของบรรทัดสอง */
+/* ---------- ลูกโป่งคำพูด: แยกกันอยู่คนละมุม ----------
+
+   ⚠ ทั้งคู่ต้อง "เกาะ element จริง" ไม่ใช่เกาะขอบจอ
+
+   เคยให้ทั้งสองใบลอยเกาะ bottom ของ .hero ผลคือไปทับบรรทัดรางวัล
+   ต้นเหตุคือความสูงของคอลัมน์ไม่คงที่ — เปลี่ยนตามความสูงจอ (ชื่อใช้
+   min(6.6vw, 13vh)) และตามจำนวนบรรทัดที่ย่อหน้าไทยตัดคำได้ในแต่ละความกว้าง
+   สองตัวแปรนี้ขยับคนละทิศ จึงไม่มีค่า bottom ไหนปลอดภัยทุกจอ
+   (วัดที่ 1620×900 เหลือช่องว่างแค่ 11px)
+
+   คราวนี้จึงผูกกับของที่ขยับไปพร้อมกับมันแทน:
+     CLICK ME!  → อยู่ในแถวชิป เกาะท้ายแถวนั้น
+     IDEAS…     → เป็นลูกของ .hero-poster เกาะขอบซ้ายของคอลัมน์
+   ทั้งคู่จึงเลื่อนตามคอลัมน์เสมอ ไม่มีทางหลุดไปทับอะไร
+
+   และทั้งคู่มีสถานะ static เป็นค่าตั้งต้น — จอที่ไม่มีที่ว่างพอ
+   มันจะไหลต่อท้ายเนื้อหาตามปกติ ไม่หลุดจอ */
+
+/* ---------- CLICK ME! — ท้ายแถวชิป ---------- */
+.hero-chips { position: relative; }
+
+@media (min-width: 60rem) {
+  .hero-chips .comic-bubble {
+    position: absolute;
+    left: calc(100% + var(--s-6));
+
+    /* top: 0 ไม่ใช่จัดกึ่งกลางแถว
+       ถ้าจัดกึ่งกลาง ครึ่งบนของลูกโป่งจะโผล่ขึ้นไปในบรรทัดสุดท้ายของย่อหน้าไทย
+       ซึ่งกว้างได้ถึง --w-text (665px) — เสี่ยงทับกันบนบางความกว้างจอ
+       การเกาะขอบบนของแถวชิปทำให้มันไม่มีทางขึ้นไปสูงกว่าแถวนี้เลย */
+    top: 0;
+  }
+}
+
+/* ---------- IDEAS IN MOTION — ช่องว่างซ้ายเหนือชื่อ ----------
+   ⚠ เกณฑ์ 94rem มาจากการคำนวณ ไม่ได้กะเอา
+
+   ลูกโป่งกว้าง ~130px ขอบขวาของมันถูกวางที่ (ขอบซ้าย poster + --pad-x − s6)
+   จอที่แคบกว่านี้ poster จะเริ่มใกล้ขอบจอเกินไปจนลูกโป่งล้นออกนอกจอ
+   แล้วถูก overflow: hidden ของ .hero ตัดหายไปครึ่งใบ
+
+   ที่ 1504px: poster เริ่มที่ 112 → ขอบขวาลูกโป่งอยู่ที่ 152 → กินพื้นที่ 22–152
+   เหลือระยะห่างจากขอบจอ 22px ซึ่งพอดี ถ้าลดเกณฑ์ลงต้องคำนวณใหม่ */
+.hero-poster > .comic-bubble--red { margin-top: var(--s-2); }
+
+@media (min-width: 94rem) {
+  .hero-poster > .comic-bubble--red {
+    position: absolute;
+    margin-top: 0;
+    /* ยกขึ้นเหนือขอบบนของคอลัมน์เล็กน้อย ให้อยู่ระดับเดียวกับป้ายสถานะ */
+    top: calc(var(--s-8) * -1);
+    /* 100% คือขอบขวาของกล่อง poster ทั้งกล่อง จึงต้องบวก padding กลับเข้ามา
+       เพื่อให้วัดจาก "ขอบเนื้อหา" ไม่ใช่ "ขอบกล่อง" */
+    right: calc(100% - var(--pad-x) + var(--s-6));
+  }
+}
+
+.comic-bubble {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: 7.75rem;
+  min-height: 4.75rem;
+  padding: var(--s-3) var(--s-4);
+  border: var(--bw-thick) solid var(--ink);
+  border-radius: 50%;
+  box-shadow: var(--shadow-md);
+  color: #14100c;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: .04em;
+  text-align: center;
+  transition: translate var(--dur) var(--ease-spring), rotate var(--dur) var(--ease-spring);
+}
+
+/* หางลูกโป่ง — สี่เหลี่ยมหมุนเอียงที่ยืมสีพื้นจากตัวลูกโป่งด้วย background: inherit
+   จึงไม่ต้องประกาศสีซ้ำในแต่ละสีของลูกโป่ง */
+.comic-bubble::after {
+  content: "";
+  position: absolute;
+  width: 1rem; height: 1rem;
+  bottom: -.7rem; left: 20%;
+  background: inherit;
+  border-right: var(--bw-thick) solid var(--ink);
+  border-bottom: var(--bw-thick) solid var(--ink);
+  rotate: 28deg;
+}
+
+.comic-bubble--red  { background: var(--accent);        rotate: -5deg; }
+.comic-bubble--cyan { background: var(--accent-bright); rotate:  7deg; }
+.comic-bubble:hover { translate: 0 -8px; rotate: 0deg; }
+
+@media (max-width: 35rem) {
+
+  .comic-bubble { min-width: 6.4rem; min-height: 4rem; font-size: 9px; }
+}
+
+/* ชื่อขยับตามเมาส์ลึกกว่าคอลัมน์ที่มันอยู่ — ค่ามาจาก comic-fx.js ผ่าน [data-depth]
+
+   ⚠ ต้องเขียนลง transform ไม่ใช่ translate
+   .hero-name ถือ data-reveal ซึ่งเขียนคุณสมบัติ translate อยู่แล้ว (motion.css)
+   ถ้าใช้ translate ทั้งคู่จะแย่งกันคุมค่า แล้วชื่อจะกระตุกหรือค้างล่องหน
+   CSS แยก transform กับ translate เป็นคนละคุณสมบัติที่ประกอบกันเอง
+   (เหตุผลเดียวกับปุ่มแม่เหล็กใน modules/fx.js)
+
+   ค่า .3 ซ้อนกับ .18 ของ .hero-poster โดยตั้งใจ ชื่อจึงขยับมากกว่าส่วนอื่น
+   เล็กน้อย = ความรู้สึกว่ามันอยู่ระนาบหน้ากว่า (โครงเดิมเป็น .32 กับ .35)
+
+   กฎนี้เคยอยู่บน .hero-copy ซึ่งถูกลบไปตอนรื้อโครง จึงต้องเขียนขึ้นใหม่ที่นี่ */
+.hero-name[data-depth] {
+  transform: translate3d(var(--depth-x, 0px), var(--depth-y, 0px), 0);
+  transition: transform 180ms var(--ease-out);
+}
+
+.hero-name {
+  font-size: var(--t-name);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -.035em;
+  /* ชดเชยช่องไฟข้างของ z ตัวเล็ก — วัดด้วย measureText เหมือนเดิม (กฎข้อ 11) */
+  margin-left: -.047em;
+}
+.hero-name span { display: block; }
+
+/* ---------- แถบข้อมูลใต้ชื่อ ----------
+   เส้นบนเส้นเดียวบอกว่า "ของกลุ่มนี้อยู่ด้วยกัน" ใช้หมึกน้อยกว่ากรอบสี่ด้านมาก */
+/* เรียงลงมาชั้นเดียว ไม่ใช่สามคอลัมน์
+
+   เคยเป็นกริดสามคอลัมน์ใต้เส้นคั่น ซึ่งจำเป็นตอนชื่อกินเต็มความกว้างจอ
+   เพราะข้อมูลต้องกระจายออกให้เต็มแนวนอนตามไปด้วย
+   พอชื่อกลับมาอยู่ในคอลัมน์เดียว ข้อมูลก็ควรอยู่ในคอลัมน์เดียวกับมัน —
+   ตาจึงอ่านลงมาเป็นเส้นตรงเส้นเดียว ไม่ต้องกวาดซ้าย-ขวา
+
+   ไม่มีเส้นคั่นแล้วด้วย เพราะทุกอย่างอยู่ในกลุ่มเดียวกันอยู่แล้ว
+   ระยะห่างทำหน้าที่แบ่งกลุ่มได้พอโดยไม่ต้องใช้หมึก */
+.hero-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(var(--s-4), 2.2vh, var(--s-6));
+  width: 100%;
+  max-width: var(--w-text);
+}
+
+/* ลิงก์ "ดูผลงานด้านล่าง" — ลูกศรกับข้อความอยู่บรรทัดเดียวกัน */
+.hero-more a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--ink-soft);
+  transition: color var(--dur) var(--ease), gap var(--dur) var(--ease-out);
+}
+.hero-more a:hover { color: var(--ink); gap: var(--s-3); }
+.hero-more svg { width: 13px; height: 13px; flex-shrink: 0; }
+.hero-award { display: flex; align-items: center; gap: var(--s-2); }
+.hero-award svg { width: 12px; height: 12px; opacity: .55; flex-shrink: 0; }
+
+/* จอแคบกว่านี้ ชื่อขึ้นบรรทัดเองไม่ได้เพราะตั้ง nowrap ไว้
+   จึงต้องปลดออกและปล่อยให้ --t-name ที่หดตามจอทำงานแทน */
+@media (max-width: 40rem) {
+  .hero-name { text-wrap: balance; }
+}
+
+/* หัวข้อยักษ์สองโทน — บรรทัดแรกขาวเต็ม บรรทัดสองจาง (ตามเรฟ)
+   ใช้ .hero-name-dim ไม่ใช่ opacity เพราะ opacity จะทำให้ลำแสงกวาดจางตามไปด้วย */
+/* text-wrap: nowrap ถูกถอดออกแล้ว — เดิมมันบังคับให้ min-content ของหัวข้อ
+   เป็นตัวกำหนดความกว้างขั้นต่ำของทั้งคอลัมน์ ซึ่งเป็นเหตุผลที่ --t-display
+   เคยถูกจำกัดเพดานไว้แค่ 6.5rem ตอนนี้แต่ละบรรทัดเป็น <span> ที่ display: block
+   อยู่แล้ว จึงขึ้นบรรทัดตามที่เขียนไว้โดยไม่ต้องพึ่ง nowrap */
+/* (.hero-title เดิมถูกแทนด้วย .hero-name ข้างบน — ดูหัวข้อ "ชื่อตัวยักษ์") */
+
+/* ---------- บรรทัดแรก — ขอบสีเหลื่อม ----------
+   คูณสองเพราะตัวนี้ใหญ่ที่สุดในหน้า ระยะ 1px จึงแทบมองไม่เห็น
+   เคยตั้งไว้คูณสาม (6px) ซึ่งมากจนตาอ่านว่าจอเสีย ไม่ใช่การออกแบบ
+
+   เดิมตรงนี้เป็น "ลำแสงกวาด" ที่ใช้ background-clip: text ถอดออกแล้ว
+   เพราะมันบังคับให้ตัวหนังสือเป็น color: transparent ซึ่งชนกับ text-shadow
+   ที่ธีมใหม่ใช้ทำขอบสี — เงาจะไปโผล่ทับตัวอักษรที่โปร่งใสจนอ่านไม่ออก
+   (คีย์เฟรม sheen ใน motion.css ถูกลบไปพร้อมกัน เพราะไม่เหลือใครใช้แล้ว) */
+.hero-name-lit {
+  color: var(--ink);
+  text-shadow:
+    calc(var(--chroma) * -2) 0 0 var(--accent),
+    calc(var(--chroma) * 2) 0 0 var(--accent-bright);
+}
+/* ไม่ต้องมี override สำหรับโหมดสว่าง — --ink-dim สลับค่าให้เองใน tokens.css แล้ว
+   และค่าที่นั่นผ่านเกณฑ์ 3:1 สำหรับตัวใหญ่ทั้งสองโหมด */
+.hero-name-dim { color: var(--ink-dim); }
+
+/* บรรทัด mono ใต้หัวข้อ — "fresh Gradu_" ในเรฟ */
+.hero-role {
+  font-family: var(--font-mono);
+  font-size: var(--t-body);
+  letter-spacing: .02em;
+  color: var(--ink-soft);
+}
+
+.hero-lede {
+  max-width: 46ch;
+  color: var(--ink-soft);
+}
+
+/* .hero-notes ถูกแทนด้วย .hero-award ในแถบข้อมูลใต้ชื่อ — ดูหัวข้อ "แถบข้อมูลใต้ชื่อ" */
+
+/* ตัวชี้ SCROLL — ย้ายจากกลางขอบล่างมาอยู่ขอบขวา เขียนตั้งฉาก
+
+   ของเดิมอยู่กลางขอบล่าง ซึ่งตอนนี้เป็นที่ของแถบข้อมูลที่กินเต็มความกว้าง
+   (วัดจริง: ทับกัน) ขอบขวาเป็นที่ว่างเดียวที่เหลือ และการเขียนตั้งฉาก
+   ก็เข้ากับป้ายบนเส้นวงจร PCB ที่ขอบซ้ายพอดี — สองขอบจึงคุยภาษาเดียวกัน */
+/* ตัวชี้ SCROLL — กลางขอบล่าง
+   กลับมาที่กลางล่างได้แล้ว เพราะแถบข้อมูลไม่ได้กินเต็มความกว้างเหมือนตอนที่
+   ชื่อเป็นโปสเตอร์ ขอบล่างจึงว่างพอ และตำแหน่งกลางคือที่ที่ตาไปหาสัญญาณ
+   "เลื่อนต่อ" โดยธรรมชาติ */
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: var(--s-6);
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  color: var(--ink-faint);
+}
+.scroll-hint svg {
+  width: 14px; height: 14px;
+  animation: scroll-hint 2.2s var(--ease) infinite;
+}
+
+/* ============================================================================
+   บัตรห้อยสายคล้อง — ชิ้นเอกของ hero (ตามเรฟ ลากแกว่งได้จริง)
+
+   โครงสร้าง: .lanyard (กรอบ) > svg เส้นสาย + .lanyard-card (ตัวบัตร)
+   ตำแหน่งทั้งหมดถูกเขียนโดย lanyard.js ผ่าน --card-x/--card-y/--card-rot
+   CSS มีหน้าที่แค่ "หน้าตา" ส่วน "ฟิสิกส์" อยู่ที่ JS
+   ========================================================================= */
+/* ตำแหน่ง: ห้อยลงมาจากขอบบนของหน้าจอแรก ไม่ได้กินคอลัมน์ในกริดแล้ว
+
+   เดิมบัตรกิน 3 ใน 12 คอลัมน์ทางขวา ซึ่งเป็นสาเหตุที่ชื่อโตได้แค่ 9 คอลัมน์
+   พอย้ายมาเป็นชั้นลอย คอลัมน์ที่คืนมาทั้งหมดตกเป็นของชื่อ
+
+   ⚠ ห้ามใส่ overflow: hidden ให้ตัวแม่ที่ครอบมัน — บัตรต้องลากออกนอกกรอบได้
+   (.hero มี overflow: hidden อยู่ ซึ่งตั้งใจ: บัตรถูกจำกัดอยู่ในจอแรกพอดี) */
+.lanyard {
+  position: absolute;
+  /* ห้อยจากขอบบนทางขวา — ถ่วงน้ำหนักกับคอลัมน์ข้อความทางซ้าย
+
+     กลับมาที่ขอบบนได้อีกครั้งเพราะชื่อไม่กินเต็มความกว้างจอแล้ว
+     ครึ่งขวาของหน้าจอแรกจึงว่างพอให้บัตรห้อยได้เต็มความยาวโดยไม่ทับอะไร */
+  top: 0;
+  /* ยื่นเลยขอบขวาของคอลัมน์เนื้อหาออกไปเล็กน้อย
+
+     --edge คือเส้นขอบเดียวกับที่ nav กับทุก section ใช้ (นิยามที่ body ใน base.css)
+     การลบออกทำให้บัตรล้ำออกไปนอกคอลัมน์ ซึ่งตั้งใจ — บัตรไม่ใช่เนื้อหาที่ต้อง
+     เรียงตามกริด แต่เป็นวัตถุที่ห้อยอยู่หน้ากระดาษ การล้ำกรอบทำให้อ่านออกว่า
+     มันอยู่คนละระนาบกับตัวหนังสือ */
+  right: calc(var(--edge) - 3vw);
+
+  z-index: 0;   /* ใต้คอลัมน์เนื้อหา เผื่อบัตรถูกลากมาทางซ้าย */
+
+  width: clamp(9rem, 14vw, 15rem);
+
+  /* ความสูงกล่อง = ความยาวเชือก + ความสูงบัตร (lanyard.js คิด ropeLen จาก
+     H − cardH − 28) ที่ 87vh บัตรจะห้อยลงมาจบราว 80% ของความสูงจอ
+     ซึ่งเป็นระยะที่ทำให้เชือกยาวพอจะแกว่งได้จริงตอนลาก ไม่ใช่กระดิกอยู่กับที่ */
+  height: clamp(22rem, 87vh, 46rem);
+  touch-action: none;   /* ไม่งั้นมือถือจะ scroll หน้าแทนที่จะลากบัตร */
+  user-select: none;
+}
+
+/* จอแคบ: รูปถ่ายกินเต็มความกว้างแล้ว บัตรจึงต้องหลบไปมุมขวาบนและเล็กลง
+   ไม่ซ่อนทิ้งเพราะมันคือของเล่นชิ้นเดียวที่ลากได้จริงในหน้า */
+/* ---------- จอแคบ: ซ่อนบัตรห้อย ----------
+   เหตุผลสองข้อ ทั้งคู่เกิดจากการย้ายชื่อขึ้นไปอยู่บน
+
+   1. พอชื่อกับแถบข้อมูลกินพื้นที่ครึ่งบนของจอมือถือ พื้นรองจึงคลุมลงมาถึง 72%
+      บัตรที่ห้อยจาก 44% เลยเหลือให้เห็นแค่แถบล่างของมัน ดูเหมือนของถูกตัดครึ่ง
+      ไม่ใช่บัตรที่ห้อยอยู่
+
+   2. .lanyard ตั้ง touch-action: none ไว้ (จำเป็นสำหรับการลาก) ซึ่งแปลว่า
+      นิ้วที่ปัดตรงกล่องนั้นจะเลื่อนหน้าไม่ได้ บนจอเล็กที่กล่องกินพื้นที่มาก
+      มันจึงกลายเป็น "หลุมที่ปัดไม่ผ่าน" กลางหน้าจอแรก
+
+   ของเล่นชิ้นนี้ต้องใช้เมาส์ลากถึงจะสนุก การซ่อนบนมือถือจึงไม่ได้เสียอะไร
+   และได้การเลื่อนหน้าที่ลื่นกลับมาแทน */
+@media (max-width: 60rem) {
+  .lanyard { display: none; }
+}
+
+/* จุดยึดบนสุด — ตะขอเล็กๆ ที่สายห้อยลงมา */
+.lanyard-anchor {
+  position: absolute;
+  top: 0; left: 50%;
+  translate: -50% -50%;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  border: var(--bw) solid var(--line-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.lanyard-rope {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.lanyard-strap {
+  fill: none;
+  stroke: #17181b;
+  stroke-width: 13;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.lanyard-strap-hi {
+  fill: none;
+  stroke: rgba(255, 255, 255, .10);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+:root[data-theme="light"] .lanyard-strap { stroke: #23252a; }
+
+/* ตัวบัตร — กรอบขาวรอบรูป แบบโพลารอยด์ในเรฟ
+   will-change:transform บอก GPU ล่วงหน้าว่าของชิ้นนี้จะขยับทุกเฟรม */
+.lanyard-card {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  translate: calc(var(--card-x, 50%) - 50%) var(--card-y, 60%);
+  rotate: var(--card-rot, 0deg);
+  transform-origin: 50% 0;
+  padding: 10px 10px 30px;
+  border-radius: var(--r-sm);
+  background: var(--card-plastic);
+  box-shadow: var(--shadow-xl), inset 0 1px 0 #fff;
+  cursor: grab;
+  will-change: translate, rotate;
+}
+.lanyard-card:active { cursor: grabbing; }
+
+/* คลิปหนีบโลหะด้านบนบัตร */
+.lanyard-clip {
+  position: absolute;
+  top: -9px; left: 50%;
+  translate: -50% 0;
+  width: 34px; height: 14px;
+  border-radius: 3px 3px 6px 6px;
+  background: linear-gradient(180deg, #9ea3ac, #5d626b);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.5), var(--shadow-sm);
+}
+.lanyard-clip::after {
+  content: "";
+  position: absolute;
+  inset: 4px 8px auto;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, .35);
+}
+
+.lanyard-photo {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--card-well);
+}
+
+/* ---------- ช่องรอรูป ----------
+   portrait-card.jpg ยังไม่มีไฟล์จริง media.js จึงใส่ภาพแทนที่ลายทแยงสีเข้มให้
+   ซึ่งพอไปอยู่ในบัตรพลาสติกสีอ่อน มันอ่านออกมาเป็น "รูโหว่สี่เหลี่ยมดำ"
+   กลางหน้าจอแรก — เป็นจุดที่สะดุดตาที่สุดจุดหนึ่งของหน้า
+
+   แทนที่จะปล่อยไว้ ให้แสดงเป็นช่องรอรูปที่ดูตั้งใจ: อักษรย่อกับป้ายกำกับ
+   แบบเดียวกับบัตรพนักงานที่ยังไม่ได้ถ่ายรูป
+   พอวาง portrait-card.jpg จริงลงไป ทั้งบล็อกนี้จะหายไปเองโดยไม่ต้องแก้อะไร */
+.lanyard-photo:has(img[data-placeheld="true"]) img { visibility: hidden; }
+
+.lanyard-monogram { display: none; }
+.lanyard-photo:has(img[data-placeheld="true"]) .lanyard-monogram {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  justify-items: center;
+  color: var(--ink);
+  background:
+    repeating-linear-gradient(45deg,
+      transparent 0 6px, rgba(253, 251, 247, .05) 6px 7px);
+}
+.lanyard-monogram b {
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  line-height: 1;
+  opacity: .55;
+}
+.lanyard-monogram small {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: var(--track-label);
+  opacity: .38;
+}
+.lanyard-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  /* ขาวดำแบบเรฟ — เอาออกได้โดยลบบรรทัดนี้บรรทัดเดียว */
+  filter: grayscale(1) contrast(1.08);
+  pointer-events: none;
+}
+
+/* ข้อความบนแถบล่างของบัตร */
+.lanyard-name {
+  position: absolute;
+  inset: auto 10px 8px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #4a4d54;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* คำใบ้ให้ลอง "ลาก" — หายไปเองหลังผู้ใช้ลากครั้งแรก */
+.lanyard-tip {
+  position: absolute;
+  inset: auto 0 var(--s-2);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.lanyard[data-dragged="true"] .lanyard-tip { opacity: 0; }
+
+/* ============================================================================
+   แถบเครื่องมือเลื่อน (marquee)
+
+   mask ทั้งสองข้างทำให้เนื้อหาจางหายที่ขอบ ไม่ใช่ถูกตัดขาด
+   :hover หยุดเลื่อน เพื่อให้อ่านชื่อเครื่องมือทันตอนสนใจ
+   ========================================================================= */
+.marquee {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--s-6);
+  border-block: var(--bw) solid var(--line);
+  background: var(--surface);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-track {
+  display: flex;
+  gap: var(--s-12);
+  width: max-content;
+  animation: marquee var(--marquee-dur, 42s) linear infinite;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  color: var(--ink-faint);
+  font-size: var(--t-small);
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease);
+}
+.marquee-item:hover { color: var(--ink-soft); }
+.marquee-item svg { width: 20px; height: 20px; }
+
+/* ============================================================================
+   CHAPTER SYSTEM — ทุก block มีจังหวะของตัวเองเหมือนหน้า comic issue เดียวกัน
+   ============================================================================ */
+.comic-ribbon {
+  border-color: var(--ink);
+  background:
+    repeating-linear-gradient(-35deg, transparent 0 18px, rgba(255,255,255,.05) 18px 20px),
+    var(--accent);
+  box-shadow: 0 5px 0 var(--ink);
+}
+.comic-ribbon .marquee-item { color: var(--ink); font-family: var(--font-mono); font-weight: 800; }
+.comic-ribbon .marquee-item:hover { color: var(--ink); text-shadow: 2px 0 0 var(--accent-bright); }
+
+.comic-chapter { overflow: hidden; isolation: isolate; }
+.comic-chapter::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: min(34rem, 55vw);
+  aspect-ratio: 1;
+  border: var(--bw-thick) solid var(--line-strong);
+  border-radius: 50%;
+  background-image: var(--halftone);
+  background-size: var(--halftone-size) var(--halftone-size);
+  opacity: .38;
+}
+.comic-chapter--about::after { right: -13rem; top: 8%; border-color: var(--accent-bright); }
+.comic-chapter--work::after { left: -14rem; bottom: -12rem; border-color: var(--accent); rotate: 23deg; }
+.comic-chapter--contact::after { right: -15rem; bottom: -12rem; border-color: var(--hue-motion); }
+.comic-chapter--cta::after { left: 50%; top: 50%; width: min(44rem, 84vw); translate: -50% -50%; border-color: var(--accent); opacity: .25; }
+
+.chapter-mark {
+  position: absolute;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  width: 5.6rem;
+  aspect-ratio: 1;
+  border: var(--bw-thick) solid var(--ink);
+  box-shadow: var(--shadow-md);
+  color: #14100c;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+}
+.chapter-mark--about { top: var(--s-10); right: max(var(--pad-x), 5vw); rotate: 10deg; background: var(--hue-motion); }
+.chapter-mark--work { top: var(--s-10); left: max(var(--pad-x), 5vw); rotate: -11deg; background: var(--accent-bright); }
+.chapter-mark--contact { top: var(--s-10); right: max(var(--pad-x), 5vw); rotate: 8deg; background: var(--hue-art); }
+.chapter-mark--cta { top: var(--s-8); right: max(var(--pad-x), 7vw); rotate: -9deg; background: var(--accent-bright); }
+
+.comic-chapter .section-head { position: relative; }
+.comic-chapter .section-head::before {
+  content: "// TRANSMISSION RECEIVED";
+  position: absolute;
+  top: calc(var(--s-6) * -1);
+  left: 0;
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+.comic-chapter .section-head--center::before { left: 50%; translate: -50% 0; white-space: nowrap; }
+
+.comic-chapter--about .split { position: relative; }
+.comic-chapter--about .portrait {
+  padding: var(--s-3);
+  background: var(--hue-motion);
+  border: var(--bw-thick) solid var(--ink);
+  box-shadow: var(--shadow-xl);
+  rotate: 3deg;
+}
+.comic-chapter--about .portrait::after {
+  content: "PROFILE // 2569";
+  position: absolute;
+  left: var(--s-4); bottom: calc(var(--s-4) * -1);
+  padding: var(--s-2) var(--s-3);
+  background: var(--ink);
+  color: var(--hue-motion);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: .05em;
+  box-shadow: var(--shadow-sm);
+}
+.comic-chapter--about .portrait img { border: var(--bw-thick) solid var(--ink); border-radius: 0; }
+.comic-chapter--about .quote-box { border-left-width: 8px; box-shadow: var(--shadow-md); }
+
+.comic-chapter--work .pindex-row:nth-child(odd) { background: color-mix(in srgb, var(--surface) 86%, var(--accent) 14%); }
+.comic-chapter--work .pindex-row:hover { background: var(--accent); color: #14100c; }
+.comic-chapter--work .pindex-row:hover .pindex-no,
+.comic-chapter--work .pindex-row:hover .pindex-meta,
+.comic-chapter--work .pindex-row:hover .pindex-year,
+.comic-chapter--work .pindex-row:hover .pindex-go { color: #14100c; }
+
+.comic-chapter--contact .split { padding: clamp(var(--s-5), 4vw, var(--s-10)); border: var(--bw-thick) solid var(--ink); background: color-mix(in srgb, var(--surface) 90%, var(--accent-bright) 10%); box-shadow: var(--shadow-xl); }
+.comic-chapter--contact .split::before {
+  content: "SEND A SIGNAL";
+  position: absolute;
+  right: var(--s-4); top: calc(var(--s-5) * -1);
+  padding: var(--s-2) var(--s-4);
+  background: var(--accent);
+  border: var(--bw) solid var(--ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 800;
+  letter-spacing: var(--track-label);
+  rotate: 3deg;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 45rem) {
+  .chapter-mark { width: 4.4rem; }
+  .chapter-mark--work { left: auto; right: var(--pad-x); }
+  .comic-chapter--about .portrait { width: min(85%, 20rem); }
+  .comic-chapter--contact .split { padding: var(--s-5); }
+}
+
+/* ============================================================================
+   ABOUT
+   ========================================================================= */
+
+/* รูปวงกลมมีวงแสงล้อม (ตามเรฟ) */
+.portrait {
+  position: relative;
+  width: min(100%, 20rem);
+  margin-inline: auto;
+  aspect-ratio: 1;
+}
+.portrait::before {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: var(--glow-accent);
+  filter: blur(10px);
+}
+.portrait img {
+  position: relative;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: var(--bw) solid var(--line-strong);
+  box-shadow: var(--shadow-xl);
+}
+
+/* กล่องคำคม — เส้นขอบซ้ายหนาเป็นตัวเน้น */
+.quote-box {
+  padding: var(--s-4) var(--s-5);
+  border: var(--bw) solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--r-md);
+  background: var(--card-face);
+  font-size: var(--t-small);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+/* ============================================================================
+   เกียรติบัตร — กริดที่กดแล้วเปิดดูขนาดเต็ม
+
+   ต่างจากแกลเลอรีรูปทั่วไปตรงที่ "การกดดูเต็มจอ" ไม่ใช่ของเล่น แต่จำเป็น
+   เพราะตัวหนังสือบนเกียรติบัตรเล็กเกินกว่าจะอ่านออกในขนาดการ์ด
+   จึงต้องมีไอคอนแว่นขยายบอกให้เห็นตั้งแต่ยังไม่ hover
+   ========================================================================= */
+.cert-grid {
+  display: grid;
+  gap: var(--s-5);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+}
+
+.cert {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border: var(--bw) solid var(--line);
+  border-radius: 0;
+  background: var(--card-face);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+  transition: border-color var(--dur) var(--ease), translate var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease);
+}
+.cert:hover {
+  border-color: var(--ink);
+  translate: 2px 2px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* กรอบภาพ — พื้นขาวเสมอไม่ว่าธีมไหน เพราะเกียรติบัตรทุกใบเป็นกระดาษสีอ่อน
+   ถ้าวางบนพื้นดำจะเห็นขอบกระดาษตัดกับพื้นแรงจนดูเหมือนภาพลอย */
+.cert-shot {
+  position: relative;
+  display: block;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: #f2f2f4;
+  border: var(--bw) solid var(--line-soft);
+}
+.cert-shot img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: scale var(--dur-slow) var(--ease-out);
+}
+.cert:hover .cert-shot img { scale: 1.03; }
+
+.cert-zoom {
+  position: absolute;
+  top: var(--s-2);
+  right: var(--s-2);
+  display: grid;
+  place-items: center;
+  width: 26px; height: 26px;
+  border-radius: var(--r-sm);
+  background: rgba(8, 9, 10, .62);
+  -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+  color: #fff;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.cert-zoom svg { width: 13px; height: 13px; }
+.cert:hover .cert-zoom,
+.cert:focus-visible .cert-zoom { opacity: 1; }
+
+.cert-meta { display: block; padding-inline: var(--s-1); }
+.cert-meta b {
+  display: block;
+  font-size: var(--t-small);
+  font-weight: 550;
+  color: var(--ink);
+  /* ตัดสองบรรทัดเสมอ เพื่อให้การ์ดในแถวเดียวกันสูงเท่ากันโดยไม่ต้องบังคับความสูง */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cert-meta small {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+}
+
+/* ---------- ป้ายรางวัลบนการ์ดผลงาน ----------
+   ใช้สีอุ่นแยกจาก accent ของเว็บ เพราะรางวัลคือสิ่งที่ควรสะดุดตาที่สุดบนการ์ด
+   ถ้าใช้สีเดียวกับปุ่มและลิงก์ มันจะจมหายไปกับองค์ประกอบอื่น */
+.award-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 3px var(--s-3) 3px var(--s-2);
+  border: var(--bw) solid color-mix(in oklab, var(--hue-motion) 34%, transparent);
+  border-radius: var(--r-pill);
+  background: color-mix(in oklab, var(--hue-motion) 12%, transparent);
+  font-size: var(--t-micro);
+  font-weight: 550;
+  letter-spacing: -.005em;
+  color: var(--hue-motion);
+  white-space: nowrap;
+}
+.award-chip svg { width: 13px; height: 13px; flex-shrink: 0; }
+.award-chip--lg {
+  padding: var(--s-2) var(--s-4) var(--s-2) var(--s-3);
+  font-size: var(--t-small);
+}
+.award-chip--lg svg { width: 16px; height: 16px; }
+
+/* ภาพปกในหน้า case study กดดูเต็มจอได้ — เป็น <button> จึงต้องล้างสไตล์ปุ่ม */
+.case-figure-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+/* ============================================================================
+   CTA — แผงใหญ่ก่อน footer
+   ========================================================================= */
+.cta {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(var(--s-10), 6vw, var(--s-20)) var(--pad-x);
+  border: var(--bw-thick) solid var(--ink);
+  border-radius: 0;
+  background:
+    radial-gradient(ellipse 80% 120% at 50% 120%, var(--accent-wash), transparent 70%),
+    var(--halftone),
+    var(--card-face);
+  background-size: auto, var(--halftone-size) var(--halftone-size), auto;
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+}
+.cta::before,
+.cta::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border: var(--bw-thick) solid var(--ink);
+  background: var(--accent-bright);
+  box-shadow: var(--shadow-md);
+}
+.cta::before { width: 5rem; aspect-ratio: 1; left: -1.2rem; top: 1.5rem; rotate: -17deg; }
+.cta::after { width: 3rem; aspect-ratio: 1; right: 3rem; bottom: -1rem; rotate: 28deg; background: var(--hue-motion); }
+.cta h2 { font-size: var(--t-h2); margin-bottom: var(--s-4); }
+.cta p  { max-width: 46ch; margin: 0 auto var(--s-8); color: var(--ink-soft); }
+
+/* ปุ่มคัดลอกอีเมล — โชว์อีเมลจริงในตัวปุ่มเพื่อให้เห็นก่อนกด */
+.copy-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: var(--bw) dashed var(--ink);
+  border-radius: 0;
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.copy-mail:hover { border-color: var(--accent); color: var(--ink); translate: 2px 2px; box-shadow: none; }
+.copy-mail svg { width: 15px; height: 15px; }
+
+/* ============================================================================
+   หน้ารวมผลงาน — แถบกรองหมวด
+   ========================================================================= */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  justify-content: center;
+  margin-bottom: var(--s-10);
+}
+.filter-btn {
+  padding: var(--s-2) var(--s-4);
+  border: var(--bw) solid var(--ink);
+  border-radius: 0;
+  background: var(--pill-face);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: var(--ink-soft);
+  transition: all var(--dur) var(--ease);
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--ink); translate: 2px 2px; box-shadow: none; }
+.filter-btn[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--accent);
+  color: #fff;
+}
+
+/* การ์ดที่ถูกกรองออก — ยุบหายไปแบบนุ่มๆ ไม่ใช่ display:none ทันที */
+.work-item[data-hidden="true"] {
+  display: none;
+}
+
+/* ============================================================================
+   หน้า CASE STUDY
+   ========================================================================= */
+.case-head {
+  position: relative;
+  overflow: hidden;
+  padding-block: 9rem var(--s-12);
+}
+.case-head::before {
+  content: "CASE FILE // MULTIVERSE EDITION";
+  position: absolute;
+  right: max(var(--pad-x), 5vw);
+  top: 8rem;
+  padding: var(--s-2) var(--s-3);
+  border: var(--bw) solid var(--ink);
+  background: var(--hue-motion);
+  box-shadow: var(--shadow-sm);
+  color: #14100c;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 900;
+  letter-spacing: .05em;
+  rotate: 4deg;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-small);
+  color: var(--ink-faint);
+  margin-bottom: var(--s-8);
+}
+.back-link:hover { color: var(--ink); }
+.back-link svg { width: 14px; height: 14px; }
+/* ลูกศรถอยหลังเล็กน้อยตอน hover — บอกทิศทางโดยไม่ต้องมีคำอธิบาย */
+.back-link:hover svg { translate: -3px 0; }
+.back-link svg { transition: translate var(--dur) var(--ease); }
+
+.case-title {
+  font-size: var(--t-h1);
+  text-shadow: calc(var(--chroma) * -2) 0 0 var(--accent), calc(var(--chroma) * 2) 0 0 var(--accent-bright);
+}
+
+/* ขีดสั้นไล่สีใต้หัวข้อ (ตามเรฟ) */
+.case-rule {
+  width: 56px; height: 2px;
+  margin-block: var(--s-5) var(--s-6);
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--accent-bright), transparent);
+}
+
+/* กรอบสื่อของ case study — ขอบและพื้นเดียวกับการ์ด แต่ใหญ่กว่า */
+.case-figure {
+  margin-block: var(--s-10);
+  border: var(--bw-thick) solid var(--ink);
+  border-radius: 0;
+  background: var(--bg-sunken);
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+}
+.case-figure img, .case-figure video { width: 100%; }
+.case-figure figcaption {
+  padding: var(--s-3) var(--s-5);
+  border-top: var(--bw-thick) solid var(--ink);
+  background: var(--hue-motion);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #14100c;
+}
+
+.case-body { max-width: var(--w-text); }
+.case-body h2 { font-size: var(--t-h3); margin-top: var(--s-12); margin-bottom: var(--s-4); }
+.case-body h2 { display: flex; align-items: center; gap: var(--s-3); }
+.case-body h2::before { content: "//"; color: var(--accent-ink); font-family: var(--font-mono); font-size: .7em; }
+.case-body h3 { font-size: var(--t-h4); margin-top: var(--s-8); margin-bottom: var(--s-3); }
+.case-body p  { color: var(--ink-soft); margin-bottom: var(--s-4); }
+.case-body ul { display: flex; flex-direction: column; gap: var(--s-3); margin-bottom: var(--s-6); }
+.case-body ul li {
+  position: relative;
+  padding-left: var(--s-5);
+  color: var(--ink-soft);
+  font-size: var(--t-small);
+}
+/* จุดนำหน้าเป็นสี่เหลี่ยมเล็ก ไม่ใช่วงกลม — เข้ากับความเป็นเทคของ Linear มากกว่า */
+.case-body ul li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: .62em;
+  width: 5px; height: 5px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+/* การ์ด Key Features ในคอลัมน์ขวา (ตามเรฟ) */
+.keyfeat {
+  padding: var(--s-6);
+  border: var(--bw-thick) solid var(--ink);
+  border-radius: 0;
+  background: var(--halftone), var(--card-face);
+  background-size: var(--halftone-size) var(--halftone-size), auto;
+  box-shadow: var(--shadow-lg);
+}
+.keyfeat h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-h4);
+  margin-bottom: var(--s-5);
+}
+.keyfeat h3 svg { width: 16px; height: 16px; color: var(--accent-ink); }
+.keyfeat li { position: relative; padding-left: var(--s-5); font-size: var(--t-small); color: var(--ink-soft); }
+.keyfeat li + li { margin-top: var(--s-3); }
+.keyfeat li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: .62em;
+  width: 5px; height: 5px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+/* แถบไปโปรเจกต์ก่อนหน้า/ถัดไป */
+.case-nav {
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  padding-top: var(--s-10);
+  border-top: var(--bw) solid var(--line);
+  margin-top: var(--s-16);
+}
+.case-nav a {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-5);
+  border: var(--bw-thick) solid var(--ink);
+  border-radius: 0;
+  background: var(--card-face);
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--dur) var(--ease), translate var(--dur) var(--ease);
+}
+.case-nav a:hover { border-color: var(--ink); translate: 2px 2px; box-shadow: var(--shadow-sm); }
+.case-nav small {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.case-nav b { font-size: var(--t-h4); font-weight: 550; }
+.case-nav a:last-child { text-align: right; }
+
+/* ============================================================================
+   หน้า 404
+   ========================================================================= */
+.notfound {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+.notfound-code {
+  font-size: clamp(6rem, 4rem + 14vw, 14rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: var(--track-display);
+  color: var(--ink-ghost);
+  -webkit-text-stroke: var(--bw-thick) var(--accent);
+  text-shadow: 6px 0 0 var(--accent-bright);
+}
+
+@media (max-width: 45rem) {
+  .case-head::before { top: 6rem; right: var(--pad-x); font-size: 8px; }
+}
+
+/* ============================================================================
+   แขนกล Dobot — SVG ขยับด้วย CSS ล้วน (หน้า work/dobot.html)
+
+   ตัวเลขทุกตัวมาจากเครื่องจริง ไม่ได้กะเอา
+   ---------------------------------------------------------------------------
+   เดิมส่วนนี้เป็นแบบจำลอง WebGL ที่ลากหมุนได้ (assets/js/gl/ หกไฟล์ 2,048 บรรทัด)
+   ถอดออกแล้วเหลือแค่ภาพเคลื่อนไหว เพราะเว็บนี้ใช้ยื่นเข้ามหาวิทยาลัย กรรมการ
+   เปิดดูบนเครื่องอะไรก็ไม่รู้ การแบกริบท WebGL ไว้แลกกับความเสี่ยงว่าจะพัง
+   ช้า หรือกินแบต ไม่คุ้มกับสิ่งที่ได้กลับมา
+
+   สเปกที่คัดมาจาก gl/dobot.js ก่อนลบ (1 หน่วยฉาก = 100 มม. = 60px ในภาพนี้):
+
+     DIM    baseH 0.30 · turretH 0.52 · L1 1.35 · L2 1.47 · eeDrop 0.42
+     LIMIT  J1 ±90°  ·  J2 0–85°  ·  J3 −10–95°
+     HOME   j1 0 · j2 30 · j3 76
+
+     ไหล่สูง   baseH + turretH = 0.82
+     ข้อศอก    ex = sin(j2)·L1           ey = cos(j2)·L1
+     ข้อมือ    fx = ex + sin(j2+j3)·L2   fy = ey + cos(j2+j3)·L2
+     ปลายแขน   รัศมี = fx   ความสูง = 0.82 + fy − eeDrop
+
+   ลำดับท่าหยิบ-วาง — ทุกมุมคำนวณย้อนกลับจากตำแหน่งปลายแขนที่ต้องการ:
+
+     t     j1    j2  j3  grip   ท่า
+     0.00  −38   37  72   0     ลอยเหนือชิ้นงาน
+     0.14  −38   51  77   0     ก้มลงแตะ
+     0.22  −38   51  77   1     สุญญากาศทำงาน
+     0.34  −38   12  80   1     ยกขึ้น
+     0.56  +38   12  80   1     หมุนฐานไปอีกฝั่ง
+     0.68  +38   51  77   1     ก้มลงวาง
+     0.75  +38   51  77   0     ปล่อย
+     0.86  +38   37  72   0     ถอยขึ้น
+     1.00    0   30  76   0     กลับท่าพัก
+
+   เปอร์เซ็นต์ในทุก @keyframes ข้างล่างคือค่า t คูณร้อย จึงตรงจังหวะกันเสมอ
+   ========================================================================= */
+
+.armviz {
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 100%, var(--accent-wash), transparent 70%),
+    var(--bg-sunken);
+  box-shadow: var(--card-lip);
+  overflow: hidden;
+}
+
+/* ภาพหลักกับหน้าปัดวางเรียงกัน — จอแคบซ้อนลงมาเป็นคอลัมน์เดียว */
+.armviz-stage {
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-5) var(--s-2);
+  place-items: center;
+}
+@media (min-width: 44rem) {
+  .armviz-stage { grid-template-columns: 1fr auto; align-items: center; }
+}
+
+.armviz-side { width: 100%; max-width: 34rem; height: auto; }
+.armviz-top  { width: clamp(7rem, 22vw, 9.5rem); height: auto; }
+
+/* ---------- ชิ้นส่วน ---------- */
+.armviz-floor  { stroke: var(--line-strong); stroke-width: 1; }
+.armviz-pad    { fill: var(--ink-ghost); }
+.armviz-base,
+.armviz-turret { fill: var(--ink-ghost); }
+.armviz-link   { fill: var(--ink-soft); }
+.armviz-ee     { fill: var(--ink-soft); }
+.armviz-rod    { fill: var(--ink-dim); }     /* แกนขนาน — เห็นได้ว่าแขนเป็นสองท่อน */
+.armviz-joint  { fill: var(--accent); }
+.armviz-cube   { fill: var(--accent); }
+.armviz-cup    { fill: var(--ink-dim); }
+.armviz-ring   { fill: var(--accent-bright); opacity: 0; }
+
+/* ---------- หน้าปัดมุมมองจากด้านบน ---------- */
+.armviz-dial      { fill: none; stroke: var(--line-strong); stroke-width: 1; }
+.armviz-dial-axis { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
+.armviz-dial-pad  { fill: var(--ink-ghost); }
+.armviz-dial-hub  { fill: var(--ink-dim); }
+.armviz-needle line   { stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; }
+.armviz-needle circle { fill: var(--accent); }
+.armviz-dial-label {
+  fill: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: .04em;
+}
+
+/* ============================================================================
+   ท่าตั้งต้น = ท่าพัก (HOME)
+
+   ต้องตั้งไว้ที่ตัว element ไม่ใช่พึ่ง @keyframes อย่างเดียว เพราะแอนิเมชัน
+   ไม่ได้ใช้ animation-fill-mode: forwards พอมันจบหรือถูกปิด ค่าจะกลับมาที่นี่
+   ผลคือคนที่ตั้งค่า "ลดการเคลื่อนไหว" ได้เห็นแขนอยู่ในท่าพักที่ถูกต้อง
+   ไม่ใช่ท่าประหลาดหรือหายไปทั้งบล็อก
+   ========================================================================= */
+.armviz-j2     { rotate:   30deg; }
+.armviz-j3     { rotate:   76deg; }
+.armviz-wrist  { rotate: -106deg; }   /* = −(30 + 76) */
+.armviz-needle { rotate:    0deg; }
+
+/* จุดหมุนของทุกข้อต่ออยู่ที่ origin ของกลุ่มตัวเองอยู่แล้ว
+   เพราะกลุ่มแม่เลื่อนมาให้ถึงจุดหมุนพอดี จึงตั้ง 0 0 ได้ตรงๆ */
+.armviz-j2, .armviz-j3, .armviz-wrist { transform-origin: 0 0; }
+.armviz-needle { transform-origin: 60px 68px; }
+
+.armviz-cube--held { opacity: 0; }
+
+/* หัวดูดยุบจากด้านบนลงมา จึงต้องอิงกรอบของ path ตัวเอง ไม่ใช่ viewBox */
+.armviz-cup { transform-box: fill-box; transform-origin: 50% 0; }
+
+/* ============================================================================
+   เวลาในแทร็ก: ยืดเป็น 10 วินาที แล้วกันวินาทีแรกไว้ให้ "ออกจากท่าพัก"
+
+   ทำไมไม่ใช้ 9 วินาทีตรงๆ ตามของเดิม
+   ---------------------------------------------------------------------------
+   ตารางลำดับท่าจบที่ t = 1.00 ด้วยท่าพัก (j2 30 · j3 76) แล้ววนกลับไปเริ่มที่
+   t = 0.00 ซึ่งเป็นท่าลอยเหนือชิ้นงาน (j2 37 · j3 72) — สองท่านี้ไม่เท่ากัน
+   ทุกครั้งที่ครบรอบ ไหล่จึงกระตุก 7 องศาในเฟรมเดียว
+
+   ของเดิมมีปัญหานี้เหมือนกัน แต่ถูกกลบเพราะ rig.js หน่วงท่าที่วาดจริงตาม
+   ท่าเป้าหมายด้วย damp(..., 30, dt) การกระโดดจึงถูกเกลี่ยออกไปสองสามเฟรม
+   จนแทบไม่เห็น ที่นี่ไม่มีการหน่วง รอยต่อจึงโผล่มาเต็มๆ ทุกเก้าวินาที
+
+   แก้โดยให้ 0% กับ 100% เป็นท่าพักทั้งคู่ แล้วเลื่อนทั้งตารางไปอยู่ในช่วง
+   10%–100% ด้วยสูตร  เปอร์เซ็นต์ = 10 + t × 90
+
+   ผลคือ 90% ของ 10 วินาที = 9 วินาที จังหวะของช่วงทำงานจึงเท่าเดิมเป๊ะ
+   ส่วนวินาทีที่เพิ่มมาคือการเดินทางออกจากท่าพักไปยังจุดเริ่ม ซึ่งเครื่องจริง
+   ก็ต้องทำอยู่แล้ว — ได้ทั้งรอยต่อที่เนียนและเรื่องเล่าที่ตรงกว่าเดิม
+   ========================================================================= */
+.armviz-j2         { animation: armviz-j2    10s infinite; }
+.armviz-j3         { animation: armviz-j3    10s infinite; }
+.armviz-wrist      { animation: armviz-wrist 10s infinite; }
+.armviz-needle     { animation: armviz-yaw   10s infinite; }
+.armviz-cup        { animation: armviz-cup   10s infinite; }
+.armviz-ring       { animation: armviz-ring  10s infinite; }
+.armviz-cube--held { animation: armviz-held  10s infinite; }
+.armviz-cube--rest { animation: armviz-rest  10s infinite; }
+
+/* ============================================================================
+   ต้องใส่ animation-timing-function ใน *ทุกคีย์เฟรม* ไม่ใช่ที่ตัว element
+
+   CSS ให้แต่ละคีย์เฟรมกำหนด easing ของช่วงที่เริ่มจากตัวเองได้ ซึ่งจำลอง
+   smoothstep() รายช่วงของโค้ดเดิมได้พอดี — มอเตอร์ออกตัวและเบรกทุกท่า
+   ถ้าตั้งครั้งเดียวที่ element จะได้ ease ยาวคลุมทั้งรอบเก้าวินาที
+   แล้วจังหวะการทำงานทีละท่าหายไปหมด กลายเป็นแขนไหลเรื่อยๆ ไม่มีจุดหยุด
+   ========================================================================= */
+@keyframes armviz-j2 {
+  0%     { rotate: 30deg; animation-timing-function: ease-in-out; }   /* ท่าพัก */
+  10%    { rotate: 37deg; animation-timing-function: ease-in-out; }   /* t 0.00 */
+  22.6%  { rotate: 51deg; animation-timing-function: ease-in-out; }   /* t 0.14 */
+  29.8%  { rotate: 51deg; animation-timing-function: ease-in-out; }   /* t 0.22 */
+  40.6%  { rotate: 12deg; animation-timing-function: ease-in-out; }   /* t 0.34 */
+  60.4%  { rotate: 12deg; animation-timing-function: ease-in-out; }   /* t 0.56 */
+  71.2%  { rotate: 51deg; animation-timing-function: ease-in-out; }   /* t 0.68 */
+  77.5%  { rotate: 51deg; animation-timing-function: ease-in-out; }   /* t 0.75 */
+  87.4%  { rotate: 37deg; animation-timing-function: ease-in-out; }   /* t 0.86 */
+  100%   { rotate: 30deg; }                                          /* t 1.00 = ท่าพัก */
+}
+@keyframes armviz-j3 {
+  0%     { rotate: 76deg; animation-timing-function: ease-in-out; }
+  10%    { rotate: 72deg; animation-timing-function: ease-in-out; }
+  22.6%  { rotate: 77deg; animation-timing-function: ease-in-out; }
+  29.8%  { rotate: 77deg; animation-timing-function: ease-in-out; }
+  40.6%  { rotate: 80deg; animation-timing-function: ease-in-out; }
+  60.4%  { rotate: 80deg; animation-timing-function: ease-in-out; }
+  71.2%  { rotate: 77deg; animation-timing-function: ease-in-out; }
+  77.5%  { rotate: 77deg; animation-timing-function: ease-in-out; }
+  87.4%  { rotate: 72deg; animation-timing-function: ease-in-out; }
+  100%   { rotate: 76deg; }
+}
+/* หมุนกลับเท่ากับ −(J2+J3) ทุกคีย์เฟรม — หัวจับจึงตั้งฉากกับพื้นตลอดทุกท่า
+   ถ้าลบแทร็กนี้ออก หัวจับจะเอียงตามแขน ซึ่งผิดจากเครื่องจริงทันที */
+@keyframes armviz-wrist {
+  0%     { rotate: -106deg; animation-timing-function: ease-in-out; }
+  10%    { rotate: -109deg; animation-timing-function: ease-in-out; }
+  22.6%  { rotate: -128deg; animation-timing-function: ease-in-out; }
+  29.8%  { rotate: -128deg; animation-timing-function: ease-in-out; }
+  40.6%  { rotate:  -92deg; animation-timing-function: ease-in-out; }
+  60.4%  { rotate:  -92deg; animation-timing-function: ease-in-out; }
+  71.2%  { rotate: -128deg; animation-timing-function: ease-in-out; }
+  77.5%  { rotate: -128deg; animation-timing-function: ease-in-out; }
+  87.4%  { rotate: -109deg; animation-timing-function: ease-in-out; }
+  100%   { rotate: -106deg; }
+}
+@keyframes armviz-yaw {
+  0%            { rotate:   0deg; animation-timing-function: ease-in-out; }
+  10%,   40.6%  { rotate: -38deg; animation-timing-function: ease-in-out; }
+  60.4%, 87.4%  { rotate:  38deg; animation-timing-function: ease-in-out; }
+  100%          { rotate:   0deg; }
+}
+
+/* grip เป็นสถานะเปิด/ปิด ไม่ควรค่อยๆ ไล่ — ของเดิมเร่งด้วย clamp(k*3,0,1)
+   คือจบภายในหนึ่งในสามแรกของช่วง ตรงนี้จึงวางคีย์เฟรมถี่ให้สลับเร็วเหมือนกัน */
+@keyframes armviz-cup {
+  0%, 22.6%     { scale: 1 1; }
+  25%,   71.2%  { scale: 1 .65; }
+  73.3%, 100%   { scale: 1 1; }
+}
+@keyframes armviz-ring {
+  0%, 22.6%     { opacity: 0; }
+  25%,   71.2%  { opacity: .85; }
+  73.3%, 100%   { opacity: 0; }
+}
+
+/* ============================================================================
+   ชิ้นงานใช้กล่องสองใบสลับกัน เพราะ CSS ย้ายพ่อแม่ของ element ไม่ได้
+
+   ใบหนึ่งอยู่ในกลุ่มข้อมือ (ติดไปกับแขน) อีกใบวางนิ่งบนแท่น
+   สลับตรง 23.8% กับ 72.3% ซึ่งคือจังหวะที่ค่า grip ของเดิมข้ามครึ่งพอดี
+   (grip เร่งด้วย clamp(k*3,0,1) จึงถึง 0.5 ที่หนึ่งในหกของช่วง) ตอนนั้นหัวดูด
+   แตะผิวกล่องอยู่แล้ว สองใบจึงทับกันสนิท มองไม่เห็นรอยต่อ
+
+   วางคีย์เฟรมห่างกัน 0.1% เพื่อให้สลับทันที ไม่ใช่ค่อยๆ จาง
+   ซึ่งจะเห็นเป็นกล่องโปร่งสองใบซ้อนกัน
+   ========================================================================= */
+@keyframes armviz-held {
+  0%,     23.7% { opacity: 0; }
+  23.8%,  72.2% { opacity: 1; }
+  72.3%,  100%  { opacity: 0; }
+}
+@keyframes armviz-rest {
+  0%,     23.7% { opacity: 1; }
+  23.8%,  72.2% { opacity: 0; }
+  72.3%,  100%  { opacity: 1; }
+}
+
+/* ---------- แถบเวลา ---------- */
+.armviz-timeline { padding: 0 var(--s-5) var(--s-4); }
+
+.armviz-track {
+  position: relative;
+  height: 2px;
+  border-radius: var(--r-pill);
+  background: var(--line-strong);
+}
+
+/* ตัวหัวอ่านกว้างเท่ารางพอดี แล้วเลื่อนด้วย translate: 100% ซึ่งคิดจาก
+   ความกว้างของตัวมันเอง — จุดสีจึงวิ่งจากซ้ายสุดไปขวาสุดพอดีทุกความกว้างจอ
+   โดยไม่ต้องรู้ค่าพิกเซลล่วงหน้า และไม่แตะ layout สักเฟรม */
+.armviz-head {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 0;
+  animation: armviz-head 10s linear infinite;
+}
+.armviz-head::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+/* เดินเป็นเส้นตรงตลอดรอบ — หัวอ่านบอกว่า "ตอนนี้อยู่ตรงไหนของรอบ"
+   ไม่ได้บอกความเร็วของแขน จึงต้อง linear ไม่ใช่ ease เหมือนแทร็กอื่น */
+@keyframes armviz-head {
+  from { translate: 0 0; }
+  to   { translate: 100% 0; }
+}
+
+/* สัดส่วนคอลัมน์ = ช่วงเวลาจริงของแต่ละท่าในรอบ 10 วินาที
+   ออกจากท่าพักแล้วหยิบ 0–40.6% · หมุนฐาน ถึง 60.4% · วาง ถึง 77.5% · กลับ ถึง 100%
+   เส้นคั่นจึงตรงกับตำแหน่งที่หัวอ่านผ่านพอดี */
+.armviz-steps {
+  display: grid;
+  grid-template-columns: 40.6fr 19.8fr 17.1fr 22.5fr;
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.armviz-steps li { border-left: var(--bw) solid var(--line); padding-left: var(--s-2); }
+
+/* ---------- สเปกจริงของเครื่อง ---------- */
+.armviz-spec {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+  padding: var(--s-3) var(--s-5);
+  border-top: var(--bw) solid var(--line-soft);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .04em;
+  color: var(--ink-faint);
+}
+.armviz-spec b {
+  color: var(--ink-soft);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================================
+   ดัชนีผลงานตัวยักษ์ — หนึ่งงานหนึ่งบรรทัด
+   (มาร์กอัปถูกสร้างโดย renderProjectIndex ใน js/modules/render.js)
+
+   เส้นคั่นบางเส้นเดียวระหว่างบรรทัดทำงานได้เท่ากรอบการ์ดสี่ด้าน
+   แต่ใช้หมึกน้อยกว่ามาก และไม่ตัดหน้าออกเป็นกล่องๆ ที่ลอยแยกจากกัน
+   ========================================================================= */
+.pindex {
+  display: flex;
+  flex-direction: column;
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.pindex-row {
+  position: relative;
+  display: grid;
+  align-items: baseline;
+  gap: var(--s-2) clamp(var(--s-4), 2.5vw, var(--s-10));
+  padding-block: clamp(var(--s-5), 2.6vw, var(--s-8));
+  border-top: var(--bw) solid var(--line);
+  color: var(--ink);
+
+  /* จอแคบ: เลข+ปีแถวบน ชื่อแถวกลาง รางวัลแถวล่าง
+     ห้ามยัดห้าคอลัมน์ลงจอ 375px เพราะชื่องานภาษาไทยจะถูกบีบจนขึ้นบรรทัดทุกคำ */
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "no    year  go"
+    "title title title"
+    "meta  meta  meta";
+
+  transition:
+    padding-inline var(--dur) var(--ease-out),
+    background      var(--dur) var(--ease),
+    border-color    var(--dur) var(--ease);
+}
+
+@media (min-width: 48rem) {
+  .pindex-row {
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    grid-template-areas: "no title meta year go";
+    align-items: center;
+  }
+}
+
+.pindex-no    { grid-area: no; }
+.pindex-title { grid-area: title; }
+.pindex-meta  { grid-area: meta; }
+.pindex-year  { grid-area: year; }
+.pindex-go    { grid-area: go; }
+
+.pindex-no {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  color: var(--ink-faint);
+}
+
+/* ชื่องานคือของที่ใหญ่เป็นอันดับสองของหน้ารองจากชื่อเจ้าของเว็บ
+   นั่นคือลำดับความสำคัญที่ถูกต้องสำหรับพอร์ตโฟลิโอ */
+.pindex-title {
+  font-size: clamp(1.4rem, .7rem + 3.1vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: var(--track-h);
+  text-wrap: balance;
+}
+
+/* รางวัลใช้สี accent ที่อ่านได้ (--accent-ink ผ่าน AA) ไม่ใช่ --accent ดิบ
+   ตรงนี้เป็นข้อมูลจริงที่กรรมการต้องอ่าน ไม่ใช่ของตกแต่ง */
+.pindex-meta {
+  font-size: var(--t-small);
+  color: var(--accent-ink);
+}
+
+.pindex-year {
+  font-family: var(--font-mono);
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+}
+
+.pindex-go {
+  display: grid;
+  place-items: center;
+  color: var(--ink-faint);
+  transition: translate var(--dur) var(--ease-out), color var(--dur) var(--ease);
+}
+.pindex-go svg { width: 20px; height: 20px; }
+
+/* ---------- ตอนชี้เมาส์ ----------
+   บรรทัดขยับเข้าไปทางขวาเล็กน้อย เหมือนถูกดึงออกมาจากรายการ
+   ใช้ padding-inline ไม่ใช่ translate เพราะ translate จะพาเส้นคั่นขยับตามไปด้วย
+   แล้วรายการทั้งหมดจะดูสั่น */
+@media (hover: hover) {
+  .pindex-row:hover {
+    padding-inline: clamp(var(--s-3), 1.5vw, var(--s-6));
+    background: var(--line-soft);
+    border-color: var(--line-strong);
+  }
+  .pindex-row:hover .pindex-go { translate: 4px -4px; color: var(--accent-ink); }
+}
+
+.pindex-row:focus-visible { background: var(--line-soft); }
+
+/* ---------- ภาพตัวอย่างลอยตามเมาส์ ----------
+   ตำแหน่งถูกเขียนเป็น translate โดย initIndexPreview ทุกครั้งที่เมาส์ขยับ
+   margin ติดลบดึงให้จุดกึ่งกลางภาพมาอยู่ที่ปลายเคอร์เซอร์พอดี
+
+   ห้ามใส่ transition ให้ translate — ค่าถูกเขียนใหม่ทุก event
+   ถ้าใส่ ภาพจะไล่ตามไม่ทันแล้วรู้สึกเหมือนลากของหนัก
+   ส่วน opacity/scale ใส่ได้ เพราะเปลี่ยนแค่ตอนเข้า-ออกบรรทัด */
+.pindex-preview {
+  --pw: clamp(180px, 20vw, 300px);
+
+  position: fixed;
+  top: 0; left: 0;
+  z-index: var(--z-content);
+  width: var(--pw);
+  aspect-ratio: 4 / 3;
+  margin-left: calc(var(--pw) / -2);
+  margin-top: calc(var(--pw) * -0.375);
+
+  pointer-events: none;   /* ห้ามบังบรรทัดที่กำลังจะถูกกด */
+  overflow: hidden;
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+
+  opacity: 0;
+  scale: .92;
+  transition: opacity var(--dur) var(--ease), scale var(--dur) var(--ease-out);
+}
+.pindex-preview[data-on="true"] { opacity: 1; scale: 1; }
+.pindex-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ตาข่ายนิรภัย — ถ้า JS ไม่ทำงาน ภาพลอยจะไม่มีทางถูกสร้าง แต่กันไว้เผื่อ
+   มีใครใส่มาร์กอัปนี้ลง HTML ตรงๆ ในอนาคต */
+html.no-js .pindex-preview { display: none; }
+
+/* ============================================================================
+   REEL — ผลงานเลื่อนแนวนอนแบบตรึงจอ (มีเฉพาะหน้าแรก)
+   มาร์กอัปสร้างโดย renderReel ใน js/modules/render.js
+   ตรรกะการตรึงอยู่ที่ js/modules/reel.js
+
+   ---------------------------------------------------------------------------
+   ทำไมค่าตั้งต้นถึงเป็น "แถบเลื่อนแนวนอนธรรมดา" ไม่ใช่แบบตรึง
+
+   ของที่ตรึงหน้าจอแล้วไถลข้างเป็นเอฟเฟกต์ที่พังง่ายที่สุดในบรรดาที่ทำมา
+   มันต้องรู้ความสูงหน้าจอ ความกว้างแทร็ก และตำแหน่ง scroll พร้อมกันทั้งสามอย่าง
+   ถ้าอย่างใดอย่างหนึ่งผิด ผู้ใช้จะเจอ "ช่องว่างเปล่าสูงสามจอ" ที่เลื่อนผ่านไม่ได้
+
+   เว็บนี้ใช้ยื่นเข้ามหาวิทยาลัย กรรมการเปิดบนเครื่องอะไรก็ไม่รู้ จึงกลับด้าน
+   ความเสี่ยง: ค่าตั้งต้นคือแถบเลื่อนแนวนอนที่ใช้ scroll-snap ของเบราว์เซอร์
+   ซึ่งทำงานได้แม้ JS ตายสนิท แล้ว reel.js ค่อย "อัปเกรด" เป็นแบบตรึงให้
+   เมื่อเช็คแล้วว่าเครื่องนี้ไหว (เมาส์จริง · ไม่ได้ปิดแอนิเมชัน · จอสูงพอ)
+
+   ผลคือกรณีแย่ที่สุดที่เป็นไปได้ = ปัดดูผลงานแนวนอน ซึ่งยังใช้งานได้ครบ
+   ========================================================================= */
+.reel {
+  position: relative;
+  padding-block: var(--gap-section) 0;
+}
+
+.reel-pin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+.reel-head {
+  max-width: var(--w-content);
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--pad-x);
+}
+
+/* ---------- แทร็ก: ค่าตั้งต้น = ปัดแนวนอนเอง ---------- */
+.reel-track {
+  display: flex;
+  gap: clamp(var(--s-4), 2vw, var(--s-8));
+  padding-inline: var(--pad-x);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.reel-track::-webkit-scrollbar { display: none; }
+
+.reel-panel {
+  scroll-snap-align: center;
+  flex: 0 0 clamp(260px, 74vw, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  color: var(--ink);
+}
+
+/* ---------- โหมดตรึงจอ — reel.js เปิดให้เมื่อเครื่องไหว ----------
+   ความสูงของ .reel มาจาก --reel-len ที่ reel.js คำนวณ
+   (หนึ่งจอ + ระยะไถลของแทร็ก) ถ้า JS ไม่ได้ตั้ง ค่าจะเป็น auto ตามปกติ */
+.reel[data-reel-mode="pin"] {
+  height: var(--reel-len, auto);
+  padding-block: 0;
+}
+.reel[data-reel-mode="pin"] .reel-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  justify-content: center;
+  overflow: hidden;      /* ตัดแทร็กที่ยื่นออกนอกจอ ไม่ให้ดันหน้าให้กว้างเกิน */
+}
+.reel[data-reel-mode="pin"] .reel-track {
+  overflow: visible;     /* ตอนตรึง เราขยับเอง ห้ามให้เบราว์เซอร์เลื่อนซ้อน */
+  scroll-snap-type: none;
+  /* แผงแรกเริ่มที่เส้นเดียวกับหัวข้อ "ผลงานที่คัดมา" ข้างบนมัน
+     ของเดิมเป็น 0 แผงจึงเริ่มชนขอบจอ ส่วนหัวข้ออยู่ที่ --pad-x — ห่างกันชัด
+     ปล่อยขอบขวาเป็น 0 ไว้ เพราะแทร็กต้องไถลเลยขอบจอไปได้ตามธรรมชาติ
+     (reel.js คิด maxX จาก scrollWidth ซึ่งรวม padding อยู่แล้ว จึงไม่ต้องแก้ JS) */
+  padding-inline: var(--edge) 0;
+  /* translate ถูกเขียนจาก reel.js ทุกเฟรม จึงห้ามใส่ transition
+     (กฎเดียวกับ .pindex-preview และ section ใน scenes.js) */
+  will-change: transform;
+}
+/* ขนาดแผงตอนตรึงจอมาจาก "ความสูงจอ" ไม่ใช่ความกว้าง
+
+   ตอนตรึง เรากำลังยัดหัวข้อ + แผง + รางลงในหนึ่งจอพอดี ความสูงจึงเป็น
+   ข้อจำกัดจริง ส่วนความกว้างเหลือเฟือเสมอ ถ้าวัดจากความกว้างอย่างเดียว
+   (34vw แบบเดิม) จอ 1440×900 จะเหลือที่ว่างแนวตั้งเปล่าๆ 368px
+   และจอเตี้ยอย่างโน้ตบุ๊ก 1366×768 จะล้นออกนอกจอแทน
+
+   คำนวณกลับจากความสูงที่ให้ได้: ความกว้าง = ความสูงภาพ × สัดส่วน 4/3
+   แล้วเพดาน 46vw กันไม่ให้แผงกว้างเกินครึ่งจอบนจอ ultrawide จนเห็นทีละใบ */
+.reel[data-reel-mode="pin"] .reel-panel {
+  flex-basis: clamp(340px, calc(58svh * 4 / 3), 46vw);
+  margin-inline: clamp(var(--s-4), 2vw, var(--s-8));
+}
+
+/* ---------- ตัวแผง ---------- */
+.reel-shot {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg-sunken);
+  box-shadow: var(--shadow-lg);
+}
+.reel-shot img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  /* แผงที่ยังไม่ถึงกลางจอถูกหรี่ไว้ ให้ตารู้ว่าอันไหนคือ "อันที่กำลังดูอยู่"
+     --reel-focus เขียนโดย reel.js เป็น 0→1 ตามระยะห่างจากกลางจอ */
+  filter: saturate(calc(.25 + var(--reel-focus, 1) * .75));
+}
+
+.reel-no {
+  position: absolute;
+  top: var(--s-3); left: var(--s-3);
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track-label);
+  padding: 3px var(--s-2);
+  background: var(--bg);
+  border: var(--bw) solid var(--line);
+  color: var(--ink-soft);
+}
+
+.reel-body { display: flex; flex-direction: column; gap: var(--s-2); }
+
+.reel-title {
+  font-size: clamp(1.25rem, .8rem + 1.4vw, 2rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: var(--track-h);
+  text-wrap: balance;
+}
+
+/* รางวัลกับปีต้องอยู่บนทุกแผง ด้วยเหตุผลเดียวกับดัชนีบรรทัด:
+   เว็บนี้ใช้ยื่นเข้ามหาวิทยาลัย กรรมการต้องเห็นผลลัพธ์โดยไม่ต้องกดเข้าไปดู
+   (คำเตือนเต็มอยู่ที่หัว renderProjectIndex ใน js/modules/render.js) */
+.reel-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--t-small);
+}
+.reel-meta b { color: var(--accent-ink); font-weight: 500; }
+.reel-meta span {
+  font-family: var(--font-mono);
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+}
+
+/* ---------- รางบอกตำแหน่ง ---------- */
+.reel-rail {
+  max-width: var(--w-content);
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--pad-x);
+}
+.reel-rail i {
+  display: block;
+  height: var(--bw);
+  background: var(--line);
+  position: relative;
+}
+.reel-rail i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: left center;
+  /* --reel-p เขียนโดย reel.js เป็น 0→1 — scale ไม่ใช่ width เพราะอยู่บน
+     compositor ล้วน เหมือน .progress-bar ใน components.css */
+  scale: var(--reel-p, 0) 1;
+}
+
+/* ตาข่ายนิรภัย: ถ้า JS ตาย แถบเลื่อนแนวนอนยังใช้ได้ แต่รางจะไม่มีวันขยับ
+   จึงซ่อนทิ้งแทนที่จะปล่อยให้เห็นเส้นที่ไม่เคยเปลี่ยน */
+html.no-js .reel-rail { display: none; }

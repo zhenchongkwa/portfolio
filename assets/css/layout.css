@@ -1,0 +1,247 @@
+/* ============================================================================
+   layout.css — โครงหน้า: container, section, กริด
+
+   แยกจาก components.css เพราะของในนี้ไม่มีหน้าตาของตัวเอง มีแต่ตำแหน่งและระยะ
+   ถ้า element ไหนมีสี ขอบ หรือเงา แปลว่ามันควรอยู่ components.css
+   ========================================================================= */
+
+/* ---------- container ----------
+   ทุกอย่างในเว็บอยู่ในสามความกว้างนี้เท่านั้น
+   .container คือค่าเริ่มต้น (1024px แบบ Linear), .container-wide สำหรับกริดผลงาน
+   z-index ต้องมี เพราะ body::before (กริดพื้นหลัง) อยู่ชั้น 0 */
+.container,
+.container-wide {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--pad-x);
+  position: relative;
+  z-index: var(--z-content);
+}
+.container      { max-width: var(--w-content); }
+.container-wide { max-width: var(--w-wide); }
+
+/* ---------- section ----------
+   ระยะห่างอยู่ที่ padding ของ section ไม่ใช่ margin ของหัวข้อข้างใน
+   เพราะ margin จะยุบรวมกัน (margin collapse) แล้วคำนวณระยะจริงไม่ได้ */
+.section {
+  position: relative;
+  padding-block: var(--gap-section);
+}
+
+/* section ที่ต้องมีเส้นคั่นด้านบน — ใช้ ::before แทน border-top
+   เพราะต้องการให้เส้นจางหายไปที่ปลายทั้งสองข้าง ซึ่ง border ทำไม่ได้ */
+/* ---------- กรอบพาเนลคอมิก ----------
+   เดิมเป็นเส้นคั่นบนสุดเส้นเดียวหนา 1px ตอนนี้เป็นกรอบรอบทั้งส่วน มุมขวาบนหักเฉียง
+   เหมือนช่องในหน้าหนังสือการ์ตูน
+
+   ⚠ ตั้งใจให้เบา ไม่ใช่กรอบหนาทึบ
+   เจ้าของเคยบอกว่าเลย์เอาต์เดิมดูแย่เพราะ "ทุกอย่างถูกใส่กล่อง" ซึ่งจริง —
+   ตอนนั้นทุกก้อนเนื้อหา (.plate, .card, .feature, หัวข้อ) ต่างมีกรอบของตัวเอง
+   หน้าจึงเป็นกำแพงการ์ดซ้อนกัน
+
+   กรอบนี้ต่างออกไปเพราะอยู่ระดับ "ทั้งส่วน" ไม่ใช่ระดับก้อนเนื้อหา ทั้งหน้าจึงมี
+   ไม่กี่กรอบที่ทำหน้าที่แบ่งบท ไม่ใช่หลายสิบกรอบที่แข่งกันเรียกร้องความสนใจ
+   ใช้ --line (จาง 14%) ไม่ใช่ --line-strong และไม่มีพื้นทึบ จึงไม่บังรูปทรงลอย
+   กับพื้นหลัง canvas ที่อยู่ข้างหลัง */
+.section--ruled {
+  --panel-notch: clamp(14px, 3vw, 32px);
+}
+
+.section--ruled::before {
+  content: "";
+  position: absolute;
+  /* เว้นซ้าย-ขวาเท่า --pad-x เพื่อให้กรอบตรงแนวกับขอบเนื้อหาใน container พอดี
+     ถ้าใช้ inset: 0 กรอบจะชิดขอบจอแล้วดูเหมือนขอบหน้าต่างเบราว์เซอร์ ไม่ใช่พาเนล */
+  inset: 0 var(--pad-x);
+  border: var(--bw) solid var(--line);
+  pointer-events: none;
+
+  /* มุมขวาบนหักเฉียง — เครื่องหมายการค้าของช่องคอมิกที่ทำให้กรอบสี่เหลี่ยม
+     ธรรมดากลายเป็นพาเนล การตัดด้วย clip-path ตัดเส้นขอบไปด้วย จึงได้รอยตัด
+     ที่ "เปิด" ตรงมุมพอดี ซึ่งเป็นผลที่ต้องการ */
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--panel-notch)) 0,
+    100% var(--panel-notch),
+    100% 100%,
+    0 100%
+  );
+}
+
+/* ============================================================================
+   .plate ถูกลบทิ้งแล้ว — บันทึกไว้กันคนกลับมาใส่ใหม่
+
+   มันเคยเป็นแผ่นทึบมีขอบและเงา ห่อย่อหน้าที่ไม่มีภาชนะของตัวเอง
+   เหตุผลที่มันเกิด: สมัยที่เว็บนี้ยังมีฉาก 3D (WebGL) เป็นพื้นหลัง ตัวหนังสือที่
+   นั่งบนพื้นหลังตรงๆ อ่านไม่ออกเวลาแขนกลสีขาวเลื่อนมาอยู่ข้างหลัง — วัดแล้วเหลือ 1.19:1
+
+   ฉาก 3D ถูกถอดออกไปนานแล้ว แผ่นนี้จึงไม่เหลือหน้าที่ แต่ยังค้างอยู่จนกลายเป็น
+   ปัญหาเสียเอง: พอธีมเปลี่ยนเป็นคอมิก ขอบจาก 1px/8% กลายเป็น 2px/14% บวกเงาแข็ง
+   ทุกก้อนเนื้อหาในหน้าจึงกลายเป็น "การ์ด" ซ้อนกันเป็นกำแพง
+
+   หลักที่ใช้แทน: เนื้อหานั่งบนผืนผ้าใบตรงๆ แล้วใช้ "ที่ว่างกับขนาดตัวอักษร"
+   เป็นตัวแบ่งกลุ่มแทนเส้นขอบ — ขอบและเงาเก็บไว้ให้เฉพาะของที่กดได้เท่านั้น
+   ========================================================================= */
+
+/* ---------- หัว section ----------
+   eyebrow → หัวข้อ → คำอธิบาย เรียงกันแบบนี้ทุก section
+
+   ไม่ใช่กล่องอีกต่อไป เหลือเส้นบางเส้นเดียวด้านบนเป็นตัวบอกว่า "ส่วนใหม่เริ่มตรงนี้"
+   เส้นเดียวทำงานได้เท่ากรอบสี่ด้าน แต่ไม่ไปแย่งความสนใจจากหัวข้อ */
+.section-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  margin-bottom: clamp(var(--s-12), 7vw, var(--s-24));
+  max-width: 100%;
+  padding-top: var(--s-6);
+  border-top: var(--bw) solid var(--line);
+}
+.section-head--center {
+  align-items: center;
+  text-align: center;
+}
+.section-head h2 { font-size: var(--t-h2); }
+.section-head p {
+  max-width: var(--w-text);
+  color: var(--ink-soft);
+}
+.section-head--center p { margin-inline: auto; }
+
+/* ---------- แสงแวดล้อมประจำ section ----------
+   วางเป็นลูกตัวแรกของ section ที่ต้องการ ไม่ใช่ ::before ของตัว section เอง
+   เพราะบาง section ใช้ ::before ไปกับเส้นคั่นแล้ว
+   position:absolute + inset ติดลบ ทำให้แสงล้นออกนอกขอบ section ได้ */
+.glow {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(20px);
+}
+.glow--accent { background: var(--glow-accent); }
+.glow--warm   { background: var(--glow-warm); }
+
+/* ============================================================================
+   กริด 12 คอลัมน์สำหรับจัดวางแบบไม่สมมาตร
+
+   ทำไมต้องมีทั้งที่มี .grid--N อยู่แล้ว
+   ---------------------------------------------------------------------------
+   .grid--N ใช้ auto-fit ซึ่งแบ่งช่องเท่ากันหมดและเรียงจากซ้ายเสมอ
+   ผลคือทุก section หน้าตาเหมือนกัน: หัวข้อชิดซ้าย เนื้อหาเต็มความกว้าง
+   ตาไล่ลงมาแล้วไม่มีอะไรสะดุด หน้าจึงดูเป็น "เอกสาร" ไม่ใช่ "งานออกแบบ"
+
+   กริดนี้ให้เลือกได้ว่าจะให้อะไรเริ่มคอลัมน์ไหน กว้างกี่คอลัมน์ — ที่ว่างที่เหลือ
+   ไม่ใช่ที่ว่างเปล่า แต่เป็นส่วนหนึ่งของการจัดวาง
+
+   ใช้ grid-column ตรงๆ ไม่ใช่ subgrid เพราะ subgrid ยังไม่รองรับกว้างพอ
+   และของที่ต้องการทำได้ด้วยวิธีธรรมดาอยู่แล้ว
+   ========================================================================= */
+.ed {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(var(--s-5), 2.5vw, var(--s-10)) clamp(var(--s-4), 2vw, var(--s-8));
+}
+@media (min-width: 60rem) {
+  .ed { grid-template-columns: repeat(12, 1fr); }
+
+  /* ตัวช่วยที่ใช้จริงเท่านั้น — ไม่ทำครบ 12×12 เพราะจะกลายเป็นเฟรมเวิร์ก
+     ที่ไม่มีใครอ่านออกว่าอันไหนถูกใช้จริง */
+  .ed-1-5   { grid-column: 1 / 6; }
+  .ed-1-7   { grid-column: 1 / 8; }
+  .ed-2-8   { grid-column: 2 / 9; }
+  .ed-7-13  { grid-column: 7 / 13; }
+  .ed-8-13  { grid-column: 8 / 13; }
+  .ed-full  { grid-column: 1 / -1; }
+}
+
+/* ---------- กริดพื้นฐาน ----------
+   auto-fit + minmax คือวิธีทำกริด responsive โดยไม่ต้องเขียน media query เลย
+   ตัวเลข min คือ "การ์ดแคบกว่านี้แล้วอ่านไม่รู้เรื่อง" */
+.grid       { display: grid; gap: var(--s-5); }
+.grid--2    { grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+.grid--3    { grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+.grid--tech { grid-template-columns: repeat(auto-fit, minmax(min(50% - .625rem, 8.5rem), 1fr)); }
+
+/* ---------- สองคอลัมน์แบบเนื้อหา + สื่อ ----------
+   ใช้ในหน้า about และหน้า case study
+   สลับที่ 62rem ไม่ใช่ 768px เพราะจุดที่พังจริงคือตอนคอลัมน์ข้อความแคบกว่า ~30rem */
+.split {
+  display: grid;
+  gap: clamp(var(--s-8), 4vw, var(--s-16));
+  align-items: center;
+}
+@media (min-width: 62rem) {
+  .split            { grid-template-columns: 1fr 1fr; }
+  .split--text-lead { grid-template-columns: 1.15fr .85fr; }
+  .split--media-lead{ grid-template-columns: .85fr 1.15fr; }
+  .split--top       { align-items: start; }
+}
+
+/* ---------- แถวจัดของ ---------- */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+.row--tight   { gap: var(--s-2); }
+.row--center  { justify-content: center; }
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  align-items: flex-start;
+}
+.stack--center { align-items: center; text-align: center; }
+
+/* ---------- footer ---------- */
+.site-footer {
+  position: relative;
+  z-index: var(--z-content);
+  border-top: var(--bw) solid var(--line);
+  /* ทึบเพราะแบกลิงก์กับข้อความลิขสิทธิ์อยู่บนฉาก 3D */
+  background:
+    linear-gradient(90deg, var(--accent) 0 6px, transparent 6px),
+    var(--halftone),
+    var(--surface);
+  background-size: auto, var(--halftone-size) var(--halftone-size), auto;
+  padding-block: var(--s-16) var(--s-10);
+  margin-top: var(--gap-section);
+}
+.footer-grid {
+  display: grid;
+  gap: var(--s-10);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  margin-bottom: var(--s-12);
+}
+.footer-brand { grid-column: 1 / -1; }
+@media (min-width: 48rem) {
+  .footer-grid  { grid-template-columns: 1.6fr 1fr 1fr 1fr; }
+  .footer-brand { grid-column: auto; }
+}
+.footer-col h4 {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  margin-bottom: var(--s-4);
+}
+.footer-col ul { display: flex; flex-direction: column; gap: var(--s-3); }
+.footer-col a  { color: var(--ink-soft); font-size: var(--t-small); }
+.footer-col a:hover { color: var(--ink); }
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--s-8);
+  border-top: var(--bw) solid var(--line-soft);
+  font-size: var(--t-tiny);
+  color: var(--ink-faint);
+}
