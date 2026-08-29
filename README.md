@@ -30,7 +30,7 @@
 const SITE = {
   name:   "zhenchong",          // ← เปลี่ยนเป็นชื่อจริงที่อยากให้แสดง
   email:  "lpk37943@loeipit.ac.th",
-  origin: "https://lpk37943-cyber.github.io/portfolio",
+  origin: "https://zhenchongkwa.github.io/portfolio",
   socials: [ /* ใส่ลิงก์จริง ตัวที่เป็น "#" จะถูกซ่อนอัตโนมัติ */ ],
 };
 ```
@@ -38,7 +38,7 @@ const SITE = {
 อีเมลจะเปลี่ยนตามทุกหน้าเอง เพราะ HTML ใช้ `data-site-email` เป็นที่วาง
 ส่วนชื่อ "zhen chong" ใน nav กับ footer เขียนไว้ใน HTML ตรงๆ ถ้าจะเปลี่ยนต้องค้นแทนทุกหน้า
 
-**2. ที่อยู่เว็บ** → ค้นหา `lpk37943-cyber.github.io/portfolio` ในไฟล์ `.html` ทุกไฟล์
+**2. ที่อยู่เว็บ** → ค้นหา `zhenchongkwa.github.io/portfolio` ในไฟล์ `.html` ทุกไฟล์
 แล้วแทนด้วยโดเมนจริง จำเป็นเพราะ `og:image` **ต้องเป็น URL เต็มเสมอ** —
 ตัวขูดข้อมูลของ LINE/Facebook ไม่ได้เปิดหน้าเว็บ มันแค่ดึง HTML มาอ่าน `<head>`
 จึงอ่าน path แบบสัมพัทธ์ไม่ออก อย่าลืมแก้ `sitemap.xml` กับ `robots.txt` ด้วย
@@ -495,7 +495,7 @@ git init
 git add .
 git commit -m "portfolio"
 git branch -M main
-git remote add origin https://github.com/lpk37943-cyber/portfolio.git
+git remote add origin https://github.com/zhenchongkwa/portfolio.git
 git push -u origin main
 ```
 
@@ -518,7 +518,7 @@ matters — `icons.js` and `data/projects.js` first, `main.js` last.
 **Before publishing, change three things:**
 
 1. Name, email and social links — `assets/js/data/projects.js`, the `SITE` object
-2. Site origin — search every `.html` for `lpk37943-cyber.github.io/portfolio`
+2. Site origin — search every `.html` for `zhenchongkwa.github.io/portfolio`
    (`og:image` must be an absolute URL; social scrapers don't run JS or resolve
    relative paths), plus `sitemap.xml` and `robots.txt`
 3. Images — see [`assets/img/README.md`](assets/img/README.md). Every slot currently

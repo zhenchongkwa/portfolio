@@ -171,7 +171,7 @@ const PROJECTS = [
            "และพบว่าปัญหาที่ใช้เวลานานที่สุดไม่ใช่ตรรกะคณิตศาสตร์ แต่เป็นการทำให้สีตัวหนังสือ" +
            "อ่านออกบนพื้นไล่สี" },
     ],
-    links: { live: "https://lpk37943-cyber.github.io/interactive-math/", code: null },
+    links: { live: "https://zhenchongkwa.github.io/interactive-math/", code: null },
   },
 
   {
@@ -324,11 +324,11 @@ const TOOLS = [
 const SITE = {
   name:    "zhenchong",
   fullname:"เจิน ชง กวา",
-  handle:  "lpk37943-cyber",
+  handle:  "zhenchongkwa",
   school:  "โรงเรียนเลยพิทยาคม จังหวัดเลย",
   role:    "Student Developer",
   email:   "lpk37943@loeipit.ac.th",
-  origin:  "https://lpk37943-cyber.github.io/portfolio",
+  origin:  "https://zhenchongkwa.github.io/portfolio",
 
   /* รูปเม็ดจุดที่เป็นฉากหลังครึ่งขวาของหน้าจอแรก
      ที่อยู่นับจาก assets/img/ — เขียน "work/ชื่อไฟล์.jpg" ก็ได้ถ้าจะใช้รูปผลงาน
@@ -341,7 +341,7 @@ const SITE = {
   heroShot: "hero-bg.jpg",
 
   socials: [
-    { name: "GitHub", handle: "@lpk37943-cyber",         url: "https://github.com/lpk37943-cyber", icon: "github" },
+    { name: "GitHub", handle: "@zhenchongkwa",         url: "https://github.com/zhenchongkwa", icon: "github" },
     { name: "Email",  handle: "lpk37943@loeipit.ac.th",  url: "mailto:lpk37943@loeipit.ac.th",     icon: "mail"   },
   ],
   stats: [
