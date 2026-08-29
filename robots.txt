@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://lpk37943-cyber.github.io/portfolio/sitemap.xml
+Sitemap: https://zhenchongkwa.github.io/portfolio/sitemap.xml
