@@ -134,34 +134,134 @@ html.no-js [data-reveal] { opacity: 1; translate: 0; scale: 1; }
    เหตุผลเดียวกับ html.no-js [data-reveal] ข้างบน: หน้าว่างเปล่าเลวร้ายกว่าไม่มีแอนิเมชัน */
 html.no-js .intro { display: none; }
 
-/* ---------- สองซีกที่จะถูกฉีกออกจากกัน ----------
-   รอยต่อเป็นฟันปลา ไม่ใช่เส้นตรง เพราะกระดาษที่ฉีกด้วยมือไม่เคยขาดเป็นเส้นตรง
-   ถ้าใช้เส้นตรงจะดูเหมือน "ประตูบานเลื่อน" ไม่ใช่ "ฉีก"
+/* ---------- สองซีกที่จะถูกดาบฟันขาด ----------
+   รอยเป็น "เส้นตรงทแยง" ไม่ใช่ฟันปลาเหมือนเวอร์ชันก่อน
 
-   พิกัดฟันปลาของสองใบต้องเป็นชุดเดียวกันแต่ไล่กลับทาง ไม่งั้นจะเหลือร่องโหว่
-   หรือซ้อนทับกันตรงกลาง */
+   ของเดิมเป็นฟันปลาเพราะจำลองกระดาษที่ถูกมือฉีก ซึ่งไม่มีทางขาดตรง
+   แต่คมดาบให้ผลตรงข้าม — รอยตัดของของมีคมคือเส้นตรงสะอาด ถ้าใช้ฟันปลากับดาบ
+   ตาจะอ่านว่า "ฉีก" ไม่ใช่ "ฟัน" ทันที
+
+   แนวทแยงจาก 49.8% ที่ขอบบน ลงไป 36.8% ที่ขอบล่าง = เอียงซ้ายราว 7.4 องศา
+
+   ตัวเลขสองตัวนี้ไม่ได้เลือกมาลอยๆ — วัดจริงแล้วรอยต่อระหว่าง "zhen" กับ "chong"
+   อยู่ที่ 44.0-44.4% ของความกว้างจอ (นิ่งทุกความกว้าง เพราะ font-size เป็น vw ล้วน)
+   จึงตั้งเส้นทแยงให้พาดผ่านจุดนั้นพอดีที่ระดับกึ่งกลางความสูงของตัวหนังสือ
+   ผลคือตอนสองท่อนแยกออก จะอ่านได้ว่าเป็นคำว่า zhen กับ chong แยกจากกันจริงๆ
+   ⚠ ต้องตรงกับมุม rotate ของ .intro-katana และ .intro-slash เสมอ
+   ทั้งสามอย่างอยู่ในเฟรมเดียวกัน ถ้าไม่ตรงจะเห็นชัดว่าดาบฟันคนละแนวกับรอยแยก
+
+   สองใบใช้พิกัดชุดเดียวกันแต่ไล่กลับทาง จึงต่อกันสนิทไม่มีร่องและไม่ซ้อนทับ */
 .intro-tear {
   position: fixed;
   inset: 0;
   background: var(--bg-sunken);
   will-change: transform;
+
+  /* ระยะเวลามาจาก --ph-part ที่ fx.js เขียนลงมา ไม่ใช่ค่าคงที่ในไฟล์นี้
+
+     ⚠ ไม่มี opacity ใน transition แล้ว ต่างจากตอนที่ยังไม่มีชุดฟันรัว
+     ตอนนั้นสองซีกต้องจางหายเพราะมันคือจุดจบของฉาก แต่ตอนนี้มันแค่ "แยกออกพอ
+     ให้เห็นว่าขาด" แล้วรอถูกฟันรัวต่อ ถ้าจางไปก่อนจะไม่เหลืออะไรให้แตก */
   transition:
-    translate var(--dur-tear) var(--ease-out),
-    rotate    var(--dur-tear) var(--ease-out),
-    opacity   var(--dur-tear) var(--ease);
+    translate var(--ph-part, 460ms) var(--ease-out),
+    rotate    var(--ph-part, 460ms) var(--ease-out),
+    background-color var(--ph-jhold, 220ms) linear;
 }
 
-.intro-tear--l {
-  clip-path: polygon(0 0, 52% 0, 47% 9%, 53% 18%, 46% 27%, 52% 36%, 45% 45%,
-                     51% 54%, 46% 63%, 53% 72%, 47% 81%, 52% 90%, 48% 100%, 0 100%);
+.intro-tear--l { clip-path: polygon(0 0, var(--cut-top, 49.8%) 0, var(--cut-bot, 36.8%) 100%, 0 100%); }
+.intro-tear--r { clip-path: polygon(var(--cut-top, 49.8%) 0, 100% 0, 100% 100%, var(--cut-bot, 36.8%) 100%); }
+
+/* ---------- สองท่อนเลื่อนแยกออกจากกัน ----------
+   ผูกกับ data-phase="part" ไม่ใช่ data-done เพราะสองอย่างนี้เกิดคนละเวลา
+   data-done ถูกตั้งพร้อมกันเพื่อปลดล็อกให้กดหน้าเว็บข้างหลังได้ แต่ถ้าวันหลัง
+   ใครย้ายจังหวะใดจังหวะหนึ่ง มันจะไม่ลากอีกอย่างไปด้วย
+
+   ทิศแยกต้อง "ตั้งฉากกับรอยฟัน" ไม่ใช่ซ้าย-ขวาตรงๆ ของที่ถูกฟันขาดจะเลื่อน
+   ตามแนวที่คมดาบดันมันไป ซึ่งตั้งฉากกับรอยตัดเสมอ
+
+   ทั้งสองท่อน**ไหลลง**ด้วย (ค่า Y เป็นบวกทั้งคู่) เพราะของที่ถูกฟันขาดไม่ลอย
+   ค้างกลางอากาศ — จุดนี้คือสิ่งที่ทำให้มันอ่านเป็นไม้ไผ่ที่ถูกฟันแล้วล้ม
+   ไม่ใช่ประตูบานเลื่อนสองบานที่เปิดออก
+
+   ระยะ 82% ไกลกว่าเดิม (62%) เพื่อให้เลื่อนพ้นจอจริงก่อนจะจาง */
+.intro[data-phase="part"]  .intro-tear--l,
+.intro[data-phase="judge"] .intro-tear--l { translate: -9% 3%; rotate: -1.5deg; }
+.intro[data-phase="part"]  .intro-tear--r,
+.intro[data-phase="judge"] .intro-tear--r { translate:  9% 3%; rotate:  1.5deg; }
+
+/* ============================================================================
+   Judgement Cut — ฟันรัวจนจอแตกเป็นเสี้ยวแล้วกระจาย
+
+   ตอนถึงเฟสนี้ ซีกทั้งสองต้องหยุดแสดงเนื้อของตัวเองแล้วปล่อยให้เสี้ยวเป็นคนแสดงแทน
+   ไม่งั้นจะเห็นทั้งของเดิมที่ยังไม่แตกกับเสี้ยวที่แตกแล้วซ้อนกันอยู่
+   ========================================================================= */
+.intro[data-phase="judge"] .intro-tear { background: transparent; }
+.intro[data-phase="judge"] .intro-tear > [data-intro-stage] { opacity: 0; }
+
+.intro-shards { position: absolute; inset: 0; }
+
+/* เสี้ยวแต่ละชิ้นคือสำเนาของฉากทั้งใบที่ถูก clip เหลือแค่แฉกของตัวเอง
+   clip ของซีก (ทแยง) กับ clip ของเสี้ยว (แฉก) ตัดกันเองโดยอัตโนมัติ
+   เพราะเสี้ยวเป็นลูกของซีก — ไม่ต้องคำนวณรูปที่ตัดกันแล้วเอง */
+.intro-shard {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--bg-sunken);
+  will-change: transform, opacity;
 }
-.intro-tear--r {
-  clip-path: polygon(52% 0, 100% 0, 100% 100%, 48% 100%, 52% 90%, 47% 81%, 53% 72%,
-                     46% 63%, 51% 54%, 45% 45%, 52% 36%, 46% 27%, 53% 18%, 47% 9%);
+.intro[data-phase="judge"] .intro-shard {
+  /* ⚠ ห้ามใช้ --ease-out ของโปรเจกต์ตรงนี้
+
+     มันคือ cubic-bezier(.16, 1, .3, 1) ซึ่งพุ่งแรงมากช่วงต้น — วัดจริงแล้ว
+     ใช้เวลาไป 9% ได้ระยะไปแล้ว 35% ผลคือเสี้ยวกระจายหายไปก่อนที่เส้นฟันรัว
+     จะวาบครบด้วยซ้ำ เหลือแต่หน้าเว็บโล่งๆ ตั้งแต่เฟรมแรกของท่า
+
+     เส้นนี้ออกตัวนุ่มกว่าและหน่วงตอนท้าย เหมาะกับเศษที่ถูกแรงเหวี่ยงออกไป */
+  animation: shard-fly calc(var(--ph-judge) + var(--ph-out))
+             cubic-bezier(.3, .5, .25, 1) var(--fd, 0ms) both;
 }
 
-.intro[data-done="true"] .intro-tear--l { translate: -64% 0; rotate: -7deg; opacity: 0; }
-.intro[data-done="true"] .intro-tear--r { translate:  64% 0; rotate:  7deg; opacity: 0; }
+/* ระยะกระเด็นกับองศาหมุนมาจาก --fx/--fy/--fr ที่ shardPolys คำนวณให้ทีละชิ้น
+   จางช้ากว่าการเคลื่อน (เริ่มจางที่ 55%) เพื่อให้เห็นชิ้นส่วนบินจริงๆ ก่อนหาย */
+@keyframes shard-fly {
+  /* ค้างนิ่ง 18% แรก (ราว 230ms) ให้เส้นฟันรัววาบก่อน — ลำดับต้องเป็น
+     "ฟันแล้วค่อยแตก" ไม่ใช่ "แตกพร้อมฟัน" ไม่งั้นจะอ่านไม่ออกว่าอะไรทำให้แตก */
+  0%, 18% { translate: 0 0; rotate: 0deg; opacity: 1; }
+  72%     { opacity: 1; }
+  100%    { translate: var(--fx, 0) var(--fy, 0); rotate: var(--fr, 0deg); opacity: 0; }
+}
+
+/* ---------- เส้นฟันรัว ----------
+   ยืดออกจากกึ่งกลางแทนที่จะจางเข้ามา (scale: 1 0 → 1 1) เพราะรอยฟันเกิดจาก
+   คมที่ลากผ่าน ไม่ใช่แสงที่ค่อยๆ สว่างขึ้นอยู่กับที่ */
+.intro-jline {
+  position: fixed;
+  left: var(--cut-x, 43.3%);
+  top: 50%;
+  width: 3px;
+  height: 175vh;
+  z-index: 4;
+  /* เรียวปลายแบบเดียวกับเส้นรอยฟันหลัก — ชุดฟันรัวต้องอ่านเป็นของตระกูลเดียวกัน
+     ถ้าเส้นหลักเรียวแต่เส้นรัวเป็นแท่งทึบ จะดูเหมือนเอฟเฟกต์คนละชุดมาชนกัน */
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    var(--accent-bright) 14%,
+    #fff 47%, #fff 53%,
+    var(--accent-bright) 86%,
+    transparent 100%);
+  filter: drop-shadow(0 0 9px var(--accent-bright)) drop-shadow(0 0 22px var(--accent-bright));
+  transform: translate(-50%, -50%) rotate(calc(var(--cut-deg, 11.85deg) + var(--ja, 0deg)));
+  opacity: 0;
+}
+.intro[data-phase="judge"] .intro-jline {
+  animation: jline calc(var(--ph-judge) * .5) var(--ease-out) var(--jd, 0ms) forwards;
+}
+@keyframes jline {
+  0%   { opacity: 0; scale: 1 .04; }
+  20%  { opacity: 1; scale: 1 1; }
+  100% { opacity: 0; scale: 1 1; }
+}
 
 /* ---------- เนื้อฉาก ----------
    ต้องเป็น absolute ไม่ใช่ fixed — ถึงจะอยู่ในกรอบที่เต็มจอเหมือนกันก็ตาม
@@ -181,32 +281,158 @@ html.no-js .intro { display: none; }
   padding-inline: var(--pad-x);
 }
 
-/* ---------- ใยแมงมุม ----------
-   เส้นบางมาก (0.9 ใน viewBox 200) เพราะใยจริงบางจนเกือบมองไม่เห็น
-   ถ้าหนากว่านี้จะกลายเป็นลายตารางมากกว่าใย */
-.intro-web {
-  width: clamp(150px, 32vmin, 260px);
-  height: auto;
-  stroke-width: .9;
-  color: var(--accent);
+/* ============================================================================
+   คาทานะที่ฟันจอ
+
+   ทุกค่าเวลามาจาก --ph-* ที่ initIntro ใน fx.js เขียนลงมาให้ ไฟล์นี้ไม่มีตัวเลข
+   เวลาของตัวเองเลยแม้แต่ค่าเดียว — แก้จังหวะที่ PH ใน fx.js ที่เดียวจบ
+
+   มุม +7.4deg มาจากแนวรอยฟันที่ clip-path ของ .intro-tear ใช้
+
+   ⚠ เครื่องหมายต้องเป็นบวก ห้ามเป็นลบ — เคยใส่ -7.4deg แล้วดาบฟันสวนทางกับ
+   รอยที่จอแยกจริง เห็นชัดมากเพราะทั้งสองอยู่ในเฟรมเดียวกัน
+
+   เหตุผล: rotate ของ CSS นับบวก = ตามเข็มนาฬิกา (แกน y ชี้ลง) จุดที่อยู่
+   "ใต้จุดหมุน" เมื่อหมุนบวกจะเลื่อนไปทางซ้าย ซึ่งตรงกับรอยตัดที่ x ลดลง
+   เมื่อ y เพิ่มขึ้น (49.8% ที่ขอบบน → 36.8% ที่ขอบล่าง)
+   ถ้าใส่ลบ ปลายดาบจะเอียงไปทางขวาแทน = คนละฝั่งกับรอยตัด
+   ⚠ ถ้าแก้มุมตรงนี้ ต้องแก้ clip-path ทั้งสองใบกับ .intro-slash ให้ตรงกันด้วย
+   ทั้งสามอยู่ในเฟรมเดียวกัน ถ้าไม่ตรงจะเห็นชัดว่าดาบฟันคนละแนวกับรอยที่จอแยกจริง
+   ========================================================================= */
+
+/* ⚠ ต้องใช้ transform ไม่ใช่คุณสมบัติ rotate/translate แยก
+   เพราะการฟันคือ "เลื่อนไปตามแกนของใบมีด" ซึ่งต้องหมุนก่อนแล้วค่อยเลื่อน
+   คุณสมบัติ translate/rotate แยกกันของ CSS บังคับลำดับเป็น translate ก่อนเสมอ
+   ผลคือดาบจะเลื่อนตรงลงล่างแล้วค่อยหมุน ซึ่งไม่ใช่การฟัน
+   ส่วน transform เรียงตามที่เขียน จึงได้ rotate → translateY ตามต้องการ */
+.intro-katana {
+  position: fixed;
+  left: var(--cut-x, 43.3%);
+  top: 50%;
+  height: 132vh;
+  width: auto;
+  z-index: 2;
+  color: var(--ink);
+  opacity: 0;
+  /* เรืองรอบใบมีด — ของที่เคลื่อนเร็วมากในเฟรมเดียวต้องมีแสงช่วย ไม่งั้นตาอ่านเป็น
+     ภาพนิ่งที่กระโดดตำแหน่ง มากกว่าของที่กำลังเคลื่อน */
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, .55));
+  transform: translate(-50%, -50%) rotate(var(--cut-deg, 11.85deg)) translateY(-125vh);
 }
 
-/* วาดตัวเอง — dasharray/dashoffset ใช้ค่า 1 ได้กับทุกเส้น เพราะ fx.js ใส่
-   pathLength="1" ให้ทุก path แล้ว (เหตุผลอยู่ที่ webSVG ใน fx.js)
-   ค่าหน่วง --d ถูกเขียนมาจาก JS ทีละเส้น จึงวาดไล่กันจากซี่ไปหาวง */
-.web-spoke,
-.web-ring {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: web-draw var(--dur-web) var(--ease-out) var(--d, 0ms) forwards;
-}
-.web-ring {
-  --dur-web: 560ms;
-  color: var(--accent-bright);
-  stroke: currentColor;
+/* เล่นเมื่อ fx.js สั่ง data-phase="cut" เท่านั้น ไม่ใช่ตั้งแต่หน้าโหลด
+   เหตุผลเต็มอยู่ที่ tear() ใน fx.js — สรุปสั้นๆ คือถ้าปล่อยให้ CSS นับเวลาเอง
+   เน็ตช้าเมื่อไหร่คาทานะจะฟันจอไปตั้งแต่ยังโหลดไม่เสร็จ */
+.intro[data-phase="cut"] .intro-katana,
+.intro[data-phase="part"] .intro-katana,
+.intro[data-phase="judge"] .intro-katana {
+  animation: katana-cut calc(var(--ph-draw) + var(--ph-poise) + var(--ph-cut)) forwards;
 }
 
-@keyframes web-draw { to { stroke-dashoffset: 0; } }
+/* ---------- จังหวะสามช่วงในแอนิเมชันเดียว ----------
+   แต่ละช่วงต้องมี easing ของตัวเอง ไม่ใช่ใช้เส้นเดียวทั้งเส้น
+   จึงประกาศ animation-timing-function ไว้ในแต่ละ keyframe
+
+     เข้ามา  ease-out แรง — พุ่งเข้ามาแล้วค่อยๆ หยุด ให้ความรู้สึกว่ามีน้ำหนัก
+     เงื้อ   ไม่ขยับเลย ความเงียบตรงนี้คือสิ่งที่ทำให้การฟันมีน้ำหนัก
+             ถ้าตัดช่วงนี้ทิ้ง มันจะกลายเป็น "ดาบบินผ่าน" ไม่ใช่ "เงื้อแล้วฟัน"
+     ฟัน    ease-in แรง — เร่งออกไป คมดาบที่เคลื่อนช้าไม่ใช่การฟัน
+
+   เปอร์เซ็นต์คิดจากผลรวม draw+poise+cut ถ้าแก้ค่า PH ใน fx.js ต้องคิดใหม่
+   ค่าปัจจุบัน 900+300+260 = 1460ms → draw จบที่ 61.6% เงื้อจบที่ 82.2% */
+@keyframes katana-cut {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--cut-deg, 11.85deg)) translateY(-125vh);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(.16, 1, .3, 1);
+  }
+  14%   { opacity: 1; }
+  61.6% {
+    transform: translate(-50%, -50%) rotate(var(--cut-deg, 11.85deg)) translateY(-92vh);
+    opacity: 1;
+    animation-timing-function: linear;
+  }
+  82.2% {
+    transform: translate(-50%, -50%) rotate(var(--cut-deg, 11.85deg)) translateY(-92vh);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(.55, 0, .95, .35);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--cut-deg, 11.85deg)) translateY(128vh);
+    opacity: 1;
+  }
+}
+
+/* ---------- เส้นรอยฟัน ----------
+   เรียวปลายและสว่างที่แกนกลาง ไม่ใช่แท่งทึบสีเดียวตลอดเส้น
+
+   รอยฟันจริงสว่างที่สุดตรงที่คมเพิ่งผ่าน แล้วจางลงไปทั้งสองปลาย
+   แท่งทึบความสว่างเท่ากันทั้งเส้นอ่านเป็น "เส้นที่ถูกวาดไว้" มากกว่า "รอยที่เพิ่งเกิด"
+   ไล่สีให้ใสที่ปลายทั้งสองและขาวจัดตรงกลางจึงเปลี่ยนความรู้สึกไปคนละเรื่อง
+
+   ค้างจางๆ ต่อไปจนถึงช่วงที่สองซีกเริ่มแยก (cut + settle + part) เพื่อให้เห็นว่า
+   แผลยังเรืองอยู่ตอนกำลังเปิดออก ไม่ใช่ดับไปแล้วค่อยแยกแบบไม่มีอะไรเชื่อมกัน */
+.intro-slash {
+  position: fixed;
+  left: var(--cut-x, 43.3%);
+  top: 50%;
+  width: 3px;
+  height: 155vh;
+  z-index: 3;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    var(--accent) 16%,
+    #fff 48%, #fff 52%,
+    var(--accent) 84%,
+    transparent 100%);
+  filter: drop-shadow(0 0 10px var(--accent)) drop-shadow(0 0 26px var(--accent));
+  transform: translate(-50%, -50%) rotate(var(--cut-deg, 11.85deg));
+  opacity: 0;
+}
+.intro[data-phase="cut"]  .intro-slash,
+.intro[data-phase="part"] .intro-slash,
+.intro[data-phase="judge"] .intro-slash {
+  animation: slash-flash calc(var(--ph-cut) + var(--ph-settle) + var(--ph-part))
+             var(--ease-out) calc(var(--ph-draw) + var(--ph-poise)) forwards;
+}
+@keyframes slash-flash {
+  0%   { opacity: 0; scale: 1 .25; }
+  12%  { opacity: 1; scale: 1 1; }
+  34%  { opacity: .55; }
+  100% { opacity: 0; }
+}
+
+/* ---------- แสงกระแทกตรงจุดที่คมโดน ----------
+   วาบสั้นมากแล้วบานออก เป็นตัวบอก "จังหวะที่โดน" ซึ่งเดิมไม่มีอะไรบอกเลย
+   ตาจับจังหวะการกระทบได้จากแสงที่บานออกจากจุดเดียว ไม่ใช่จากเส้นที่ยาวทั้งจอ
+
+   วางที่ 46% ของความสูง ไม่ใช่ 50% เพราะตัวหนังสืออยู่เหนือกึ่งกลางจอเล็กน้อย
+   (stage เรียงชื่อ → portfolio → ตัวนับ ลงมาเป็นคอลัมน์) แสงจึงต้องขยับขึ้นตาม */
+.intro-spark {
+  position: fixed;
+  left: var(--cut-x, 43.3%);
+  top: 46%;
+  width: 34vmin;
+  height: 34vmin;
+  z-index: 3;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+    #fff 0%, var(--accent-bright) 14%, var(--accent) 34%, transparent 68%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+.intro[data-phase="cut"]  .intro-spark,
+.intro[data-phase="part"] .intro-spark,
+.intro[data-phase="judge"] .intro-spark {
+  animation: spark-hit calc(var(--ph-cut) * 2.2) var(--ease-out)
+             calc(var(--ph-draw) + var(--ph-poise)) forwards;
+}
+@keyframes spark-hit {
+  0%   { opacity: 0; scale: .18; }
+  16%  { opacity: 1; scale: .85; }
+  100% { opacity: 0; scale: 1.9; }
+}
 
 /* ---------- ข้อความ ----------
    โผล่หลังใยวาดเสร็จ ไม่ใช่พร้อมกัน — ให้ตาได้ดูใยก่อนหนึ่งจังหวะ */
@@ -225,12 +451,42 @@ html.no-js .intro { display: none; }
    ⚠ ห้ามใส่ transition ให้ mask-size — ค่าถูกเขียนใหม่ทุกเฟรมอยู่แล้ว
    (กฎเดียวกับ .pindex-preview และแทร็กของ reel) */
 .intro-title {
-  --intro-dot: calc(16px - 13px * var(--intro-p, 0));
+  /* ---------- ขนาดเม็ดจุด ----------
+     ⚠ ต้องเป็น px และปลายทางห้ามต่ำกว่า ~12px
 
-  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.4rem);
+     เคยลองผูกกับ vw เพื่อให้สัดส่วนจุดต่อตัวอักษรคงที่ทุกจอ ผลคือ**ตัวหนังสือ
+     หายไปทั้งคำ** เพราะที่ปลายทางค่าออกมาราว 4.6px ซึ่งทำให้วงทึบในแต่ละเซลล์
+     เหลือรัศมีแค่ 1.4px — เล็กกว่าที่เบราว์เซอร์จะเรนเดอร์ mask ได้จริง
+     มันจึงกลายเป็นโปร่งเกือบหมดแทนที่จะเป็นทึบเกือบหมด (จอดำสนิททั้งจอ)
+
+     วัดจริงแล้ว: 30px = เม็ดจุดหยาบอ่านไม่ออก (สถานะกำลังโหลด)
+                  12px = ตัวหนังสือทึบอ่านชัด (สถานะโหลดเสร็จ)
+     ใช้ช่วงนี้ ไม่ต้องไล่ตามขนาดจอ เพราะความหยาบที่ต่างกันเล็กน้อยตามจอ
+     ยอมรับได้ แต่ตัวหนังสือหายทั้งคำยอมไม่ได้ */
+  --intro-dot: calc(34px - 22px * var(--intro-p, 0));
+
+  /* ---------- คำเดียวยาวเต็มความกว้าง ----------
+     ไม่มีช่องว่างคั่นกลางแล้ว ต่างจากรอบก่อนที่ต้องเว้นไว้ให้รอยฉีกฟันปลาลอดผ่าน
+     รอบนี้รอยฟันเป็นเส้นตรงคม การผ่ากลางตัวอักษรคือภาพที่ต้องการ ไม่ใช่ปัญหา
+
+     18vw มาจากการวัด: "zhenchong" 9 ตัว ที่ Inter น้ำหนัก 800 กว้างเฉลี่ยตัวละ
+     ราว .58em หักด้วย letter-spacing ติดลบเหลือ ~.535em รวมเป็น 4.8em
+     4.8 × 18vw ≈ 86vw ซึ่งพอดีกับพื้นที่ที่เหลือหลังหัก padding ของ stage
+     ถ้าดันเกิน 19vw คำจะเริ่มล้นขอบจอบนบางความกว้าง */
+  /* ⚠ ห้ามใส่เพดานเป็น rem — ต้องเป็น vw ล้วน
+
+     เพราะรอยตัดถูกกำหนดเป็น % ของความกว้างจอ ถ้าตัวหนังสือหยุดโตที่ค่า rem
+     เมื่อจอกว้างเกินจุดหนึ่ง ตำแหน่งรอยต่อระหว่าง zhen กับ chong จะเลื่อนไป
+     เป็น % ที่ต่างออกไป แล้วดาบจะฟันไม่ตรงรอยต่ออีกต่อไปบนจอกว้าง
+     พอเป็น vw ล้วน สัดส่วนทุกอย่างคงที่ รอยตัดชุดเดียวจึงใช้ได้ทุกความกว้าง
+
+     18vw คำนวณจาก "zhenchong" 9 ตัวที่ Inter น้ำหนัก 800 หัก letter-spacing
+     ติดลบแล้วกว้างราว 4.8em → 4.8 × 18vw ≈ 86vw พอดีกับพื้นที่หลังหัก padding */
+  font-size: 18vw;
   font-weight: 800;
-  letter-spacing: var(--track-h);
-  line-height: 1.1;
+  letter-spacing: -.045em;
+  line-height: .92;
+  white-space: nowrap;
   color: var(--ink);
   text-shadow:
     calc(var(--chroma) * -1) 0 0 var(--accent),
@@ -242,7 +498,7 @@ html.no-js .intro { display: none; }
           mask-size: var(--intro-dot) var(--intro-dot);
 
   opacity: 0;
-  animation: intro-in 460ms var(--ease-out) 380ms forwards;
+  animation: intro-in 460ms var(--ease-out) 260ms forwards;
 }
 
 /* ---------- ตัวนับความคืบหน้า ----------
