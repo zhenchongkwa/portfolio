@@ -83,14 +83,6 @@
      ============================================================ -->
 <div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
 
-<!-- เส้นลายวงจร PCB ที่ขอบซ้าย — แถบความคืบหน้าการอ่านที่มีจุดบัดกรีคั่นตามหัวข้อ
-     ตำแหน่งจุดคำนวณจากตำแหน่งจริงของแต่ละ section ในเอกสาร เส้นนี้จึงเป็น
-     "แผนที่ย่อ" ของหน้า ไม่ใช่ของตกแต่ง — รูปเส้นสร้างโดย js/modules/spine.js
-     เพราะจำนวนจุดเปลี่ยนตามหน้าและเปลี่ยนอีกทุกครั้งที่ย่อ-ขยายหน้าต่าง
-
-     ⚠ pointer-events: none ถูกตั้งไว้ใน CSS แล้ว (กฎข้อ 6) — มันสูงเต็มจอ
-     ถ้าลืม ลิงก์และปุ่มที่อยู่ใต้แถบนี้จะกดไม่ได้ทั้งแถบ -->
-<div class="spine" data-spine aria-hidden="true"></div>
 
 <!-- รูปทรงวิศวกรรมลอยเป็นฉากหลัง ลากได้ — รูปทรงถูกสร้างโดย js/modules/formes.js -->
 <div class="formes" data-formes aria-hidden="true"></div>
@@ -162,6 +154,12 @@
          ⚠ ห้ามใส่ data-par ทับ element ที่มี data-reveal (ทั้งคู่เขียน translate) -->
     <div class="glow glow--accent hero-glow-a" aria-hidden="true" data-par="0.35"></div>
     <div class="glow glow--warm hero-glow-b" aria-hidden="true" data-par="-0.25"></div>
+
+    <!-- รอยฟันค้างจากฉากเปิด — วาบครั้งเดียวตอนคิวหน้าจอแรกเริ่ม แล้วจางหาย
+         มุมกับตำแหน่งมาจาก --cut-deg / --cut-x ที่ fx.js เขียนไว้ที่ <html>
+         ซึ่งเป็นแนวที่จอแยกจริง รอยนี้จึงต่อจากคมดาบพอดีทุกสัดส่วนจอ
+         หน้าตาอยู่ที่ .hero-scar ใน pages.css · แอนิเมชันอยู่ใน motion.css -->
+    <i class="hero-scar" aria-hidden="true"></i>
     
     <!-- ==========================================================
          หน้าจอแรกแบบโปสเตอร์ — เต็มจอ ชนขอบ
@@ -213,7 +211,15 @@
          ทุกอย่างอยู่ในกล่องเดียวกับ .container ของ section อื่น (กฎข้อ 11) -->
     <div class="hero-poster" data-depth="0.18">
 
-      <span class="status-pill" data-reveal>
+      <!-- ⚠ --i ทุกตัวในหน้าจอแรกเขียนเป็น inline style โดยตั้งใจ ไม่ใช่ใน CSS
+           stagger() ใน reveal.js เช็คด้วย el.style.getPropertyValue("--i")
+           ซึ่งอ่านเฉพาะ inline — ถ้าเขียนไว้ในไฟล์ CSS มันจะมองไม่เห็นแล้วทับ
+           ด้วยเลขไล่อัตโนมัติตามลำดับ DOM ทำให้คิวที่จัดไว้เสียทั้งชุด
+
+           ลำดับที่ตั้งไว้ไล่ตามที่ตาอ่านหน้าแนะนำตัวจริงๆ ไม่ใช่ตามลำดับใน DOM:
+           ภาพ → ชื่อ → ตัวตน → รายละเอียด → ทางไปต่อ
+           ค่าจริงของแต่ละขั้นอยู่ที่ --enter-* ใน tokens.css -->
+      <span class="status-pill" data-reveal style="--i:0">
         <span class="status-dot"></span>
         Available for work
       </span>
@@ -225,10 +231,15 @@
         <span class="hero-name-dim">portfolio</span>
       </h1>
 
-      <div class="hero-bar" data-reveal>
-        <p class="hero-role caret">student developer</p>
+      <!-- .hero-bar ไม่ถือ data-reveal เองแล้ว — ย้ายไปไว้ที่ลูกทีละตัว
 
-        <p class="hero-lede">
+           ของเดิมทั้งก้อนเป็น [data-reveal] ตัวเดียว บทบาท · ย่อหน้า · ชิป ·
+           ลิงก์ · บรรทัดรางวัล จึงโผล่พร้อมกันหมดในจังหวะเดียว ซึ่งอ่านเป็น
+           "กล่องข้อความปรากฏ" ไม่ใช่ "คนคนหนึ่งกำลังแนะนำตัว" -->
+      <div class="hero-bar">
+        <p class="hero-role caret" data-reveal style="--i:1">student developer</p>
+
+        <p class="hero-lede" data-reveal style="--i:2">
           กระผมนายเจิน ชง กวา จากโรงเรียนเลยพิทยาคม แผนการเรียนศิลป์-เทคโนโลยี
           สนใจการทำฮาร์ดแวร์และซอฟต์แวร์ จึงตั้งใจเรียนต่อคณะวิศวกรรมคอมพิวเตอร์
         </p>
@@ -237,19 +248,19 @@
              มันจึงเกาะท้ายแถวชิปเสมอ ไม่ว่าคอลัมน์จะสูงเท่าไหร่
              จอแคบ = ไหลต่อท้ายชิปตามปกติ · จอกว้าง = ลอยออกไปทางขวาของแถว -->
         <div class="row row--tight hero-chips">
-          <span class="chip">Electronics</span>
-          <span class="chip">Developer</span>
-          <span class="chip">Project Manager</span>
-          <button type="button" class="comic-bubble comic-bubble--cyan" data-pop data-sense aria-label="Click me">CLICK<br>ME!</button>
+          <span class="chip" data-reveal style="--i:3">Electronics</span>
+          <span class="chip" data-reveal style="--i:4">Developer</span>
+          <span class="chip" data-reveal style="--i:5">Project Manager</span>
+          <button type="button" class="comic-bubble comic-bubble--cyan" data-reveal style="--i:6" data-pop data-sense aria-label="Click me">CLICK<br>ME!</button>
         </div>
 
         <!-- ลิงก์ข้อความแทนปุ่มสองปุ่ม — หน้าจอแรกมีทางเดินทางเดียวคือ "เลื่อนลง"
              ปุ่มทึบสองปุ่มเรียกความสนใจแรงเกินกว่าที่ควรได้ในจอที่เนื้อหาสงบแบบนี้ -->
-        <p class="hero-more mono-note">
+        <p class="hero-more mono-note" data-reveal style="--i:8">
           <a href="#work" data-magnet data-sense><span data-icon="arrowDown"></span> ดูผลงานด้านล่าง</a>
         </p>
 
-        <p class="hero-award mono-note">
+        <p class="hero-award mono-note" data-reveal style="--i:9">
           <span data-icon="trophy"></span> รางวัลระดับประเทศ IPST AI Inventor 2569
         </p>
       </div>
@@ -257,7 +268,7 @@
       <!-- ลูกโป่ง IDEAS IN MOTION — ช่องว่างซ้ายเหนือชื่อ (เฉพาะจอกว้างมาก)
            เป็นลูกคนสุดท้ายของ .hero-poster ซึ่ง position: relative อยู่แล้ว
            จอที่ช่องซ้ายแคบเกินไป = ไหลต่อท้ายคอลัมน์ตามปกติ ไม่หลุดจอ -->
-      <button type="button" class="comic-bubble comic-bubble--red" data-pop data-sense aria-label="Ideas in motion">IDEAS<br>IN MOTION</button>
+      <button type="button" class="comic-bubble comic-bubble--red" data-reveal style="--i:10" data-pop data-sense aria-label="Ideas in motion">IDEAS<br>IN MOTION</button>
     </div>
 
     <span class="scroll-hint" aria-hidden="true">
@@ -287,7 +298,7 @@
        JavaScript ตายสนิท reel.js จะอัปเกรดเป็นโหมดตรึงให้เมื่อเครื่องไหว
        ========================================================== -->
   <section class="reel" id="reel" data-reel data-sticky
-           data-spine-label="REEL" aria-labelledby="reel-heading">
+           aria-labelledby="reel-heading">
     <div class="reel-pin">
 
       <div class="reel-head">
@@ -306,8 +317,7 @@
   <!-- ==========================================================
        ABOUT
        ========================================================== -->
-  <section class="section comic-chapter comic-chapter--about" id="about"
-           data-spine-label="ORIGIN">
+  <section class="section comic-chapter comic-chapter--about" id="about">
     <span class="chapter-mark chapter-mark--about" data-depth="0.12" aria-hidden="true">01<br>ORIGIN</span>
     <div class="container">
       <div class="split split--text-lead">
@@ -373,7 +383,7 @@
   <!-- ==========================================================
        SHOWCASE — สลับสามแท็บ
        ========================================================== -->
-  <section class="section section--ruled comic-chapter comic-chapter--work" id="work" data-spine-label="ISSUES">
+  <section class="section section--ruled comic-chapter comic-chapter--work" id="work">
     <span class="chapter-mark chapter-mark--work" data-depth="0.08" aria-hidden="true">02<br>ISSUES</span>
     <div class="container-wide">
 
@@ -427,7 +437,7 @@
   <!-- ==========================================================
        CONTACT
        ========================================================== -->
-  <section class="section section--ruled comic-chapter comic-chapter--contact" id="contact" data-spine-label="CONNECT">
+  <section class="section section--ruled comic-chapter comic-chapter--contact" id="contact">
     <span class="chapter-mark chapter-mark--contact" data-depth="0.1" aria-hidden="true">03<br>CONNECT</span>
     <div class="container">
 
@@ -616,7 +626,6 @@
      main.js จึงต้องเรียกมันด้วย PF.initReel?.() ไม่ใช่เรียกตรงๆ ตามกฎข้อ 9
      ต้องมาหลัง scenes.js เพราะใช้ PF.docTop ที่ไฟล์นั้นเป็นคนฝากไว้ -->
 <script defer src="assets/js/modules/reel.js"></script>
-<script defer src="assets/js/modules/spine.js"></script>
 <script defer src="assets/js/main.js"></script>
 </body>
 </html>

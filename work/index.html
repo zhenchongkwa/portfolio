@@ -44,10 +44,6 @@
 <div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
 
 <!-- รูปทรงวิศวกรรมลอยเป็นฉากหลัง ลากได้ — รูปทรงถูกสร้างโดย js/modules/formes.js -->
-<!-- เส้นลายวงจร PCB ที่ขอบซ้าย — แถบความคืบหน้าการอ่าน จุดบัดกรีติดไฟทีละจุดตามหัวข้อ
-     รูปเส้นสร้างโดย js/modules/spine.js เพราะจำนวนจุดต่างกันทุกหน้า
-     ⚠ pointer-events: none อยู่ใน CSS แล้ว (กฎข้อ 6) มันสูงเต็มจอ ถ้าลืมจะกินคลิกทั้งแถบ -->
-<div class="spine" data-spine aria-hidden="true"></div>
 
 <div class="formes" data-formes aria-hidden="true"></div>
 
@@ -82,7 +78,14 @@
 </header>
 
 <main id="main">
-  <section class="section" id="all-work" data-spine-label="INDEX" style="padding-top:9rem">
+  <section class="section" id="all-work" style="padding-top:9rem">
+
+    <!-- ป้ายเลขบทแบบเดียวกับหน้าแรก — หน้าตาอยู่ที่ .chapter-mark ใน pages.css
+         หน้านี้ไม่มีเลขบทเพราะมันคือ "ทุกบท" จึงใช้คำว่า ALL ISSUES
+         ให้ล้อกับ "02 ISSUES" ที่หน้าแรกใช้เรียกส่วนผลงาน
+         ⚠ ซ่อนอัตโนมัติบนจอ < 45rem — เหตุผลอยู่ที่ media query ใน pages.css -->
+    <span class="chapter-mark chapter-mark--index" aria-hidden="true">ALL<br>ISSUES</span>
+
     <div class="container-wide">
 
       <div class="section-head section-head--center">
@@ -112,7 +115,7 @@
     </div>
   </section>
 
-  <section class="section" id="cta" data-spine-label="CONTACT">
+  <section class="section" id="cta">
     <div class="container">
       <div class="cta" data-reveal="scale">
         <h2 class="gradient-text" data-split>สนใจร่วมงานกันไหม</h2>
@@ -180,7 +183,6 @@
 <script defer src="../assets/js/modules/type.js"></script>
 <script defer src="../assets/js/modules/smooth.js"></script>
 <script defer src="../assets/js/modules/scenes.js"></script>
-<script defer src="../assets/js/modules/spine.js"></script>
 <script defer src="../assets/js/main.js"></script>
 </body>
 </html>

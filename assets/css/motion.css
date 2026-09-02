@@ -102,6 +102,114 @@
 html.no-js [data-reveal] { opacity: 1; translate: 0; scale: 1; }
 
 /* ============================================================================
+   ประตูม่าน — คิวการเข้าของหน้าจอแรกหลังฉากเปิดฟันจบ
+
+   fx.js เขียน data-enter ที่ <html> เป็นสองค่า: "hold" แล้ว "go" แล้วลบทิ้ง
+   เหตุผลเต็มอยู่ที่ initIntro ใน js/modules/fx.js
+
+   ---------------------------------------------------------------------------
+   ทำไมทับแค่ "ค่าปลายทาง" ไม่ใช่ใส่ transition: none ระหว่าง hold
+
+   ถ้าตั้ง transition: none ตอน hold แล้วถอดออกตอน go เบราว์เซอร์จะเห็น
+   "ค่าเปลี่ยน" กับ "transition กลับมา" ในการคำนวณสไตล์รอบเดียวกัน ซึ่งผลลัพธ์
+   ต่างกันไปตามเบราว์เซอร์ บางตัวข้ามแอนิเมชันไปที่ค่าปลายทางเลย
+
+   วิธีนี้ปลอดภัยกว่าเพราะไม่ยุ่งกับ transition เลย: ระหว่าง hold ค่าที่คำนวณ
+   ได้ยังเป็นท่าเริ่มต้น reveal.js จะเขียน data-revealed="true" ไปก็ไม่เกิดอะไร
+   เพราะกฎข้างล่างนี้ทับอยู่ พอ hold หายไป ค่าจึงเปลี่ยนเป็นท่าปลายทาง
+   แล้ว transition เดิมที่ประกาศไว้ข้างบนทำงานตามปกติ
+   ========================================================================= */
+
+/* ---------- ตรึง ---------- */
+html[data-enter="hold"] .hero [data-reveal],
+html[data-enter="hold"] .hero-shot,
+html[data-enter="hold"] .scroll-hint { opacity: 0; }
+
+/* บัตรห้อยยกขึ้นไปพ้นขอบบนจอ รอร่วงลงมา
+   ⚠ ต้องเป็น transform ห้ามใช้ translate — .lanyard ถือ data-par="0.15"
+   ซึ่ง scenes.js เขียนลง translate ให้ทุกเฟรม ถ้าใช้ตัวเดียวกันจะแย่งกันคุมค่า
+   แล้วบัตรจะกระตุกตอนเลื่อนหน้า (กฎเดียวกับปุ่มแม่เหล็กใน fx.js) */
+html[data-enter="hold"] .lanyard { opacity: 0; transform: translateY(-42%); }
+
+/* ⚠ ต้องมี .hero คั่น ไม่ใช่เขียน html[data-enter="hold"] [data-split] .line-i เฉยๆ
+   กฎที่เผยชื่อคือ [data-split][data-split-in="true"] .line-i ซึ่งมีค่าความเฉพาะ
+   เจาะจงเท่ากันพอดี (0,3,1) การพึ่งลำดับบรรทัดว่าใครอยู่ล่างกว่าเปราะเกินไป
+   เติม .hero เข้าไปให้เป็น (0,4,1) แล้วมันชนะแน่นอนไม่ว่าไฟล์จะถูกจัดเรียงใหม่ */
+html[data-enter="hold"] .hero [data-split] .line-i { translate: 0 130%; }
+
+/* ---------- ปล่อย ----------
+
+   สองตัวนี้ต้องประกาศ transition เองเต็มรูปแบบ ไม่ใช่แค่ transition-delay
+   เพราะทั้งคู่ไม่ใช่ [data-reveal] จึงไม่มี transition ติดตัวมาให้ใช้ต่อ
+   ถ้าใส่แค่ delay มันจะกระโดดจาก 0 เป็น 1 ทันทีหลังหน่วงครบ ไม่ได้จางเข้า
+
+   ⚠ .scroll-hint ห้ามใส่ data-reveal เด็ดขาด — มันใช้ translate: -50% 0
+   จัดกึ่งกลางแนวนอนอยู่ ส่วน [data-reveal] เขียน translate: 0 14px ทับ
+   ตัวชี้จะกระเด็นไปอยู่ครึ่งขวาของจอทันที (เหตุผลเดียวกับที่ data-par
+   ห้ามอยู่ร่วมกับ data-reveal) */
+html[data-enter="go"] .hero-shot {
+  opacity: 1;
+  transition: opacity var(--dur-slower) var(--ease-out) var(--enter-shot);
+}
+html[data-enter="go"] .scroll-hint {
+  opacity: 1;
+  transition: opacity var(--dur-slower) var(--ease-out)
+              calc(var(--enter-lead) + 10 * var(--enter-step));
+}
+
+html[data-enter="go"] .lanyard {
+  opacity: 1;
+  transform: translateY(0);
+  /* สปริงที่ท้ายการร่วง — บัตรตกลงมาแล้วเด้งเกินนิดหนึ่งก่อนเข้าที่
+     ซึ่งเป็นท่าเดียวกับที่ฟิสิกส์ Verlet ใน lanyard.js ทำต่อจากนี้พอดี
+     รอยต่อระหว่าง "CSS พามาถึง" กับ "ฟิสิกส์รับช่วง" จึงไม่มีรอยสะดุด */
+  transition:
+    opacity   var(--dur-slower) var(--ease-out)    var(--enter-card),
+    transform var(--dur-slower) var(--ease-spring) var(--enter-card);
+}
+
+/* --i เขียนเป็น inline style ที่ตัว element ใน index.html
+   ค่าที่ตั้งเองจะถูก stagger() ใน reveal.js เคารพไว้ ไม่ถูกเขียนทับ */
+html[data-enter="go"] .hero [data-reveal] {
+  transition-delay: calc(var(--enter-lead) + var(--i, 0) * var(--enter-step));
+}
+
+html[data-enter="go"] .hero [data-split] .line-i {
+  transition-delay: calc(var(--enter-name) + var(--i, 0) * var(--enter-name-step));
+}
+
+/* ชื่อถือทั้ง data-split และ data-reveal — สองกลไกที่ต้องมาถึงพร้อมกัน
+
+   ถ้าปล่อยให้ opacity ของมันไปตามคิวข้อความ (--enter-lead = 340ms) บรรทัดที่
+   เริ่มเลื่อนขึ้นตั้งแต่ 120ms จะเลื่อนอยู่ในความมืดสองร้อยกว่ามิลลิวินาที
+   แล้วโผล่มากลางทาง ดึง opacity มาเริ่มพร้อมบรรทัดแรกแทน
+
+   ต้องมี [data-reveal] ในตัวเลือกด้วยเพื่อให้ค่าความเฉพาะเจาะจงเป็น (0,5,0)
+   ชนะกฎคิวข้อความข้างบนที่เป็น (0,4,0) โดยไม่ต้องพึ่งลำดับบรรทัด */
+html[data-enter="go"] .hero [data-reveal].hero-name {
+  transition-delay: var(--enter-name);
+}
+
+/* ---------- รอยฟันค้าง ----------
+   เส้นสว่างพาดหน้าจอแรกหนึ่งครั้งตอนคิวเริ่ม แล้วจางหายไปเอง
+
+   มุมของมันมาจาก --cut-deg ที่ fx.js คำนวณจากแนวที่จอแยกจริง แล้วเขียนไว้ที่
+   <html> (ไม่ใช่ที่ .intro ซึ่งถูกลบทิ้ง) รอยนี้จึงพาดตรงแนวเดียวกับที่ดาบ
+   เพิ่งฟันเป๊ะทุกสัดส่วนจอ — เป็นสิ่งที่ทำให้สองฉากอ่านเป็นเรื่องเดียวกัน
+   ไม่ใช่เอฟเฟกต์สองอันที่บังเอิญต่อกัน
+
+   เล่นครั้งเดียว (ไม่มี infinite) และ forwards ให้ค้างที่ opacity 0 ตอนจบ */
+html[data-enter="go"] .hero-scar {
+  animation: hero-scar 620ms var(--ease-out) both;
+}
+
+@keyframes hero-scar {
+  0%   { opacity: 0;   scale: 1 0; }
+  18%  { opacity: 1;   scale: 1 1; }
+  100% { opacity: 0;   scale: 1 1; }
+}
+
+/* ============================================================================
    ฉากเปิด — ใยแมงมุมวาดตัวเอง แล้วฉีกออกเป็นสองซีก
 
    ทำงานครั้งเดียวต่อ session (fx.js เก็บสถานะไว้ใน sessionStorage)
@@ -883,13 +991,21 @@ html.no-js [data-par] { scale: 1; opacity: 1; translate: 0; }
   }
   .reel-shot img { filter: none !important; }
 
-  /* เส้นวงจร — โชว์เต็มเส้นค้างไว้ ไม่ต้องวิ่งตาม scroll
-     จุดบัดกรีทุกจุดติดไฟหมด เพราะ "ยังไม่ได้อ่าน" กับ "อ่านแล้ว" เป็นข้อมูล
-     ที่สื่อด้วยการเคลื่อนไหวล้วน พอไม่มีการเคลื่อนไหวก็ไม่เหลือความหมาย */
-  .spine-live { stroke-dashoffset: 0 !important; }
-  .spine-pad  { stroke: var(--pcb-live); }
-  .spine-glow { opacity: 1; }
 
   /* ปุ่มแม่เหล็ก — คืนตำแหน่งจริง */
   [data-magnet] { transform: none !important; }
+
+  /* ประตูม่าน — คืนหน้าจอแรกให้เห็นครบทันที (กฎข้อ 7)
+
+     ปกติ initIntro ไม่เคยตั้ง data-enter เลยเมื่อผู้ใช้ปิดแอนิเมชัน เพราะมัน
+     คืนค่าออกไปตั้งแต่บรรทัดแรกพร้อมกับลบฉากเปิดทิ้ง บล็อกนี้จึงมีไว้สำหรับ
+     กรณีเดียวเท่านั้น: ผู้ใช้เปลี่ยนการตั้งค่าของเครื่อง "หลัง" หน้าโหลดไปแล้ว
+     ระหว่างที่ประตูยังตรึงอยู่ ถ้าไม่มีตัวนี้ หน้าจอแรกจะค้างล่องหนถาวร
+     เพราะ JS ไม่ได้รันซ้ำและไม่มีใครมาปล่อยประตูให้ */
+  html[data-enter] .hero [data-reveal],
+  html[data-enter] .hero-shot,
+  html[data-enter] .scroll-hint,
+  html[data-enter] .lanyard { opacity: 1 !important; transform: none !important; }
+  html[data-enter] .hero [data-split] .line-i { translate: 0 !important; }
+  .hero-scar { display: none; }
 }

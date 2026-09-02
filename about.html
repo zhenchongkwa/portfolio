@@ -44,10 +44,6 @@
 <div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
 
 <!-- รูปทรงวิศวกรรมลอยเป็นฉากหลัง ลากได้ — รูปทรงถูกสร้างโดย js/modules/formes.js -->
-<!-- เส้นลายวงจร PCB ที่ขอบซ้าย — แถบความคืบหน้าการอ่าน จุดบัดกรีติดไฟทีละจุดตามหัวข้อ
-     รูปเส้นสร้างโดย js/modules/spine.js เพราะจำนวนจุดต่างกันทุกหน้า
-     ⚠ pointer-events: none อยู่ใน CSS แล้ว (กฎข้อ 6) มันสูงเต็มจอ ถ้าลืมจะกินคลิกทั้งแถบ -->
-<div class="spine" data-spine aria-hidden="true"></div>
 
 <div class="formes" data-formes aria-hidden="true"></div>
 
@@ -84,8 +80,15 @@
 
 <main id="main">
 
-  <section class="section" id="intro" data-spine-label="INTRO" style="padding-top:9rem;position:relative;overflow:hidden">
+  <section class="section" id="intro" style="padding-top:9rem;position:relative;overflow:hidden">
     <div class="glow glow--accent" style="top:-30%;left:-10%;width:60vw;height:60vw;max-width:760px;max-height:760px" aria-hidden="true"></div>
+
+    <!-- ป้ายเลขบทแบบเดียวกับหน้าแรก — หน้าตาทั้งหมดอยู่ที่ .chapter-mark ใน pages.css
+         ใช้คำว่า BIO ไม่ใช่ ORIGIN เพราะหน้าแรกใช้ "01 ORIGIN" ไปแล้วกับ section about
+         ถ้าคำซ้ำกัน ระบบเลขจะอ่านเหมือนเป็นบทเดียวกันทั้งที่คนละหน้า
+         aria-hidden เพราะเป็นของประดับ หัวข้อจริงอยู่ใน <h1> ข้างล่าง
+         ⚠ ซ่อนอัตโนมัติบนจอ < 45rem — เหตุผลอยู่ที่ media query ใน pages.css -->
+    <span class="chapter-mark chapter-mark--bio" aria-hidden="true">00<br>BIO</span>
 
     <div class="container">
       <div class="split split--text-lead">
@@ -110,7 +113,7 @@
     </div>
   </section>
 
-  <section class="section section--ruled" id="story" data-spine-label="STORY">
+  <section class="section section--ruled" id="story">
     <div class="container">
       <div class="case-body">
 
@@ -169,7 +172,7 @@
     </div>
   </section>
 
-  <section class="section section--ruled" id="skills" data-spine-label="SKILLS">
+  <section class="section section--ruled" id="skills">
     <div class="container-wide">
       <div class="section-head section-head--center">
         <span class="eyebrow" data-scramble data-reveal>Skills</span>
@@ -180,7 +183,7 @@
     </div>
   </section>
 
-  <section class="section" id="cta" data-spine-label="CONTACT">
+  <section class="section" id="cta">
     <div class="container">
       <div class="cta" data-reveal="scale">
         <h2 class="gradient-text" data-split>อยากคุยเรื่องงานไหม</h2>
@@ -252,7 +255,6 @@
 <script defer src="assets/js/modules/type.js"></script>
 <script defer src="assets/js/modules/smooth.js"></script>
 <script defer src="assets/js/modules/scenes.js"></script>
-<script defer src="assets/js/modules/spine.js"></script>
 <script defer src="assets/js/main.js"></script>
 </body>
 </html>

@@ -484,6 +484,34 @@ kbd {
   color: var(--ink-soft);
 }
 
+/* ---------- เลขพาเนลมุมบนขวาของสื่อ ----------
+   ฟิล์มสตริปมีเลขอยู่แล้ว (.reel-no = "01 / 06") ดัชนีบรรทัดก็มี (.pindex-no = "01")
+   เหลือการ์ดที่ไม่มี ทั้งที่เป็นตัวเดียวที่โผล่ทั้งหน้าแรก หน้ารวมผลงาน
+   และผลค้นหาใน command palette — เลขจึงขาดหายเฉพาะที่ที่คนเห็นบ่อยที่สุด
+
+   อยู่มุมขวาเพราะ .card-tag (แข่งขัน/อบรม) จองมุมซ้ายไปแล้ว
+   และยืมหน้าตาจาก .card-tag ทั้งชุด (mono · --t-micro · letter-spacing เท่ากัน)
+   เพื่อให้สองมุมอ่านเป็นคู่ของกัน ไม่ใช่ป้ายสองแบบที่บังเอิญมาอยู่การ์ดเดียวกัน
+
+   ต่างกันแค่สีตัวอักษร: ป้ายหมวดเป็นข้อมูล (--ink-soft) ส่วนเลขเป็นของประดับ
+   จึงจางกว่าหนึ่งขั้น (--ink-faint) ตาจะได้ไม่สับสนว่าอันไหนต้องอ่าน */
+.card-no {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-3);
+  z-index: 2;
+  padding: 3px var(--s-2);
+  border-radius: var(--r-xs);
+  background: rgba(8, 9, 10, .72);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+  border: var(--bw) solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .08em;
+  color: var(--ink-faint);
+}
+
 /* การ์ดเด่น — ขอบไล่สีหมุนรอบตัว
    ต้องใช้ @property (motion.css) ประกาศ --angle เป็นมุมจริง
    ไม่งั้นเบราว์เซอร์จะ animate ไม่ได้เพราะมองเป็นแค่ข้อความ */
@@ -734,8 +762,7 @@ textarea.input { min-height: 130px; padding-top: var(--s-3); line-height: 1.6; }
 .stat:hover,
 .tech:hover,
 .social:hover { border-color: var(--ink); translate: 2px 2px; box-shadow: var(--shadow-sm); }
-.stat-icon,
-.feature-icon { border-radius: 0; border-color: var(--ink); background: var(--hue-motion); color: #14100c; }
+.stat-icon { border-radius: 0; border-color: var(--ink); background: var(--hue-motion); color: #14100c; }
 .stat-num { color: var(--accent-ink); font-weight: 900; text-shadow: 1px 0 0 var(--accent-bright); }
 
 .tech { background-image: var(--halftone); background-size: var(--halftone-size) var(--halftone-size); }
@@ -1341,97 +1368,18 @@ textarea.input { min-height: 130px; padding-top: var(--s-3); line-height: 1.6; }
 [data-magnet][data-magnet-on="true"] { transition: none; }
 
 /* ============================================================================
-   เส้นลายวงจร PCB ที่ขอบจอ — แถบความคืบหน้าที่พูดเรื่องเดียวกับเนื้อหา
+   เส้นลายวงจร PCB ที่ขอบซ้าย — ถอดออกแล้วทั้งชุด
 
-   มาแทนอะไร: แถบ progress เส้นตรงธรรมดาบอกได้แค่ "อ่านไปกี่เปอร์เซ็นต์"
-   เส้นนี้บอกเท่ากันแต่บอกด้วยว่า "ผ่านหัวข้อไหนมาแล้วบ้าง" — จุดบัดกรีแต่ละจุด
-   ผูกกับ section จริงในหน้า พอเลื่อนถึงจุดไหน จุดนั้นติดไฟค้างไว้
+   เคยเป็นแถบความคืบหน้าการอ่านที่ขอบซ้ายของทุกหน้า: ลายทองแดงลากลงมา
+   มีจุดบัดกรีคั่นตรงตำแหน่งของแต่ละ section แล้วติดไฟทีละจุดตามที่เลื่อนผ่าน
+   ตำแหน่งจุดคำนวณจากตำแหน่งจริงในเอกสาร มันจึงเป็นแผนที่ย่อของหน้าจริงๆ
 
-   รูปเส้นถูกสร้างด้วย JS (js/modules/spine.js) ไม่ได้เขียน path ไว้ตรงนี้
-   เพราะจำนวนจุดเปลี่ยนตามจำนวน section ของแต่ละหน้า — หน้าแรกมีสี่ หน้า
-   case study มีสอง ถ้า hardcode ไว้จะผิดทันทีที่เพิ่มหรือลบส่วนใดส่วนหนึ่ง
+   ถอดออกเพราะเจ้าของเว็บไม่ชอบหน้าตาของมัน หลังจากลองแก้รูปเส้นแล้วรอบหนึ่ง
+   ทั้งชุดที่หายไปคือ modules/spine.js · markup กับ <script> ทั้งสิบหน้า ·
+   data-spine-label ทุกตัว · token --pcb-* · บล็อกใน motion.css
 
-   ⚠ pointer-events: none บังคับ (กฎข้อ 6) — มันสูงเต็มจอ ถ้าลืมจะกินคลิก
-   ของลิงก์และปุ่มที่อยู่ใต้มันทั้งแถบ
+   ⚠ ถ้าจะเอากลับมา อย่าเขียนใหม่จากศูนย์ — กู้จาก git history แล้วอ่าน
+   หัวข้อ "เส้นลายวงจร PCB (ถอดออกแล้ว)" ใน README ก่อน เพราะมันบันทึกกับดัก
+   สองข้อที่เคยพังจริงไว้ (หัวเส้นงอกลับ กับตัวเลือกพี่น้อง ~ ที่จุดป้ายทุกใบ
+   พร้อมกัน) ทั้งคู่หาสาเหตุยากและจะพลาดซ้ำได้ง่ายมากถ้าเริ่มใหม่
    ========================================================================= */
-/* ตำแหน่งของเส้นถูกคำนวณให้อยู่ใน "ช่องว่างขอบซ้าย" ของ container พอดี
-
-   container ใช้ --pad-x = clamp(1.25rem, .5rem + 4vw, 4rem) เป็นระยะขอบ
-   ที่จุดตัด 72rem (1152px) ค่านั้นเท่ากับ 54px ส่วนกล่องเส้นกินพื้นที่
-   13px → 53px จึงพอดีเฉียดโดยไม่ทับตัวหนังสือ และกว้างขึ้นเรื่อยๆ ตามจอ
-
-   ⚠ ถ้าจะแก้ --pad-x ใน tokens.css ต้องมาดูตรงนี้ด้วย ไม่งั้นเส้นจะเลื่อน
-   ไปนั่งใต้ย่อหน้าแรกของทุกหน้าพร้อมกัน */
-.spine {
-  position: fixed;
-  inset-block: 0;
-  inset-inline-start: clamp(6px, 1.2vw, 18px);
-  z-index: var(--z-grid);
-  width: 40px;
-  pointer-events: none;
-  display: none;                 /* เปิดเฉพาะจอกว้างพอ — ดูกฎข้างล่าง */
-  color: var(--pcb-trace);
-}
-
-/* จอแคบกว่า 72rem ไม่มีที่ว่างข้างเนื้อหาให้เส้นอยู่โดยไม่ทับตัวหนังสือ
-   เพราะ --pad-x หดลงตามความกว้างจอ พอถึงมือถือมันเหลือแค่ 20px */
-@media (min-width: 72rem) {
-  .spine { display: block; }
-}
-
-.spine svg { width: 100%; height: 100%; overflow: visible; }
-
-/* เส้นทองแดงพื้นหลัง — เห็นทั้งเส้นตลอดเวลา บอกว่าหน้านี้ยาวแค่ไหน */
-.spine-trace {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: var(--pcb-w);
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-}
-
-/* เส้นที่ "วิ่งแล้ว" — ทับเส้นพื้นหลังด้วยสีสด
-   pathLength="1" ทำให้ dasharray ใช้ค่าชุดเดียวได้ไม่ว่าเส้นจริงยาวเท่าไหร่
-   (เหตุผลเต็มอยู่ที่ webSVG ใน js/modules/fx.js ซึ่งใช้เทคนิคเดียวกัน)
-   spine.js เขียน --pcb-p เป็น 0→1 ตามที่เลื่อน ที่เหลือ CSS จัดการเอง */
-.spine-live {
-  fill: none;
-  stroke: var(--pcb-live);
-  stroke-width: var(--pcb-w);
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--pcb-p, 0));
-  filter: drop-shadow(0 0 3px var(--pcb-live));
-  opacity: .9;
-}
-
-/* จุดบัดกรี — วงแหวนกลวงเหมือนรู via บนแผ่นปริ๊นต์จริง ไม่ใช่จุดทึบ */
-.spine-pad {
-  fill: var(--bg);
-  stroke: currentColor;
-  stroke-width: var(--pcb-w);
-  transition: stroke var(--dur) var(--ease), r var(--dur) var(--ease-spring);
-}
-.spine-pad[data-lit="true"] { stroke: var(--pcb-live); }
-
-/* ไฟที่จุด — element แยกเพื่อให้เรืองแสงได้โดยไม่ต้องใส่ filter ให้ตัววงแหวน
-   (filter บนวงแหวนจะทำให้เส้นขอบเบลอไปด้วย) */
-.spine-glow {
-  fill: var(--pcb-live);
-  opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease);
-}
-.spine-pad[data-lit="true"] + .spine-glow { opacity: 1; }
-
-/* ป้ายชื่อหัวข้อข้างจุด — เขียนตั้งฉากให้เหมือนซิลค์สกรีนบนแผ่นปริ๊นต์ */
-.spine-label {
-  fill: currentColor;
-  font-family: var(--font-mono);
-  font-size: 7px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity var(--dur) var(--ease), fill var(--dur) var(--ease);
-}
-.spine-pad[data-lit="true"] ~ .spine-label { opacity: .85; fill: var(--pcb-live); }

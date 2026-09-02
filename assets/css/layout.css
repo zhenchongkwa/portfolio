@@ -209,6 +209,35 @@
   background-size: auto, var(--halftone-size) var(--halftone-size), auto;
   padding-block: var(--s-16) var(--s-10);
   margin-top: var(--gap-section);
+
+  /* ต้องประกาศเองเพราะค่านี้อยู่ที่ .section--ruled ซึ่ง footer ไม่ได้เป็น */
+  --panel-notch: clamp(14px, 3vw, 32px);
+}
+
+/* ---------- กรอบพาเนลของ footer ----------
+   ทุก section เหนือมันมีกรอบมุมหักเฉียง แต่ footer ไม่มี ทั้งที่เป็นสิ่งสุดท้าย
+   ที่คนเห็นก่อนปิดหน้า — หน้าเว็บจึงจบลงแบบ "หลุดกรอบ" แทนที่จะปิดเล่ม
+
+   หักมุม "ซ้ายบน" ไม่ใช่ขวาบนแบบ .section--ruled โดยตั้งใจ
+   รอยตัดที่กลับทิศทำให้ตาอ่านออกว่านี่ไม่ใช่ section อีกอัน แต่เป็นตัวปิด
+   ถ้าหักทางเดียวกันหมด footer จะอ่านเป็นบทที่ห้าที่ไม่มีหัวข้อ
+
+   inset แนวตั้งไม่ใช่ 0 เพราะ footer มี border-top ของตัวเองอยู่แล้ว
+   ถ้าให้กรอบชนขอบบนพอดี เส้นสองเส้นจะซ้อนกันจนหนาเป็นสองเท่าเฉพาะด้านบน */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: var(--s-8) var(--pad-x) var(--s-6);
+  border: var(--bw) solid var(--line);
+  pointer-events: none;   /* กฎข้อ 6 — มันคลุมทั้ง footer ถ้าลืมจะกินคลิกลิงก์หมด */
+
+  clip-path: polygon(
+    var(--panel-notch) 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 var(--panel-notch)
+  );
 }
 .footer-grid {
   display: grid;

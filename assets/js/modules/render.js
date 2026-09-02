@@ -64,16 +64,28 @@ function mediaTag(p, ratio = "16/10") {
 
    ป้ายล่างซ้ายโชว์ "รางวัล" ไม่ใช่แค่ปี เพราะพอร์ตชุดนี้ขายผลลัพธ์เป็นหลัก
    ถ้ารายการไหนไม่มีรางวัลจะตกกลับไปโชว์ปีแทน */
-function projectCard(p, { featured = false } = {}) {
+function projectCard(p, { featured = false, no = 0 } = {}) {
   const cls = [
     "card", "card--spotlight", "work-item",
     featured && p.featured ? "card--featured" : "",
   ].filter(Boolean).join(" ");
 
+  /* เลขพาเนลมุมบนขวา — รูปแบบเดียวกับ .pindex-no ("01") ไม่ใช่ "01 / 06"
+     แบบฟิล์มสตริป เพราะการ์ดอยู่ในกริดที่เห็นทั้งชุดพร้อมกันอยู่แล้ว
+     ตัวหารจึงไม่ได้บอกอะไรใหม่ ต่างจากฟิล์มสตริปที่เห็นทีละแผง
+
+     no = 0 แปลว่าคนเรียกไม่ได้ส่งลำดับมา (projectCard ถูก export ที่ PF ด้วย)
+     กรณีนั้นไม่ต้องมีเลข ดีกว่าโชว์ "00" ซึ่งอ่านเหมือนข้อมูลผิด
+     aria-hidden เพราะเป็นเลขประดับ ไม่ใช่ข้อมูล — ชื่อกับรางวัลอยู่ในเนื้อการ์ดแล้ว */
+  const noTag = no
+    ? `<span class="card-no" aria-hidden="true">${String(no).padStart(2, "0")}</span>`
+    : "";
+
   return `
   <article class="${cls}" data-kind="${esc(p.kind)}" data-reveal data-cursor-label="VIEW">
     <div class="card-media" data-halftone data-ht-mode="hold" style="view-transition-name:cover-${esc(p.slug)}">
       <span class="card-tag">${esc(KIND_LABEL[p.kind] || "")}</span>
+      ${noTag}
       ${mediaTag(p)}
     </div>
     <div class="card-body">
@@ -94,7 +106,15 @@ function projectCard(p, { featured = false } = {}) {
 function renderProjects(el, { limit = 0, featured = true } = {}) {
   if (!el) return;
   const list = limit ? PROJECTS.slice(0, limit) : PROJECTS;
-  el.innerHTML = list.map((p) => projectCard(p, { featured })).join("");
+  /* เลขมาจากตำแหน่งใน PROJECTS ไม่ใช่ index ของ map
+
+     ตอนนี้ limit ตัดจากต้นรายการ สองค่าจึงบังเอิญตรงกัน แต่ถ้าวันหนึ่ง
+     เปลี่ยนไปตัดจากตรงกลาง (เช่นอยากโชว์เฉพาะงานที่ได้รางวัล) เลขบนการ์ด
+     จะเริ่มนับหนึ่งใหม่เงียบๆ แล้วไม่ตรงกับหน้ารวมผลงานที่ไม่มี limit
+     ผูกกับ PROJECTS ตรงๆ ไว้ตั้งแต่แรกจะไม่มีวันเพี้ยน (กฎข้อ 5) */
+  el.innerHTML = list
+    .map((p) => projectCard(p, { featured, no: PROJECTS.indexOf(p) + 1 }))
+    .join("");
 }
 
 /* ============================================================================
@@ -322,6 +342,23 @@ function renderCaseNav(el, prev, next) {
     </a>`;
 }
 
+/* ---------- ป้ายเลขเล่มของหน้า case study ----------
+   หน้าแรกมีป้ายพวกนี้อยู่สี่ใบ (01 ORIGIN · 02 ISSUES · 03 CONNECT · 04 NEXT?)
+   แต่อีกเก้าหน้าไม่มีเลย ทั้งที่ใช้ CSS ชุดเดียวกันได้ทันที
+
+   เลขมาจากลำดับใน PROJECTS ไม่ได้เขียนใส่ไฟล์ .html ทีละหน้า (กฎข้อ 5)
+   สลับลำดับผลงานใน projects.js แล้วเลขทั้งหกหน้าขยับตามเองทันที
+   ถ้า hardcode ไว้ จะมีวันที่ work/dobot.html ขึ้น "02" ทั้งที่ย้ายไปอยู่ที่สี่แล้ว
+
+   aria-hidden เหมือนป้ายในหน้าแรกทุกใบ — หมวดกับปีอยู่ใน .eyebrow บรรทัดถัดไป
+   และชื่อผลงานอยู่ใน <h1> ต่อจากนั้น เลขจึงไม่ได้บอกอะไรที่ยังไม่ได้พูด */
+function caseMark(p) {
+  const i = PROJECTS.indexOf(p);
+  if (i === -1) return "";   // ผลงานที่ยังไม่ได้ลงทะเบียนใน PROJECTS — ไม่ต้องมีเลขดีกว่าเดา
+  return `<span class="chapter-mark chapter-mark--case" aria-hidden="true">${
+    String(i + 1).padStart(2, "0")}<br>CASE</span>`;
+}
+
 /* ============================================================================
    หน้า case study — สร้างเนื้อหาทั้งหน้าจากข้อมูลของผลงานชิ้นนั้น
 
@@ -367,6 +404,7 @@ function renderCase(el, p) {
     <div class="split split--top" style="align-items:start">
 
       <div class="stack" style="width:100%">
+        ${caseMark(p)}
         <span class="eyebrow">${esc(KIND_LABEL[p.kind] || "")} · ${esc(p.year)}</span>
         <h1 class="case-title gradient-text">${esc(p.title)}</h1>
         <div class="case-rule"></div>

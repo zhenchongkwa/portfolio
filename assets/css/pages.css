@@ -323,6 +323,16 @@
 .comic-bubble--cyan { background: var(--accent-bright); rotate:  7deg; }
 .comic-bubble:hover { translate: 0 -8px; rotate: 0deg; }
 
+/* กดแล้วจมกลับลงไปหาเงา — ทิศเดียวกับ .btn--primary และ .cert ทั้งเว็บ
+   ต้องมีเพราะ data-pop (คีย์เฟรม bubble-pop ใน comic-fx.js) มีเฉพาะหน้าแรก
+   อีกเก้าหน้าลูกโป่งจึงเป็นของนิ่งสนิท กดแล้วไม่มีอะไรตอบ
+
+   เขียนลง translate ไม่ใช่ transform โดยตั้งใจ — บรรทัด :hover ข้างบนใช้
+   translate อยู่แล้ว ถ้าสลับไปใช้ transform ตอน :active ทั้งสองค่าจะทับกัน
+   (CSS ประกอบ translate → rotate → scale → transform) แล้วลูกโป่งจะกระโดด
+   ส่วนคีย์เฟรมของ comic-fx ใช้ scale กับ rotate จึงไม่ชนกับตรงนี้ */
+.comic-bubble:active { translate: 0 -2px; box-shadow: var(--shadow-sm); }
+
 @media (max-width: 35rem) {
 
   .comic-bubble { min-width: 6.4rem; min-height: 4rem; font-size: 9px; }
@@ -435,11 +445,40 @@
 
 /* .hero-notes ถูกแทนด้วย .hero-award ในแถบข้อมูลใต้ชื่อ — ดูหัวข้อ "แถบข้อมูลใต้ชื่อ" */
 
-/* ตัวชี้ SCROLL — ย้ายจากกลางขอบล่างมาอยู่ขอบขวา เขียนตั้งฉาก
+/* ---------- รอยฟันค้างบนหน้าจอแรก ----------
+   เส้นเดียวที่พาดจอตอนฉากเปิดฟันจบ แล้วจางหายภายในครึ่งวินาที
+   (แอนิเมชันอยู่ที่ @keyframes hero-scar ใน motion.css ตามกฎข้อ 3)
 
-   ของเดิมอยู่กลางขอบล่าง ซึ่งตอนนี้เป็นที่ของแถบข้อมูลที่กินเต็มความกว้าง
-   (วัดจริง: ทับกัน) ขอบขวาเป็นที่ว่างเดียวที่เหลือ และการเขียนตั้งฉาก
-   ก็เข้ากับป้ายบนเส้นวงจร PCB ที่ขอบซ้ายพอดี — สองขอบจึงคุยภาษาเดียวกัน */
+   ตำแหน่งกับมุมมาจาก --cut-x และ --cut-deg ที่ fx.js เขียนไว้ที่ <html>
+   ซึ่งเป็นค่าที่คำนวณจากแนวรอยแยกจริงของฉากเปิด ไม่ใช่ค่าที่กะเอาให้ดูคล้าย
+
+   fixed เพราะต้องพาดทั้งจอเหมือนคมดาบ ไม่ใช่แค่ในกล่องของ section
+   สูง 220vh กันไม่ให้ปลายเส้นหลุดจอตอนหมุนตามมุม
+   ⚠ pointer-events: none (กฎข้อ 6) — มันคลุมกลางจอ ถ้าลืมจะกินคลิกทั้งแถบ
+
+   ค่าตั้งต้นเป็น opacity: 0 ตามกฎข้อ 7 — ถ้าผู้ใช้ปิดแอนิเมชันหรือ JS ไม่ทำงาน
+   จนไม่มีใครตั้ง data-enter ให้ จะต้องไม่เหลือเส้นแดงพาดจอค้างไว้เฉยๆ */
+.hero-scar {
+  position: fixed;
+  left: var(--cut-x, 44%);
+  top: 50%;
+  z-index: var(--z-scar);
+  width: var(--bw-thick);
+  height: 220vh;
+  translate: -50% -50%;
+  rotate: var(--cut-deg, 8deg);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--accent-bright) 18%,
+    var(--ink) 50%,
+    var(--accent) 82%,
+    transparent);
+  box-shadow: 0 0 12px var(--accent-bright);
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* ตัวชี้ SCROLL — กลางขอบล่าง
    กลับมาที่กลางล่างได้แล้ว เพราะแถบข้อมูลไม่ได้กินเต็มความกว้างเหมือนตอนที่
    ชื่อเป็นโปสเตอร์ ขอบล่างจึงว่างพอ และตำแหน่งกลางคือที่ที่ตาไปหาสัญญาณ
@@ -761,6 +800,36 @@
 .chapter-mark--contact { top: var(--s-10); right: max(var(--pad-x), 5vw); rotate: 8deg; background: var(--hue-art); }
 .chapter-mark--cta { top: var(--s-8); right: max(var(--pad-x), 7vw); rotate: -9deg; background: var(--accent-bright); }
 
+/* ---------- ป้ายเลขของหน้าอื่นที่ไม่ใช่หน้าแรก ----------
+   สี่ตัวบนเป็นของ section กลางหน้า ซึ่งลอยได้อิสระเพราะมี --gap-section
+   (5–10rem) เป็นที่ว่างรองรับ และแถบ nav ไม่เคยค้างอยู่ตรงนั้นตอนหยุดนิ่ง
+
+   สามตัวล่างเป็นของ section ที่อยู่ "หัวหน้า" พอดี ซึ่งมีข้อจำกัดคนละชุด:
+   บนมี nav ลอยทับถาวร (สูงราว 4.5rem) ล่างมีเนื้อหาเริ่มที่ padding-top 9rem
+   เหลือช่องปลอดภัยแค่ช่วง 5–9rem จึงใช้ --s-20 เท่ากันทั้งสามตัว ไม่ใช่ --s-10
+   ถ้าลอกค่า --s-10 ของสี่ตัวบนมาใช้ ป้ายจะจมอยู่ใต้แคปซูล nav ตั้งแต่ยังไม่เลื่อน */
+.chapter-mark--bio   { top: var(--s-20); right: max(var(--pad-x), 5vw); rotate:  9deg; background: var(--hue-art); }
+.chapter-mark--index { top: var(--s-20); right: max(var(--pad-x), 5vw); rotate: -8deg; background: var(--hue-motion); }
+.chapter-mark--lost  { top: var(--s-20); right: max(var(--pad-x), 5vw); rotate: 11deg; background: var(--accent-bright); }
+
+/* ---------- ป้ายเลขในหน้า case study — อยู่ในสายอ่าน ไม่ใช่ลอยทับ ----------
+   ที่หน้าแรกป้ายพวกนี้เป็นของประดับ ลอยได้ แต่ที่นี่ "เล่มที่เท่าไหร่"
+   คือข้อมูลของหน้า มันจึงควรอยู่ในลำดับที่ตาอ่านถึงจริง
+
+   และถึงอยากให้ลอยก็ลอยไม่ได้ — .case-head มี overflow: hidden กับ
+   padding-top 9rem ที่ nav ลอยทับอยู่ ส่วนป้ายสูง 5.6rem ช่องที่เหลือจึงแคบ
+   เกินกว่าจะมีค่า top ไหนที่ปลอดภัยทั้งจอสูงและจอเตี้ย (เหตุผลเดียวกับที่
+   ลูกโป่งในหน้าจอแรกต้องเกาะ element จริงแทนที่จะเกาะขอบจอ)
+
+   .stack ที่ห่อมันอยู่เป็น align-items: flex-start จึงไม่ต้องกัน stretch เพิ่ม */
+.chapter-mark--case {
+  position: static;
+  width: 4.6rem;
+  margin-bottom: var(--s-2);
+  rotate: -4deg;
+  background: var(--hue-motion);
+}
+
 .comic-chapter .section-head { position: relative; }
 .comic-chapter .section-head::before {
   content: "// TRANSMISSION RECEIVED";
@@ -826,6 +895,21 @@
 @media (max-width: 45rem) {
   .chapter-mark { width: 4.4rem; }
   .chapter-mark--work { left: auto; right: var(--pad-x); }
+
+  /* ป้ายของหน้าที่ขึ้นต้นด้วย section เต็มจอ — ซ่อนบนจอแคบ ไม่ใช่ย้ายที่
+     ต่างจาก --work ข้างบนที่ย้ายไปชิดขวาแล้วรอด เพราะมันอยู่กลางหน้า
+     ที่มี --gap-section รองรับ
+
+     สามตัวนี้ไม่มีที่ให้ย้าย: จอต่ำกว่า 45rem คอลัมน์เนื้อหากินเต็มความกว้าง
+     หัวข้อกับ eyebrow จึงยื่นมาถึงขอบขวาพอดีกับที่ป้ายเกาะอยู่ ส่วนช่องบน
+     ก็มี nav ครองไว้แล้ว — ย้ายไปตรงไหนก็ทับของที่อ่านได้ทั้งนั้น
+
+     ใช้กฎเดียวกับ .hero-shot กับบัตรห้อยที่ถูกซ่อนบนมือถือ:
+     ป้ายเป็นของประดับ ตัวหนังสือเป็นเนื้อหา เนื้อหาชนะเสมอ
+     (.chapter-mark--case ไม่โดนกฎนี้เพราะมันอยู่ในสายอ่าน ไม่ได้ลอยทับใคร) */
+  .chapter-mark--bio,
+  .chapter-mark--index,
+  .chapter-mark--lost { display: none; }
   .comic-chapter--about .portrait { width: min(85%, 20rem); }
   .comic-chapter--contact .split { padding: var(--s-5); }
 }
@@ -1150,7 +1234,31 @@
 .case-body { max-width: var(--w-text); }
 .case-body h2 { font-size: var(--t-h3); margin-top: var(--s-12); margin-bottom: var(--s-4); }
 .case-body h2 { display: flex; align-items: center; gap: var(--s-3); }
-.case-body h2::before { content: "//"; color: var(--accent-ink); font-family: var(--font-mono); font-size: .7em; }
+/* เครื่องหมายหัวข้อเป็นวงแหวนกลวง ไม่ใช่ //
+
+   ตอนแรกทำขึ้นเพื่อให้เป็นสัญลักษณ์เดียวกับจุดบัดกรีบนเส้นลายวงจร PCB
+   ที่ขอบซ้าย แต่เส้นนั้นถูกถอดออกทั้งชุดไปแล้ว วงแหวนนี้เก็บไว้เพราะมันยัง
+   ทำงานได้ในตัวเอง — เป็นหมุดกลมเล็กที่นำสายตาลงมาตามหัวข้อโดยไม่แย่งน้ำหนัก
+   แบบที่ // (ตัวอักษรสองตัว) เคยทำ
+
+   ⚠ เคยใช้ var(--pcb-w) ซึ่งเป็น token ของเส้น PCB ตอนนี้เปลี่ยนมาใช้ --bw
+   ที่เป็นความหนาขอบมาตรฐานของทั้งเว็บแทน (ค่าเท่ากันคือ 2px ภาพจึงไม่เปลี่ยน)
+   ถ้าไม่เปลี่ยน หัวข้อในหน้า case study ทั้งหกจะขอบหายทันทีที่ลบ token นั้นทิ้ง
+
+   ใช้ --accent-ink สีเดิมของ // ที่มันมาแทน เพราะตั้งใจเปลี่ยนแค่ "รูปร่าง"
+   ไม่ได้ตั้งใจลดน้ำหนักของหัวข้อลง
+
+   flex-shrink: 0 จำเป็น — h2 เป็น flex container ถ้าไม่กันไว้ หัวข้อยาวๆ
+   จะบีบวงกลมให้แบนเป็นวงรี */
+.case-body h2::before {
+  content: "";
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border: var(--bw) solid var(--accent-ink);
+  border-radius: var(--r-pill);
+  background: var(--bg);
+}
 .case-body h3 { font-size: var(--t-h4); margin-top: var(--s-8); margin-bottom: var(--s-3); }
 .case-body p  { color: var(--ink-soft); margin-bottom: var(--s-4); }
 .case-body ul { display: flex; flex-direction: column; gap: var(--s-3); margin-bottom: var(--s-6); }
@@ -1233,6 +1341,10 @@
    หน้า 404
    ========================================================================= */
 .notfound {
+  /* position: relative เพื่อให้ .chapter-mark--lost กับกรอบพาเนลของ
+     .section--ruled ที่หน้านี้ยืมมาใช้ มีกรอบอ้างอิงเป็นตัวมันเอง
+     ไม่ใช่ <body> ซึ่งจะทำให้ป้ายไปเกาะขอบเอกสารแทนขอบหน้า */
+  position: relative;
   min-height: 100dvh;
   display: grid;
   place-items: center;
