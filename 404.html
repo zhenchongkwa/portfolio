@@ -53,14 +53,18 @@
 <div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
 
 <!-- รูปทรงวิศวกรรมลอยเป็นฉากหลัง ลากได้ — รูปทรงถูกสร้างโดย js/modules/formes.js -->
-<!-- เส้นลายวงจร PCB ที่ขอบซ้าย — แถบความคืบหน้าการอ่าน จุดบัดกรีติดไฟทีละจุดตามหัวข้อ
-     รูปเส้นสร้างโดย js/modules/spine.js เพราะจำนวนจุดต่างกันทุกหน้า
-     ⚠ pointer-events: none อยู่ใน CSS แล้ว (กฎข้อ 6) มันสูงเต็มจอ ถ้าลืมจะกินคลิกทั้งแถบ -->
-<div class="spine" data-spine aria-hidden="true"></div>
 
 <div class="formes" data-formes aria-hidden="true"></div>
 
-<main class="notfound">
+<!-- section--ruled ยืมกรอบพาเนลมุมหักเฉียงมาใช้ทั้งดุ้น ไม่ต้องเขียน CSS ใหม่
+     (กรอบอยู่ที่ .section--ruled::before ใน layout.css) — หน้านี้เคยเป็นหน้าเดียว
+     ที่ไม่มีกรอบเลย ทั้งที่ทุก section ในหน้าอื่นมี -->
+<main class="notfound section--ruled">
+
+  <!-- ป้ายเลขบท — หน้านี้ไม่มีเลขเพราะมันไม่ได้อยู่ในสารบัญ จึงใช้ ?? แทนตัวเลข
+       ⚠ ซ่อนอัตโนมัติบนจอ < 45rem — เหตุผลอยู่ที่ media query ใน pages.css -->
+  <span class="chapter-mark chapter-mark--lost" aria-hidden="true">??<br>LOST</span>
+
   <div class="container stack stack--center"><div class="stack stack--center" style="width:100%">
     <p class="notfound-code" aria-hidden="true">404</p>
     <span class="eyebrow" data-scramble>Page not found</span>
@@ -69,6 +73,14 @@
       ลิงก์อาจพิมพ์ผิด หรือหน้านั้นถูกย้ายไปแล้ว
       ลองกลับไปหน้าแรก หรือกด <kbd>⌘</kbd><kbd>K</kbd> เพื่อค้นหาผลงาน
     </p>
+
+    <!-- ⚠ ห้ามใส่ data-pop หรือ data-sense ที่นี่
+         สอง attribute นั้นถูกอ่านโดย comic-fx.js ซึ่งโหลดเฉพาะ index.html
+         ตามขอบเขตที่ตกลงไว้ ใส่ไปก็ไม่มีใครฟัง (ไม่ error แต่ก็ไม่ทำงาน)
+         ลูกโป่งที่นี่ยุบ-เด้งด้วย :hover / :active ที่เป็น CSS ล้วนแทน -->
+    <span class="comic-bubble comic-bubble--cyan" aria-hidden="true"
+          style="margin-top:var(--s-2)">LOST?!</span>
+
     <div class="row row--center" style="margin-top:var(--s-4)">
       <a data-magnet class="btn btn--primary" href="index.html">
         <span data-icon="home"></span> กลับหน้าแรก
@@ -110,7 +122,6 @@
 <script defer src="assets/js/modules/type.js"></script>
 <script defer src="assets/js/modules/smooth.js"></script>
 <script defer src="assets/js/modules/scenes.js"></script>
-<script defer src="assets/js/modules/spine.js"></script>
 <script defer src="assets/js/main.js"></script>
 </body>
 </html>
