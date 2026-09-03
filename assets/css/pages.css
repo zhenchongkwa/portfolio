@@ -44,6 +44,62 @@
   overflow: hidden;
 }
 
+/* วีดีโอพื้นหลัง About Me — สร้าง stacking context + overflow hidden ให้วีดีโอไม่หลุด */
+.about-video-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* วีดีโอพื้นหลัง — เต็มบล็อก About Me อยู่ใต้เนื้อหาทุกชั้น */
+.about-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* โทนมืดทับวีดีโอ — gradient จากซ้ายมืดไปขวาอ่อน ให้ฝั่งข้อความอ่านง่ายกว่าฝั่งรูป */
+.about-video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.55) 50%, rgba(0,0,0,.35) 100%),
+    rgba(0,0,0,.25);
+}
+
+/* วีดีโอพื้นหลัง Portfolio — stacking context + overflow hidden */
+.work-video-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.work-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.work-video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.55) 50%, rgba(0,0,0,.35) 100%),
+    rgba(0,0,0,.25);
+}
+
 
 /* แสงสองก้อน — ก้อนเย็นบนซ้ายหลังหัวข้อ ก้อนอุ่นขวาหลังบัตรห้อย
    ขนาดใหญ่กว่าจอโดยตั้งใจ จะได้ไม่เห็นขอบวง */
@@ -1123,6 +1179,123 @@
 .copy-mail:hover { border-color: var(--accent); color: var(--ink); translate: 2px 2px; box-shadow: none; }
 .copy-mail svg { width: 15px; height: 15px; }
 
+/* การ์ดเล่นวีดีโอฝั่งขวาของ Contact — ตกแต่งสไตล์ไซเบอร์คอมิก */
+.contact-video-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-top: var(--s-4);
+  border: var(--bw-thick) solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 5px 5px 0 var(--accent);
+  overflow: hidden;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.contact-video-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 var(--accent-bright);
+  border-color: var(--accent-bright);
+}
+.contact-video-card video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* แถบ HUD ด้านบนวิดีโอ */
+.video-card-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-2) var(--s-3);
+  background: linear-gradient(180deg, rgba(6, 4, 9, 0.85) 0%, rgba(6, 4, 9, 0) 100%);
+  pointer-events: none;
+}
+.video-card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  color: var(--ink);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.video-live-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+.video-live-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  animation: pulse-ring 1.8s var(--ease) infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.video-card-tag {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--hue-motion);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 212, 0, 0.3);
+}
+
+/* เอฟเฟกต์ Scanlines หน้าจอมอนิเตอร์ */
+.video-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  opacity: 0.6;
+}
+
+/* ป้ายสติกเกอร์ประดับมุมล่าง */
+.video-card-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #0b0910;
+  background: var(--accent-bright);
+  padding: 3px 8px;
+  border-radius: 2px;
+  box-shadow: 2px 2px 0 var(--accent);
+  transform: rotate(-3deg);
+  pointer-events: none;
+  letter-spacing: 0.5px;
+  transition: transform var(--dur) var(--ease);
+}
+.contact-video-card:hover .video-card-badge {
+  transform: rotate(0deg) scale(1.05);
+}
+
 /* ============================================================================
    หน้ารวมผลงาน — แถบกรองหมวด
    ========================================================================= */
@@ -1903,35 +2076,76 @@ html.no-js .pindex-preview { display: none; }
   margin-inline: clamp(var(--s-4), 2vw, var(--s-8));
 }
 
-/* ---------- ตัวแผง ---------- */
+/* ---------- ตัวแผงกรอบรูปใน Selected Work ---------- */
 .reel-shot {
   position: relative;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border: var(--bw) solid var(--line);
+  border: var(--bw-thick) solid var(--line-strong);
   border-radius: var(--r-lg);
   background: var(--bg-sunken);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 5px 5px 0 var(--accent);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
+
+/* วิกเน็ตเงาจางด้านล่างกรอบรูปเพื่อมิติความลึก */
+.reel-shot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(11, 9, 16, 0.15) 0%, rgba(11, 9, 16, 0.65) 100%);
+  opacity: 0.7;
+  transition: opacity var(--dur) var(--ease);
+}
+
 .reel-shot img {
   width: 100%; height: 100%;
   object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out), filter var(--dur) var(--ease);
   /* แผงที่ยังไม่ถึงกลางจอถูกหรี่ไว้ ให้ตารู้ว่าอันไหนคือ "อันที่กำลังดูอยู่"
      --reel-focus เขียนโดย reel.js เป็น 0→1 ตามระยะห่างจากกลางจอ */
   filter: saturate(calc(.25 + var(--reel-focus, 1) * .75));
 }
 
+/* เอฟเฟกต์ตอบสนองตอนเมาส์ชี้บนการ์ด */
+.reel-panel:hover .reel-shot {
+  transform: translate3d(-3px, -3px, 0);
+  box-shadow: 8px 8px 0 var(--accent-bright);
+  border-color: var(--accent-bright);
+}
+
+.reel-panel:hover .reel-shot img {
+  transform: scale(1.06);
+}
+
+.reel-panel:hover .reel-shot::after {
+  opacity: 0.35;
+}
+
+/* ป้ายหมายเลขลำดับรูปสไตล์สติกเกอร์คอมิก */
 .reel-no {
   position: absolute;
   top: var(--s-3); left: var(--s-3);
   z-index: 2;
   font-family: var(--font-mono);
   font-size: var(--t-micro);
+  font-weight: 700;
   letter-spacing: var(--track-label);
-  padding: 3px var(--s-2);
-  background: var(--bg);
-  border: var(--bw) solid var(--line);
-  color: var(--ink-soft);
+  padding: 3px var(--s-3);
+  background: var(--accent);
+  border: var(--bw) solid #0b0910;
+  border-radius: var(--r-xs);
+  color: #0b0910;
+  box-shadow: 2px 2px 0 #0b0910;
+  transform: rotate(-2deg);
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.reel-panel:hover .reel-no {
+  transform: rotate(0deg) scale(1.08);
+  background: var(--accent-bright);
 }
 
 .reel-body { display: flex; flex-direction: column; gap: var(--s-2); }

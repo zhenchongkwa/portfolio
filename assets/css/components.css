@@ -12,6 +12,13 @@
    ส่วนที่มองเห็นคือ .nav ข้างในซึ่งเป็นแคปซูล — ทำแบบนี้เพื่อให้แคปซูลอยู่กลาง
    และหดความกว้างได้เองตอน scroll โดยไม่ต้องขยับตัว header
    ========================================================================= */
+/* ============================================================================
+   NAV — แถบ pill ลอย ไม่ติดขอบบน (ตามเรฟ)
+
+   ต่างจาก header ทั่วไปตรงที่ตัว <header> เป็นแค่กรอบโปร่งใสเต็มความกว้าง
+   ส่วนที่มองเห็นคือ .nav ข้างในซึ่งเป็นแคปซูล — ทำแบบนี้เพื่อให้แคปซูลอยู่กลาง
+   และหดความกว้างได้เองตอน scroll โดยไม่ต้องขยับตัว header
+   ========================================================================= */
 .site-header {
   position: fixed;
   inset-inline: 0;
@@ -25,13 +32,6 @@
 
 .nav {
   pointer-events: auto;
-  /* ⚠ ต้องหัก --pad-x ออกสองข้าง ไม่ใช่ใช้ --w-content ดิบๆ
-
-     .container เอา padding ไว้ "ข้างใน" กล่อง 1600px (ขอบเนื้อหา = กลาง + pad)
-     ส่วน nav เอา padding ไว้ "ข้างนอก" ที่ .site-header (ขอบกล่อง = กลางเฉยๆ)
-     ถ้าให้ทั้งคู่กว้าง 1600px เท่ากัน ขอบซ้ายจะห่างกันเท่ากับ --pad-x พอดี
-     ซึ่งเห็นชัดเฉพาะจอที่กว้างกว่ากล่อง (วัดจริงที่ 1920px: ห่างกัน 42px)
-     จอแคบกว่านั้นไม่เห็นเพราะทั้งคู่ถูกบีบเต็มความกว้างอยู่แล้ว */
   max-width: calc(var(--w-content) - var(--pad-x) * 2);
   margin-inline: auto;
   display: flex;
@@ -50,14 +50,6 @@
     max-width    var(--dur-slow) var(--ease);
 }
 
-/* กระจกจะ "ติด" ก็ต่อเมื่อเลื่อนลงมาแล้ว — ตอนอยู่บนสุด nav ลอยเปล่าๆ บน hero
-   backdrop-filter ตอน scroll เท่านั้น เพราะมันกิน GPU ตลอดเวลาถ้าเปิดค้างไว้
-
-   ⚠ ห้ามใส่ max-width กลับมาที่นี่
-   เดิมแคปซูลหดลง 4rem ตอนเลื่อน ซึ่งดูดีเมื่อดูเฉพาะแถบ แต่มันทำให้ขอบซ้าย
-   ของ nav เลื่อนออกจากขอบของเนื้อหาข้างล่างทันทีที่คนเริ่มอ่าน — เส้นตั้ง
-   ที่เพิ่งจัดให้ตรงกันทั้งหน้าจะพังทุกครั้งที่ scroll (ดูกฎที่ tokens.css)
-   ความรู้สึก "แถบเปลี่ยนสถานะ" ยังได้ครบจากกระจก ขอบ และเงาที่ติดเข้ามา */
 .site-header[data-scrolled="true"] .nav {
   background: var(--surface-glass);
   border-color: var(--line);
@@ -83,8 +75,6 @@
 }
 @media (min-width: 52rem) { .nav-links { display: flex; } }
 
-/* ลิงก์ nav — ขีดใต้ตัว active เป็นเส้นสั้นๆ ใต้ตัวอักษรพอดี (ตามเรฟ)
-   ใช้ ::after ที่ scaleX จาก 0 เพื่อให้เส้นวิ่งออกจากกลาง ไม่ใช่โผล่มาทั้งเส้น */
 .nav-link {
   position: relative;
   padding: var(--s-2) var(--s-3);
@@ -112,7 +102,6 @@
 
 .nav-actions { display: flex; align-items: center; gap: var(--s-2); }
 
-/* ปุ่มเรียก command palette — โชว์คีย์ลัดไว้ในตัวปุ่มเลย (แบบ Linear) */
 .kbd-hint {
   display: none;
   align-items: center;
@@ -144,10 +133,6 @@ kbd {
   color: var(--ink-soft);
 }
 
-/* ปุ่มไอคอนเปล่าใน nav — ใช้กับสวิตช์ธีม
-   ต้องแสดงทุกขนาดจอ ต่างจาก .kbd-hint ที่ซ่อนบนจอแคบ
-   เพราะสวิตช์ธีมเป็นฟีเจอร์ที่คนหาไม่เจอถ้าไม่มีปุ่มให้เห็น
-   (เดิมเรียกได้จาก command palette อย่างเดียว ซึ่งเท่ากับไม่มี สำหรับคนส่วนใหญ่) */
 .icon-btn {
   display: grid;
   place-items: center;
@@ -161,7 +146,6 @@ kbd {
 .icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
 .icon-btn svg { width: 15px; height: 15px; }
 
-/* ปุ่มเปิดเมนูมือถือ — hamburger สามขีดที่แปลงเป็นกากบาท */
 .nav-toggle {
   display: grid;
   place-items: center;
@@ -184,11 +168,8 @@ kbd {
 .nav-toggle[aria-expanded="true"] i:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] i:nth-child(3) { translate: 0 -5.5px; rotate: -45deg; }
 
-/* แผงเมนูมือถือ — ร่วงลงมาจากใต้แคปซูล
-   ใช้ grid-template-rows 0fr→1fr เพื่อ animate ความสูงโดยไม่ต้องรู้ค่าจริง */
 .nav-panel {
   pointer-events: auto;
-  /* กล่องเดียวกับ .nav ข้างบน — หักขอบสองข้างเหมือนกัน (เหตุผลอยู่ที่นั่น) */
   max-width: calc(var(--w-content) - var(--pad-x) * 2);
   margin: var(--s-2) auto 0;
   display: grid;
@@ -446,15 +427,17 @@ kbd {
   padding-top: var(--s-2);
 }
 
-/* กรอบสื่อในการ์ด — เว้นขอบด้านในให้ภาพลอยอยู่ในการ์ดอีกที (ตามเรฟ) */
+/* กรอบสื่อในการ์ด — ตกแต่งขอบหนา เงานีออนเด้ง */
 .card-media {
   position: relative;
   margin: var(--s-3) var(--s-3) 0;
-  border-radius: var(--r-lg);
+  border-radius: var(--r-md);
   overflow: hidden;
   background: var(--bg-sunken);
-  border: var(--bw) solid var(--line-soft);
+  border: var(--bw-thick) solid var(--line-strong);
   aspect-ratio: 16 / 10;
+  box-shadow: 3px 3px 0 var(--accent);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .card-media img,
 .card-media video {
@@ -462,8 +445,13 @@ kbd {
   object-fit: cover;
   transition: scale var(--dur-slow) var(--ease-out), opacity var(--dur) var(--ease);
 }
+.card:hover .card-media {
+  transform: translate3d(-2px, -2px, 0);
+  box-shadow: 6px 6px 0 var(--accent-bright);
+  border-color: var(--accent-bright);
+}
 .card:hover .card-media img,
-.card:hover .card-media video { scale: 1.04; }
+.card:hover .card-media video { scale: 1.06; }
 
 /* ป้ายหมวดมุมบนซ้ายของสื่อ */
 .card-tag {
@@ -471,17 +459,17 @@ kbd {
   top: var(--s-3);
   left: var(--s-3);
   z-index: 2;
-  padding: 3px var(--s-2);
+  padding: 3px var(--s-3);
   border-radius: var(--r-xs);
-  background: rgba(8, 9, 10, .72);
-  -webkit-backdrop-filter: blur(8px);
-          backdrop-filter: blur(8px);
-  border: var(--bw) solid var(--line);
+  background: var(--accent);
+  border: var(--bw) solid #0b0910;
   font-family: var(--font-mono);
   font-size: var(--t-micro);
+  font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: #0b0910;
+  box-shadow: 2px 2px 0 #0b0910;
 }
 
 /* ---------- เลขพาเนลมุมบนขวาของสื่อ ----------
