@@ -44,60 +44,43 @@
   overflow: hidden;
 }
 
-/* วีดีโอพื้นหลัง About Me — สร้าง stacking context + overflow hidden ให้วีดีโอไม่หลุด */
-.about-video-section {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
-/* วีดีโอพื้นหลัง — เต็มบล็อก About Me อยู่ใต้เนื้อหาทุกชั้น */
-.about-bg-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* โทนมืดทับวีดีโอ — gradient จากซ้ายมืดไปขวาอ่อน ให้ฝั่งข้อความอ่านง่ายกว่าฝั่งรูป */
-.about-video-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.55) 50%, rgba(0,0,0,.35) 100%),
-    rgba(0,0,0,.25);
-}
-
-/* วีดีโอพื้นหลัง Portfolio — stacking context + overflow hidden */
+/* วีดีโอพื้นหลัง About Me & Portfolio — stacking context + overflow hidden */
+.about-video-section,
 .work-video-section {
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
 
+.about-video-section > .container,
+.work-video-section > .container-wide {
+  position: relative;
+  z-index: 2;
+}
+
+.about-bg-video,
 .work-bg-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
+  opacity: 0.32;
+  filter: brightness(0.45) contrast(1.15);
 }
 
+/* โทนมืดทับวีดีโอ — ป้องกันภาพแข่งกับตัวหนังสือ */
+.about-video-overlay,
 .work-video-overlay {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.55) 50%, rgba(0,0,0,.35) 100%),
-    rgba(0,0,0,.25);
+    linear-gradient(90deg, rgba(11, 9, 16, 0.85) 0%, rgba(11, 9, 16, 0.65) 50%, rgba(11, 9, 16, 0.45) 100%),
+    rgba(6, 4, 9, 0.35);
 }
 
 
