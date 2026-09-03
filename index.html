@@ -148,6 +148,7 @@
        HERO
        ========================================================== -->
   <section class="hero" id="hero">
+
     <!-- data-par = ขยับคนละความเร็วกับหน้า (โค้ดอยู่ที่ modules/scenes.js)
          แสงสองก้อนใช้ค่าคนละเครื่องหมาย จึงสวนทางกันตอนเลื่อน ทำให้รู้สึกว่า
          อยู่คนละระยะลึก — ถ้าไปทางเดียวกันทั้งคู่จะดูเหมือนภาพเดียวที่เลื่อนเฉยๆ
@@ -317,7 +318,14 @@
   <!-- ==========================================================
        ABOUT
        ========================================================== -->
-  <section class="section comic-chapter comic-chapter--about" id="about">
+  <section class="section comic-chapter comic-chapter--about about-video-section" id="about">
+    <!-- วีดีโอพื้นหลัง — เล่นเฉพาะบล็อก About Me เท่านั้น -->
+    <video class="about-bg-video" autoplay muted loop playsinline aria-hidden="true">
+      <source src="assets/video/0903(1).mp4" type="video/mp4">
+    </video>
+    <!-- โทนมืดทับวีดีโอ — ช่วยให้ตัวหนังสืออ่านง่าย -->
+    <div class="about-video-overlay" aria-hidden="true"></div>
+
     <span class="chapter-mark chapter-mark--about" data-depth="0.12" aria-hidden="true">01<br>ORIGIN</span>
     <div class="container">
       <div class="split split--text-lead">
@@ -383,7 +391,14 @@
   <!-- ==========================================================
        SHOWCASE — สลับสามแท็บ
        ========================================================== -->
-  <section class="section section--ruled comic-chapter comic-chapter--work" id="work">
+  <section class="section section--ruled comic-chapter comic-chapter--work work-video-section" id="work">
+    <!-- วีดีโอพื้นหลัง — เล่นเฉพาะบล็อก Portfolio เท่านั้น -->
+    <video class="work-bg-video" autoplay muted loop playsinline aria-hidden="true">
+      <source src="assets/video/open eye.mp4" type="video/mp4">
+    </video>
+    <!-- โทนมืดทับวีดีโอ — ช่วยให้ตัวหนังสืออ่านง่าย -->
+    <div class="work-video-overlay" aria-hidden="true"></div>
+
     <span class="chapter-mark chapter-mark--work" data-depth="0.08" aria-hidden="true">02<br>ISSUES</span>
     <div class="container-wide">
 
@@ -482,6 +497,24 @@
             <span data-icon="copy"></span>
             <span data-site-email>lpk37943@loeipit.ac.th</span>
           </button>
+
+          <!-- การ์ดเล่นวีดีโอ eye of star ในโซน Contact — ตกแต่งสไตล์ไซเบอร์คอมิก -->
+          <div class="contact-video-card" data-reveal data-magnet>
+            <div class="video-card-header">
+              <span class="video-card-status">
+                <span class="video-live-dot"></span>
+                <span>EYE OF STAR</span>
+              </span>
+              <span class="video-card-tag">03 // MEDIA</span>
+            </div>
+
+            <video autoplay muted loop playsinline aria-label="Eye of star video">
+              <source src="assets/video/eye of star.mp4" type="video/mp4">
+            </video>
+
+            <div class="video-scanlines" aria-hidden="true"></div>
+            <span class="video-card-badge" aria-hidden="true">STAR EYE ★</span>
+          </div>
         </div>
 
       </div>
